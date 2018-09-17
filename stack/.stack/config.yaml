@@ -1,0 +1,19 @@
+# This file contains default non-project-specific settings for
+# 'stack', used in all projects. For more information about stack's
+# configuration, see
+# http://docs.haskellstack.org/en/stable/yaml_configuration/
+
+# The following parameters are used by "stack new" to automatically
+# fill fields in the cabal config.
+#
+# See https://docs.haskellstack.org/en/stable/yaml_configuration/#templates
+templates:
+  params:
+    author-name: Christopher Reichert
+    author-email: <author@email.com>
+    copyright: 2018 Christopher Reichert
+    github-username: creichert
+
+ghc-options:
+  "$locals":
+      "-j"

@@ -1,0 +1,14 @@
+set completion-ignore-case on
+set editing-mode vi
+set keymap vi # keymap vi-command
+set bell-style none
+
+# This tells readline not to convert the escaped control/ALT sequences,
+# but still to allow 8-bit values, thus allowing input of the UTF-8
+# characters. Again, 8-bit output needs to be turned on, so that when
+# programs output UTF-8 sequences, they don't get converted down to
+# escaped 7-bit sequences, which would confuse XTerm into thinking they
+# are control sequences.
+set input-meta   on
+set output-meta  on
+set convert-meta off

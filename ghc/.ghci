@@ -1,0 +1,4 @@
+:set -XOverloadedStrings
+:def hoogle \x -> return $ ":!hoogle \"" ++ x ++ "\""
+:def doc \x -> return $ ":!hoogle --info \"" ++ x ++ "\""
+:def clear \_ -> return $ ":!clear"

@@ -1,0 +1,81 @@
+# backup files
+*~
+*.swp
+\#*\#
+.\#*
+*\#
+
+# build artifacts
+*.o
+*.so
+*.a
+*.hi
+
+# vc
+_darcs/
+
+
+# tags
+GTAGS
+GRTAGS
+GPATH
+GSYMS
+TAGS
+codex.tags
+
+
+# rust / cargo
+Cargo.lock
+
+
+# emacs
+*_flycheck_*
+*flycheck_*
+*_flycheck*
+
+
+
+# node
+node_modules/
+bower_components/
+
+# cabal
+cabal.sandbox.config
+.cabal-sandbox/
+
+*.keter
+
+# Some of these files will be written into the symlinks given by stow if stow
+# was run before
+
+## emacs
+#emacs/.emacs.d/elpa
+#ido.last
+#emacs/.emacs.d/projectile*
+#emacs/.emacs.d/savehist
+#emacs/.emacs.d/smex-items
+#emacs/*signature
+#**.uuid
+#gnupg/.gnupg/*.gpg*
+#gnupg/.gnupg/*.kbx
+#gnupg/.gnupg/crls.d
+#gnupg/.gnupg/dirmngr.conf
+#gnupg/.gnupg/private-keys-v1.d
+#gnupg/.gnupg/random_seed
+#ssh/.ssh/agent
+#ssh/.ssh/authorized_keys
+#ssh/.ssh/aws.pem
+#ssh/.ssh/env-*
+#ssh/.ssh/id_*
+#ssh/.ssh/known_hosts
+#stack/.stack/snapshots
+#stack/.stack/build-*
+#stack/.stack/docker*
+#stack/.stack/indices
+#stack/.stack/*dyn_hi
+#stack/.stack/programs
+#stack/.stack/setup-exe-src
+#stack/.stack/setup-exe-cache
+#stack/.stack/precompiled
+#stack/.stack/loaded-snapshot-cache
+#stack/.stack/global-project/.stack-work

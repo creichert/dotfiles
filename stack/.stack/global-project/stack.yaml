@@ -1,0 +1,20 @@
+# This is the implicit global project's config file, which is only used
+# when 'stack' is run outside of a real project.  Settings here do _not_
+# act as defaults for all projects.  To change stack's default settings,
+# edit '~/.stack/config.yaml' instead.
+#
+# For more information about stack's configuration, see
+# http://docs.haskellstack.org/en/stable/yaml_configuration/
+#
+resolver: lts-11.22
+packages: []
+
+flags:
+  xmobar:
+    with_xft: true
+
+extra-deps:
+  - xmobar-0.26
+  - xmonad-contrib-0.14
+  - git: "https://github.com/xmonad/xmonad"
+    commit: v0.14

@@ -1,0 +1,6 @@
+[submodule "x11/.local/share/base16-xresources"]
+	path = x11/.local/share/base16-xresources
+	url = https://github.com/creichert/base16-xresources
+[submodule "emacs/.emacs.d/ido-vertical-mode.el"]
+	path = emacs/.emacs.d/ido-vertical-mode.el
+	url = https://github.com/creichert/ido-vertical-mode.el

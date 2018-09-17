@@ -1,0 +1,46 @@
+
+Config {
+    font = "xft:monofur:size=10:style=Regular"
+  , position = Top
+  , lowerOnStart = True
+  , sepChar = "%"
+  , alignSep = "}{"
+  , template = "%multicpu% | %memory% | %eno1% | %coretemp% } %StdinReader% {           <fc=#ee9a00>%date%</fc> "
+  , commands = [
+
+        Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
+
+      , Run Network "eno1" [ "-L","10000" -- 10 kb in bytes
+                           , "-H","500000"  -- 500kb in bytes
+                           , "--low", "gray90"
+                           , "--normal","green"
+                           , "--high","red"
+                           -- ,"-S","Off"
+                           ] 30
+
+      , Run Memory [ "-t"
+                   , "Mem: <usedratio>%"
+                   ] 20
+
+      , Run MultiCpu ["-L","2" -- 10 kb in bytes
+                     ,"-H","50"  -- 500kb in bytes
+                     ,"--normal","green"
+                     ,"--high","red"
+                     ] 10
+
+        -- temps
+      , Run CoreTemp [ "-t", "Temp:<core0>|<core1>C"
+                     , "-L", "45"
+                     , "-H", "75"
+                     , "-l", "lightblue"
+                     , "-n", "gray90"
+                     , "-h", "red"
+                     ] 50
+
+      , Run StdinReader
+      , Run PipeReader "default text:~/.xmonad/xmonad.errors" "xmonad"
+
+        -- laptop
+        -- , Run Battery [] 600
+      ]
+  }
