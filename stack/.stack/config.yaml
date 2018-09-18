@@ -14,6 +14,8 @@ templates:
     copyright: 2018 Christopher Reichert
     github-username: creichert
 
+# stack-colors: error=31:good=32:shell=35:dir=34:recommendation=32:target=95:module=35:package-component=95
+
 ghc-options:
   "$locals":
       "-j"

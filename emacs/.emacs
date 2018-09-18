@@ -397,19 +397,6 @@ With argument ARG, do this that many times."
        (t (setq unread-command-events (append unread-command-events
                                               (list evt))))))))
 
-
-;; sql
-
-(require 'sql)
-;; (setq sql-postgres-options '("--prompt=psql> "))
-;; (sql-set-product-feature 'postgres :prompt-regexp "^\\(Postgrj\\) \\[[_a-zA-Z]*\\]> ")
-(add-hook 'sql-interactive-mode-hook
-          (lambda ()
-            (setq sql-postgres-options '("--no-psqlrc"))
-            (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
-            (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] ")))
-
-
 ;; magit
 
 (global-set-key [f9]   'magit-status)
@@ -573,3 +560,14 @@ With argument ARG, do this that many times."
 
 (add-hook 'web-mode-hook  'web-mode-init-hook)
 (add-hook 'flycheck-mode-hook 'use-eslint-from-node-modules)
+
+;; sql
+
+(require 'sql)
+;; (setq sql-postgres-options '("--prompt=psql> "))
+;; (sql-set-product-feature 'postgres :prompt-regexp "^\\(Postgrj\\) \\[[_a-zA-Z]*\\]> ")
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (setq sql-postgres-options '("--no-psqlrc"))
+            (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
+            (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] ")))

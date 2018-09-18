@@ -1,11 +1,13 @@
 
 Config {
-    font = "xft:monofur:size=10:style=Regular"
-  , position = Top
+    position = Top
+  , font = "xft:monofur:size=10"
+  , bgColor = "#3b3228"
+  , fgColor = "#d0c8c6"
   , lowerOnStart = True
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%multicpu% | %memory% | %eno1% | %coretemp% } %StdinReader% {           <fc=#ee9a00>%date%</fc> "
+  , template = "%multicpu% | %memory% | %eno1% | %coretemp% } %StdinReader% { <fc=#d0c8c6>%date%</fc> "
   , commands = [
 
         Run Date "%a %b %_d %Y %H:%M:%S" "date" 10

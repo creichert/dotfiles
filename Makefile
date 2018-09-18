@@ -19,18 +19,17 @@ XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 
 .PHONY: simulate
 simulate: $(THEME_DIR)
-	stow -D --simulate ${STOW_FLAGS} ${PACKAGES} --target=$(PKG_DIR)
-	stow ${STOW_FLAGS} ${PACKAGES} --verbose --simulate --target=$(PKG_DIR)
+	stow ${STOW_FLAGS} --verbose --simulate -v1 -R --target=$(PKG_DIR) ${PACKAGES}
 
 
 .PHONY: dotfiles
 dotfiles: $(THEME_DIR)
-	@stow ${STOW_FLAGS} ${PACKAGES} --verbose --target=$(PKG_DIR)
+	@stow ${STOW_FLAGS} -v1 --target=$(PKG_DIR) ${PACKAGES}
 
 
 .PHONY: clean
 clean:
-	@stow -D --verbose ${PACKAGES}
+	@stow -D -v1 ${PACKAGES}
 
 
 # https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/

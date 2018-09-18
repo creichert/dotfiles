@@ -31,7 +31,7 @@ main = do
     h <- spawnPipe "xmobar"
     xmonad $ docks $ def {
                terminal    = "xterm"
-             , borderWidth = 2
+             , borderWidth = 1
              , keys        = newKeys def
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
