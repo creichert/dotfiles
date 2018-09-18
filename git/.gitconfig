@@ -1,12 +1,12 @@
 [include]
 	path = ~/.gitconfig.local
 [core]
-        excludesfile = ~/.gitignore_global
+	excludesfile = ~/.gitignore_global
 	autocrlf = false
 [color]
-        ui = auto
+	ui = auto
 [help]
-        autocorrect = 1
+	autocorrect = 1
 [push]
 	default = simple
 [magit]

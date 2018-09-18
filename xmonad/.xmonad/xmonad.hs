@@ -101,7 +101,7 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
 screenshotRegion :: String
 screenshotRegion = L.intercalate ";" [
       "sleep 0.7"
-    , "scrot '/tmp/%Y-%m-%d_$wx$h_screenshot.png' --select -e '" ++ clipAndCp ++ "'"
+    , "scrot '/tmp/%Y-%m-%d_$wx$h_screenshot.png' --quality 100 --select -e '" ++ clipAndCp ++ "'"
     ]
   where
     clipAndCp = "xclip -selection primary -selection clipboard -t image/png -i $f; mv $f ~/downloads/screenshots;"

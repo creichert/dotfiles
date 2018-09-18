@@ -1,20 +1,36 @@
+# creichert's dotfiles
 
-My computing environment: `xmonad`, `emacs`, & `haskell`
+- [**`xmonad`**](#xmonad)
+- [**`emacs`**](#emacs)
+  - [`haskell`](#haskell)
+- [**`themes`**](#themes)
+
+All dotfiles in this repo are installed in a minimally invasive way and
+will not overwrite any existing data on your system
+
+**install**
+
+visualize how the install will affect your system.
+
+    $ make simulate
+
+install all dotfiles with `stow`
+
+    $ make dotfiles
+
+install a single dotfile with `stow`
+
+    $ make dotfiles pkg=emacs
+
+install/reinstall xmonad config
+
+    $ make xmonad
+
+## xmonad
 
 - **open new terminal** `M-f1`
 - **open new emacs session** `M-f2`
 - **open any program** `M-p`
-
-Use the `Makefile` to:
-- `make` Install dotfiles using `stow`
-- `make themes-list`
-- `make theme q=chalk` Change the theme
-
-If you want to visualize what running `make` will do to your system, use
-`make --dry-run --trace`
-
-which can bootstrap the dotfiles using `stow`
-## XMonad
 
 My xmonad configuration is built using `stack`.
 
@@ -22,7 +38,7 @@ My xmonad configuration is built using `stack`.
 - `M-[0..9]` switch workspaces
 - `M-SPC` switch layout
 
-### Scratchpads
+### scratchpads
 
 Load these scratchpads on any workspace:
 
@@ -33,17 +49,23 @@ Load these scratchpads on any workspace:
 
 - `C-x C-d` **open project**
 
-### Haskell
+### haskell
 
 - **load/reload project in ghci repl** `C-l`
 - **reload current module in ghci** `C-l`
 - **jump to definition** `f`
 
-## Setting a theme
+## themes
 
-# Load theme and merge w/ .Xresources
+Get a list of themes:
 
     $ make theme q=chalk
 
+Install a theme:
+
+    $ make theme q=chalk
+
+Which takes effect when an application, or the entire X session is
+restarted.
 
 > [_dotfiles.github.io_](https://dotfiles.github.io/)

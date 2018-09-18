@@ -13,6 +13,10 @@ flags:
   xmobar:
     with_xft: true
 
+ghc-options:
+  "$locals":
+      "-j"
+
 extra-deps:
   - xmobar-0.26
   - xmonad-contrib-0.14

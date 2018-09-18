@@ -56,7 +56,7 @@ function rapid_keys() {
 
 function generate_password () {
     tr -dc A-Za-z0-9_ < /dev/urandom | head -c8
-    echo \n
+    echo
 }
 
 function find_largest_files () {

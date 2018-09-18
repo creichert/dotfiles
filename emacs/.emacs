@@ -130,7 +130,6 @@
 (global-set-key (kbd "C-c b")       'execute-extended-command)
 
 (global-set-key [f5]                'projectile-compile-project)
-(global-set-key [f1]                'eshell)
 
 ;; Convenience keybindings in
 (defun backward-delete-word (arg)
@@ -495,22 +494,6 @@ With argument ARG, do this that many times."
 
 (require 'flycheck-haskell)
 
-;; flycheck-haskell-stack configures these based on the cabal file. If flycheck
-;; throws any errors in a haskell buffer, try running "M-x
-;; haskell-check-configure" then "M-x haskell-flycheck-configure"
-;;
-;; (setq flycheck-ghc-args '("-Wall" "-no-link" "-fno-code" "-O0"))
-;; (setq flycheck-ghc-search-path '("src/" "test/" "src/main"))
-;; (setq flycheck-ghc-language-extensions
-;;       '("CPP"
-;;         "TemplateHaskell"
-;;         "QuasiQuotes"
-;;         "NoImplicitPrelude"
-;;         ))
-;;
-;; (flycheck-select-checker 'haskell-stack-ghc)
-;; (flyspell-prog-mode)
-;; (flycheck-haskell-configure)
 (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
 
 (add-hook 'haskell-mode-hook

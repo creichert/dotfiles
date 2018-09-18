@@ -4,7 +4,10 @@
 # This Makefile manages dotfiles using `stow` and also has helpers for
 # bootstrapping a new system with packages I use the most.
 
-PROGRAMS	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack
+PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack
+
+# The location you want to install packages to
+PKG_DIR         ?= $(or $(pkg),$(HOME))
 STOW_FLAGS	:= --ignore=.*.gpg --ignore=.*.pem
 STACK_VERSION	:= 1.7.1
 THEME           ?= $(or $(q),mocha-256)
@@ -14,15 +17,20 @@ XMOBAR_BIN      := $(HOME)/.local/bin/xmobar
 XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 
 
+.PHONY: simulate
+simulate: $(THEME_DIR)
+	stow -D --simulate ${STOW_FLAGS} ${PACKAGES} --target=$(PKG_DIR)
+	stow ${STOW_FLAGS} ${PACKAGES} --verbose --simulate --target=$(PKG_DIR)
+
 
 .PHONY: dotfiles
 dotfiles: $(THEME_DIR)
-	stow ${STOW_FLAGS} ${PROGRAMS} --verbose --target=$(HOME)
+	@stow ${STOW_FLAGS} ${PACKAGES} --verbose --target=$(PKG_DIR)
 
 
 .PHONY: clean
 clean:
-	stow -D ${PROGRAMS}
+	@stow -D --verbose ${PACKAGES}
 
 
 # https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/

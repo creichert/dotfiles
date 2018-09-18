@@ -2,8 +2,11 @@
 
 set -o vi
 
-# unlock ssh credentials
-[ -r ~/.bash_functions ] && . ~/.bash_functions
+[ -r ~/.bash_functions ]       && . ~/.bash_functions
+
+# private bash functions
+[ -r ~/.bash_functions.local ] && . ~/.bash_functions.local
+
 [ -r ~/.bash_aliases   ] && . ~/.bash_aliases
 [ -r ~/.inputrc        ] && bind -f ~/.inputrc
 
@@ -16,7 +19,6 @@ set -o vi
 
 shopt -s histappend
 shopt -s checkwinsize
-
 
 export ALTERNATE_EDITOR="emacsclient -t -nw"
 export EDITOR="emacsclient -t -nw"
