@@ -4,7 +4,7 @@
 # This Makefile manages dotfiles using `stow` and also has helpers for
 # bootstrapping a new system with packages I use the most.
 
-PROGRAMS	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin
+PROGRAMS	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack
 STOW_FLAGS	:= --ignore=.*.gpg --ignore=.*.pem
 STACK_VERSION	:= 1.7.1
 THEME           ?= $(or $(q),mocha-256)
