@@ -1,6 +1,5 @@
 ---
 author: Christopher Reichert
-date: 2018-09-18
 title: Self-documenting makefiles
 description: Automaticall
 tags: make
