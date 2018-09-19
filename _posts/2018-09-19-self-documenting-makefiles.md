@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Self-documenting makefiles
 description: "Automatically create a help recipe for Makefiles"
 tags:

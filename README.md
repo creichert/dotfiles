@@ -43,8 +43,8 @@ install/reinstall xmonad config:
 
 Load these scratchpads on any workspace:
 
-- `M-K` **terminal**
-- `M-J` **terminal 2**
+- `M-K` open floating terminal
+- `M-J` toggle floting terminal 2
 
 ## emacs
 
