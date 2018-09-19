@@ -158,28 +158,15 @@ With argument ARG, do this that many times."
 (add-to-list 'auto-mode-alist '("\\.inputrc\\'"        . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'"            . conf-mode))
 
-(setq dired-omit-files
-      (concat
-       "|\\GTAGS\\" "|\\GSYMS\\"
-       "|\\GPATH\\" "|\\GRTAGS\\"
-       "|\\TAGS\\" "|\\#$\\" "|\\.*~$\\"
-       "|\\.dyn_hi$\\" "|\\.dyn_o$\\"
-       "|\\.hi$\\" "|\\.o$"
-       ))
-
-
 (require 'flx-ido)
 (require 'ido-vertical-mode)
 (require 'ido-at-point)
 
 (ido-mode 1)
 (ido-everywhere 1)
-
-
 (flx-ido-mode)
-;;(ido-better-flex/enable)
-
 (ido-vertical-mode)
+
 (require 'ido-completing-read+)
 (ido-ubiquitous-mode 1)
 (ido-at-point-mode)
@@ -211,6 +198,12 @@ With argument ARG, do this that many times."
                         "\\TAGS$"
                         "\\#*#$"
                         ))
+(setq dired-omit-files
+      (concat
+       "|\\TAGS\\" "|\\#$\\" "|\\.*~$\\"
+       "|\\.dyn_hi$\\" "|\\.dyn_o$\\"
+       "|\\.hi$\\" "|\\.o$"
+       ))
 
 (setq ido-max-directory-size 2000000
       ido-enable-flex-matching t
@@ -399,13 +392,16 @@ With argument ARG, do this that many times."
 
 ;; magit
 
+(require 'magit)
+(require 'evil-magit)
+
 (global-set-key [f9]   'magit-status)
 (global-set-key [C-f9] 'magit-log)
 (setq magit-completing-read-function 'magit-ido-completing-read)
 (setq git-commit-summary-max-length 73)
 
-;; (evil-set-initial-state 'magit-popup-mode 'emacs)
 (add-hook 'with-editor-mode-hook 'evil-insert-state)
+(add-hook 'with-presentation-mode-hook 'evil-insert-state)
 
 (evil-set-initial-state 'magit-refs-mode 'emacs)
 (evil-set-initial-state 'magit-log-edit-mode 'emacs)
@@ -435,6 +431,10 @@ With argument ARG, do this that many times."
   "s" 'magit-stage-item
   "u" 'magit-unstage-item
   "z" 'magit-key-mode-popup-stashing)
+(evil-define-key evil-magit-state magit-mode-map
+  "p" 'magit-section-backward
+  "n" 'magit-section-forward)
+
 
 
 ;; flycheck
@@ -452,21 +452,19 @@ With argument ARG, do this that many times."
 (setq haskell-process-reload-with-fbytecode nil
       haskell-process-use-presentation-mode t
       haskell-process-type 'stack-ghci
+      haskell-stylish-on-save t
+      ;; haskell-process-log t
+      ;; haskell-mode-stylish-haskell-path "brittany"
       haskell-indent-spaces 4)
 
 ;; https://gist.github.com/989ad8be92f68682abff
 (defun haskell-run-function-under-cursor ()
   "Send the word-at-point as a function to GHCi process."
   (interactive)
+  ;; (haskell-process-set-sent-stdin 't)
   (haskell-process-send-string
-	    (haskell-interactive-process)
+            (haskell-session-process (haskell-session-maybe))
 	    (format "%s" (word-at-point))))
-
-(add-to-list 'auto-mode-alist '("\\.lhs\\'"   . literate-haskell-mode))
-(add-to-list 'auto-mode-alist '("\\.cabal\\'" . haskell-cabal-mode))
-(add-to-list 'auto-mode-alist '("\\.hss\\'"   . haskell-mode))
-(add-to-list 'auto-mode-alist '("\\.cpphs\\'" . haskell-c-mode))
-(add-to-list 'auto-mode-alist '("\\.chs\\'"   . hakell-c-mode))
 
 (add-to-list 'interpreter-mode-alist '("stack"      . haskell-mode))
 (add-to-list 'interpreter-mode-alist '("runhaskell" . haskell-mode))
@@ -481,6 +479,7 @@ With argument ARG, do this that many times."
 
 (require 'flycheck-haskell)
 
+(setq flycheck-ghc-args '("-Wall"))
 (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
 
 (add-hook 'haskell-mode-hook
@@ -493,11 +492,14 @@ With argument ARG, do this that many times."
                      '("--no-load"
                        "--ghci-options=-O0"
                        "--ghci-options=-ferror-spans"
-                       "--ghci-options=-fshow-loaded-modules"))
+                       "--ghci-options=-fshow-loaded-modules"
+	    	       ))
+
+	    (evil-leader/set-key "f" 'haskell-mode-jump-to-def-or-tag)
 
             (define-key evil-motion-state-map "f" 'haskell-mode-jump-to-def-or-tag)
             (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
-            (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+            (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
 
             (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
             (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
@@ -571,3 +573,7 @@ With argument ARG, do this that many times."
             (setq sql-postgres-options '("--no-psqlrc"))
             (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
             (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] ")))
+
+
+
+(setq custom-file "~/.emacs.d/emacs-custom.el")
