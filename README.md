@@ -55,6 +55,13 @@ Load these scratchpads on any workspace:
 - **reload current module in ghci** `C-l`
 - **jump to definition** `f`
 
+#### haskell etags
+
+[`stack-tag`](https://github.com/creichert/stack-tag) can compile a
+single etags file for a stack project including all transitive
+dependencies.
+
+
 ## themes
 
 Get a list of themes:
@@ -65,7 +72,9 @@ Install a theme:
 
     $ make theme q=chalk
 
-Which takes effect when an application, or the entire X session is
-restarted.
+Which will take effect when an application, or the entire X session is
+restarted. Themes are generated using Xresources. Default settings can be
+found in `x11/.Xresources`.
+
 
 > [_dotfiles.github.io_](https://dotfiles.github.io/)
