@@ -1,11 +1,7 @@
 ---
+title: Self-documenting Makefiles
 layout: post
-title: Self-documenting makefiles
-description: "Automatically create a help recipe for Makefiles"
-tags:
-  - make
 ---
-
 
 I've been through quite a lot of iterations trying to get makefiles
 to automatically print help docs. Recently, I settled on this in
