@@ -1,8 +1,8 @@
 ---
-author: Christopher Reichert
 title: Self-documenting makefiles
-description: Automaticall
-tags: make
+description: "Automatically create a help recipe for Makefiles"
+tags:
+  - make
 ---
 
 

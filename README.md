@@ -1,40 +1,41 @@
+
 # creichert's dotfiles
 
-- [**`xmonad`**](#xmonad)
-- [**`emacs`**](#emacs)
+- [`xmonad`](#xmonad)
+- [`emacs`](#emacs)
+
   - [`haskell`](#haskell)
-- [**`themes`**](#themes)
 
-All dotfiles in this repo are installed in a minimally invasive way and
-will not overwrite any existing data on your system
+- [`themes`](#themes)
 
-**install**
+All dotfiles in this repo are installed using in a minimally invasive way
+and will not overwrite any existing data on your system
 
-visualize how the install will affect your system.
+visualize how the install will affect your system:
 
     $ make simulate
 
-install all dotfiles with `stow`
+install all dotfiles with `stow`:
 
     $ make dotfiles
 
-install a single dotfile with `stow`
+install a single dotfile with `stow`:
 
     $ make dotfiles pkg=emacs
 
-install/reinstall xmonad config
+install/reinstall xmonad config:
 
     $ make xmonad
 
 ## xmonad
 
-- **open new terminal** `M-f1`
-- **open new emacs session** `M-f2`
-- **open any program** `M-p`
+- `M-f1` open new terminal
+- `M-f2` open new emacs session
+- `M-p`  open any program
 
-My xmonad configuration is built using `stack`.
+`xmonad` can be re-compiled on the fly using `stack`:
 
-- `M-q` will **recompile & reload** xmonad & xmobar.
+- `M-q` recompile & reload xmonad/xmobar.
 - `M-[0..9]` switch workspaces
 - `M-SPC` switch layout
 
@@ -47,13 +48,17 @@ Load these scratchpads on any workspace:
 
 ## emacs
 
-- `C-x C-d` **open project**
+- `C-x d` load a new project directory
+- `C-x C-d` open an existing project
+
+once a project is opened:
+- `C-x f` load a file
 
 ### haskell
 
-- **load/reload project in ghci repl** `C-l`
-- **reload current module in ghci** `C-l`
-- **jump to definition** `f`
+- `C-l` load/reload project in ghci repl
+- `C-l` reload current module in ghci
+- `f` jump to definition
 
 #### haskell etags
 
