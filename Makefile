@@ -19,7 +19,7 @@ XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 
 .PHONY: simulate
 simulate: $(THEME_DIR)
-	stow ${STOW_FLAGS} --verbose --simulate -v1 -R --target=$(PKG_DIR) ${PACKAGES}
+	@stow ${STOW_FLAGS} --verbose --simulate -v1 -R --target=$(PKG_DIR) ${PACKAGES}
 
 
 .PHONY: dotfiles
