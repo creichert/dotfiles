@@ -82,4 +82,10 @@ restarted. Themes are generated using Xresources. Default settings can be
 found in `x11/.Xresources`.
 
 
+## hacks
+
+- [self-documenting Makefiles](docs/self-documenting-makefiles.md)
+
+---
+
 > [_dotfiles.github.io_](https://dotfiles.github.io/)
