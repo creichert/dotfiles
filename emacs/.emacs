@@ -484,7 +484,7 @@ With argument ARG, do this that many times."
 
 (add-hook 'haskell-mode-hook
 	  (lambda ()
-            (turn-on-haskell-indent)
+            (turn-on-haskell-indentation)
             (haskell-doc-mode)
             (haskell-decl-scan-mode)
 
