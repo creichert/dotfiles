@@ -8,6 +8,12 @@
 [help]
 	autocorrect = 1
 [push]
+	# upstream - push the current branch to its upstream branch...
+	#
+	# simple - like upstream, but refuses to push if the upstream
+	#          branch’s name is different from the local one...
+	#
+	# current - push the current branch to a branch of the same name.
 	default = simple
 [magit]
 	hideCampaign = true
