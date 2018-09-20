@@ -35,7 +35,9 @@
     yaml-mode
     ansi-color
     dotenv-mode
+
     xresources-theme
+    gif-screencast
     )
   "installed on startup"
 )
@@ -238,15 +240,18 @@ With argument ARG, do this that many times."
                  (load-theme 'xresources t))
                (error nil))
 
+(condition-case nil
+               (progn
+                 (require 'gif-screencast)
+		 (print "gif-screencast loaded")
+                 (setq gif-screencast-screenshot-directory "~/downloads/screencasts/tmp")
+                 (setq gif-screencast-output-directory "~/downloads/screencasts")
+		 (global-set-key [f11]   'gif-screencast)
+		 (global-set-key [f12]   'gif-screencast-stop)
+		 )
+               (error (print "error loading gif-screencast")))
+
 (require 'ansi-color)
-
-(defun colorize-compilation-buffer ()
-  (read-only-mode)
-  (ansi-color-apply-on-region (point-min) (point-max))
-  (ansi-color-apply-on-region compilation-filter-start (point))
-  (toggle-read-only))
-
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;; make compilation-mode a lot faster but excluding cpu intensive
 ;; regexp's which clog up the buffer on long lines.
