@@ -76,3 +76,7 @@ dotemacs:
 elpa:
 	rm -rf $(HOME)/.emacs.d/elpa
 	$(MAKE) dotemacs
+
+emacsdaemon:
+	emacsclient -e '(kill-emacs)'
+	emacs --daemon
