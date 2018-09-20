@@ -23,7 +23,7 @@ Then, at the bottom of the `Makefile`, I put this script. I tried my
 hardest to come up w/ something that was a less invasive blob but it make
 untenable.
 
-```
+```makefile
 export generate_help_docs
 define generate_help_docs
 

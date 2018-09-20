@@ -1,4 +1,8 @@
 
+> If I have seen further it is only by standing on the shoulders of giants.
+>
+> -- Isaac Newton
+
 # creichert's dotfiles
 
 - [`xmonad`](#xmonad)
