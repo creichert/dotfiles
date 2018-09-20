@@ -73,7 +73,7 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
           -- launch dmenu
         , ((modm, xK_p), spawn "dmenu_run -fn 'monofur-11'")
 
-        , ((modm .|. shiftMask, xK_F1), spawn "emacs")
+        , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
         , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
         , ((modm, xK_f), toggleFloatAllNew)
 
