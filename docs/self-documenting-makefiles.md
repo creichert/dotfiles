@@ -1,5 +1,6 @@
 ---
 title: Self-documenting Makefiles
+author: creichert
 layout: post
 ---
 
