@@ -17,7 +17,8 @@ TAGS
 Cargo.lock
 
 # emacs
-*flycheck*
+*_flycheck*
+*flycheck_*
 
 # node
 node_modules/
