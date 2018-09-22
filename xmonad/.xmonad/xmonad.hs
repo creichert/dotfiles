@@ -66,15 +66,16 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
     xpCfg = xPCfg { font = "xft:monofur:size=10:style=italic" }
     keys' XConfig { XMonad.modMask = modm } = Map.fromList [
 
-          ((modm, xK_F1), spawn "xterm")
+          ((modm,               xK_F1), spawn "xterm")
+        , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
+        , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
 
         , ((0, xF86XK_Launch1), spawn "xterm")
 
           -- launch dmenu
-        , ((modm, xK_p), spawn "dmenu_run -fn 'monofur-11'")
+        , ((modm, xK_p), spawn "dmenu_run_history -nb '#3b3228' -nf '#d0c8c6' -fn 'monofur-11'")
 
-        , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
-        , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
+
         , ((modm, xK_f), toggleFloatAllNew)
 
           -- Audio
