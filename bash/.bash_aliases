@@ -17,5 +17,5 @@ alias ls='ls --color=auto'
 alias m='make -j || stack build || cabal build'
 alias mi='make -j install'
 alias s='stack'
-alias upgrade='sudo apt-get update && sudo apt-get upgrade'
+alias upgrade='sudo apt update && sudo apt upgrade'
 alias xml="xmlstarlet format"
