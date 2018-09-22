@@ -4,11 +4,11 @@
 # This Makefile manages dotfiles using `stow` and also has helpers for
 # bootstrapping a new system with packages I use the most.
 
-PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack
+PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin
 
 # The location you want to install packages to
 PKG_DIR         ?= $(or $(pkg),$(HOME))
-STOW_FLAGS	:= --ignore=.*.gpg --ignore=.*.pem
+STOW_FLAGS	:= --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
 STACK_VERSION	:= 1.7.1
 THEME           ?= $(or $(q),mocha-256)
 THEME_DIR       := x11/.local/share/base16-xresources/xresources
@@ -19,7 +19,7 @@ XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 
 .PHONY: simulate
 simulate: $(THEME_DIR)
-	@stow ${STOW_FLAGS} --verbose --simulate -v1 -R --target=$(PKG_DIR) ${PACKAGES}
+	@stow ${STOW_FLAGS} --verbose --simulate -v1 --target=$(PKG_DIR) ${PACKAGES}
 
 
 .PHONY: dotfiles
