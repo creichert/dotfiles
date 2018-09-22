@@ -23,6 +23,7 @@
     ;; git
     magit
     evil-magit
+    gist
 
     ;; haskell
     haskell-mode
@@ -65,9 +66,15 @@
                      ;; Guarantee a valid filename across all OSs.
                      (convert-standard-filename dir))))
 
-(load-local-package "ido-vertical-mode.el/")
+;;; core
+;;
+;;
+(load-local-package "ido-vertical-mode.el")
 (load-local-package "etags-select.el/")
 
+;; display
+;;
+;; minimal default display
 (global-font-lock-mode 1)
 (show-paren-mode 1)
 (line-number-mode 1)
@@ -79,26 +86,25 @@
 (global-linum-mode -1)
 (blink-cursor-mode 0)
 (setq blink-cursor-delay 0)
-(setq save-interprogram-paste-before-kill t)
-(setq yank-pop-change-selection t)
-(setq select-enable-clipboard t) ;; emacs 25.1
 
+;; make gui look like terminal
 (when (fboundp 'menu-bar-mode)   (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-(prefer-coding-system           'utf-8)
-(set-terminal-coding-system     'utf-8-unix)
-(set-keyboard-coding-system     'utf-8)
-(set-selection-coding-system    'utf-8)
-(setq locale-coding-system      'utf-8)
-(setq buffer-file-coding-system 'utf-8-unix)
+;; clipboard
+;;
+;; share clipboard across the entire system
+(setq save-interprogram-paste-before-kill t)
+(setq yank-pop-change-selection t)
+(setq select-enable-clipboard t) ;; emacs 25.1
 
-(setq-default fill-column 73)
 
-(add-to-list 'default-frame-alist '(font . "monofur 12"))
-(set-face-attribute 'default t :font '"monofur 12")
+(setq-default fill-column 80)
 
+
+;; minibuffer history
+;;
 (savehist-mode 1)
 (setq history-length t)
 (setq history-delete-duplicates t)
@@ -120,28 +126,26 @@
 
 (global-set-key (kbd "C-c :")       'reload-dotemacs)
 (global-set-key (kbd "C-x f")       'ido-find-file)
-(global-set-key (kbd "C-x C-f")     'projectile-find-file)
-(global-set-key (kbd "C-x C-d")     'projectile-switch-project)
-(global-set-key (kbd "C-c E")       'first-error)
+;; (global-set-key (kbd "C-c E")       'first-error)
+;; (global-set-key (kbd "C-c S")       'first-error)
 (global-set-key (kbd "C-c e")       'next-error)
 (global-set-key (kbd "C-c C-e p ")  'previous-error)
+
 (global-set-key (kbd "C-x /")       'align-regexp)
 (global-set-key (kbd "C-x C-/")     'replace-regexp)
 (global-set-key (kbd "C-c :")       'reload-dotemacs)
+
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 (global-set-key (kbd "C-c b")       'execute-extended-command)
 
+(global-set-key (kbd "C-x C-f")     'projectile-find-file)
+(global-set-key (kbd "C-x C-d")     'projectile-switch-project)
 (global-set-key [f5]                'projectile-compile-project)
-
-;; Convenience keybindings in
-(defun backward-delete-word (arg)
-  "Delete characters backward until encountering the beginning of a word.
-With argument ARG, do this that many times."
-  (interactive "p")
-  (delete-region (point) (progn (backward-word arg) (point))))
+(global-set-key (kbd "C-c g")       'projectile-grep)
 
 ;; vim-like bindings in the minibuffer
-(define-key minibuffer-local-map (kbd "C-w") 'backward-delete-word)
+(define-key minibuffer-local-map (kbd "C-w") 'evil-delete-backward-word)
+(define-key minibuffer-local-map (kbd "C-p") 'evil-paste-after-from-0)
 (define-key minibuffer-inactive-mode-map (kbd "C-j") 'next-history-element)
 (define-key minibuffer-inactive-mode-map (kbd "C-k") 'previous-history-element)
 (define-key minibuffer-local-map (kbd "C-j") 'next-history-element)
@@ -166,24 +170,28 @@ With argument ARG, do this that many times."
 
 (ido-mode 1)
 (ido-everywhere 1)
-(flx-ido-mode)
-(ido-vertical-mode)
 
 (require 'ido-completing-read+)
-(ido-ubiquitous-mode 1)
+(ido-ubiquitous-mode t)
 (ido-at-point-mode)
 
+(eval-after-load 'ido-ubiquitous
+  '(append '(enable prefix "xref-") ido-ubiquitous-command-overrides))
+
+(flx-ido-mode)
+(ido-vertical-mode)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 
 (require 'projectile)
 (projectile-mode)
-(setq projectile-enable-caching t)  ;; occasionally causing weird cache issues but very fast
-(setq projectile-indexing-method 'alien)
-(setq projectile-use-git-grep 't)
-(setq projectile-project-search-path '("~/dev"))
-(setq projectile-globally-ignored-directories '("~/.stack/snapshots"))
 
-(global-set-key (kbd "C-c g") 'projectile-grep)
+(setq projectile-enable-caching t
+      projectile-indexing-method 'alien
+      projectile-use-git-grep 't
+      projectile-project-search-path '("~/dev")
+      projectile-globally-ignored-directories '("~/.stack/snapshots")
+      projectile-tags-command "make tags")
+
 
 (add-to-list 'ido-ignore-buffers "*Compile-Log*")
 (add-to-list 'ido-ignore-buffers "*Help*")
@@ -200,6 +208,7 @@ With argument ARG, do this that many times."
                         "\\TAGS$"
                         "\\#*#$"
                         ))
+
 (setq dired-omit-files
       (concat
        "|\\TAGS\\" "|\\#$\\" "|\\.*~$\\"
@@ -207,23 +216,20 @@ With argument ARG, do this that many times."
        "|\\.hi$\\" "|\\.o$"
        ))
 
-(setq ido-max-directory-size 2000000
+(setq ido-max-directory-size 20000 ;2000000
       ido-enable-flex-matching t
-      ido-max-prospects 7
+      ido-max-prospects 5
       ido-create-new-buffer 'always
-      flx-ido-use-faces t
       ido-use-faces t
       ido-use-filename-at-point 'nil
-      flx-ido-threshold 100
+      flx-ido-use-faces t
+      flx-ido-ereshold 1000
       )
 
 (require 'smex)
-
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
-(setq compilation-read-command nil)
-(setq compilation-scroll-output t)
 
 (setq scroll-conservatively 1000)
 (setq scroll-margin 7)
@@ -233,12 +239,37 @@ With argument ARG, do this that many times."
             (setq scroll-margin 0)))
 
 (require 'dotenv-mode)
+(add-to-list 'auto-mode-alist '("\\.env.\\'" . dotenv-mode))
+(require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("\\.Dockerfile.\\'" . dockerfile-mode))
 
+
+
+;; Xresource based styles
+;;
+;; Uses colors supplied through xresources (xrdb -query) to make emacs
+;; consistent with other desktop applications. In theory, all apps should use
+;; this but "larger" apps like Chrome & Gnome apps will often just ignore it.
+;; This is only needed once, near the top of the file
 (condition-case nil
                (progn
                  (require 'xresources-theme)
                  (load-theme 'xresources t))
                (error nil))
+
+(add-to-list 'default-frame-alist '(font . "monofur 12"))
+(set-face-attribute 'default t :font '"monofur 12")
+
+
+;; minimal modelin
+;;
+;; (set-face-attribute 'mode-line-emphasis :weight 1)
+;; (set-face-attribute 'mode-line-highlight :background (x-get-resource "color2" ""))
+;; (mode-line ((t (:background ,atom-one-dark-black :foreground ,atom-one-dark-silver))))
+;; (mode-line-buffer-id ((t (:weight bold))))
+;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
+(set-face-attribute 'mode-line nil :box '(:width 0.5))
+(set-face-attribute 'mode-line-inactive nil :box nil)
 
 (condition-case nil
                (progn
@@ -251,73 +282,68 @@ With argument ARG, do this that many times."
 		 )
                (error (print "error loading gif-screencast")))
 
+
 (require 'ansi-color)
 
-;; make compilation-mode a lot faster but excluding cpu intensive
-;; regexp's which clog up the buffer on long lines.
+(setq compilation-read-command nil
+      compilation-scroll-output t)
+
+(evil-leader/set-key
+  "v" 'recompile-quietly
+  "k" 'recompile-quietly
+  )
+
+(add-to-list 'compilation-finish-functions
+	     'notify-compilation-result)
+
+;; Fix some escape sequences in compilation buffer for complex output
+;; like webpack
+(add-hook 'compilation-mode-hook
+	  (lambda ()
+	    (read-only-mode)
+	    (ansi-color-apply-on-region (point-min) (point-max))
+	    ;;(ansi-color-apply-on-region compilation-filter-start (point))
+	    (toggle-read-only)
+	    ))
+
+(defun notify-compilation-result(buffer msg)
+  (if (string-match "^finished" msg)
+      (progn
+	;; frame-visible-p before... to determine whehter to add it
+	(delete-windows-on buffer)
+	(message "compilation successful"))
+    (message "compilation failed: " (buffer-substring (- (point-max) 500) (point-max))))
+  (setq current-frame (car (car (cdr (current-frame-configuration)))))
+  (raise-frame current-frame))
+
+(defun recompile-quietly ()
+  "Re-compile without changing the window configuration."
+  (interactive)
+  (save-window-excursion
+    (projectile-compile-project nil)))
+
+;; make compilation-mode a lot faster but excluding cpu intensive regexp's which
+;; clog up the buffer on long lines.
 (setq compilation-error-regexp-alist
-      '(absoft
-        ;;ada
-        ;;aix
-        ;;ant
-        bash
-        borland
-        ;;python-tracebacks-and-caml
-        ;;comma
-        ;;cucumber
-        msft
-        ;;edg-1
-        ;;edg-2
-        epc
-        ;;ftnchek
-        ;;iar
-        ibm
-        ;;irix
-        java
-        ;;jikes-file
-        ;;maven
-        ;;jikes-line
-        gcc-include
-        ;;ruby-Test::Unit
-        gnu
-        lcc
-        ;;makepp
-        mips-1
-        mips-2
-        omake
-        oracle
-        perl
-        php
-        ;;rxp
-        ;;sparc-pascal-file
-        ;;sparc-pascal-line
-        ;;sparc-pascal-example
-        sun
-        sun-ada
-        watcom
-        4bsd
-        gcov-file
-        gcov-header
-        gcov-nomark
-        gcov-called-line
-        gcov-never-called
-        ;;perl--Pod::Checker
-        ;;perl--Test
-        ;;perl--Test2
-        ;;perl--Test::Harness
-        weblint
-        guile-file
-        guile-line
-        ))
+      '(absoft bash borland msft epc ibm java gcc-include gnu lcc
+	mips-1 mips-2 omake oracle perl php sun sun-ada watcom
+	4bsd gcov-file gcov-header gcov-nomark gcov-called-line
+	gcov-never-called weblint guile-file guile-line
+	;; disabled compilation regexps
+	;;
+	;; ada aix ant python-tracebacks-and-caml comma cucumber edg-1 edg-2
+	;; ftnchek iar irix jikes-file maven jikes-line ruby-Test::Unit makepp
+	;; rxp sparc-pascal-file sparc-pascal-line sparc-pascal-example
+	;; perl--Pod::Checker perl--Test perl--Test2 perl--Test::Harness
+	))
 
 
 (require 'whitespace)
 
 (add-hook 'prog-mode-hook
            (lambda ()
-             (add-hook 'before-save-hook 'delete-trailing-whitespace)))
-
-;; Quickly save & load window configuration
+             (add-hook 'before-save-hook 'delete-trailing-whitespace)
+	     ))
 
 (global-set-key [f10]
                 '(lambda ()
@@ -325,6 +351,7 @@ With argument ARG, do this that many times."
                    (jump-to-register 9)
                    ;; make sure to put compilation-buffer at end here.
                    (message "Windows disposition loaded")))
+
 (global-set-key [C-f10]
                 '(lambda ()
                    (interactive)
@@ -334,49 +361,81 @@ With argument ARG, do this that many times."
 
 ;; evil
 
-(require 'evil-leader)
 (require 'evil)
+(require 'evil-leader)
+(require 'evil-commentary)
 
-(setq evil-leader/leader "SPC")
+;; global-evil-leader-mode is enabled before evil-mode so initial buffers
+;; (*scratch*, *Messages*, …)  are configured correctly.
 (global-evil-leader-mode 1)
-(setq evil-leader/in-all-states t)
-(setq evil-leader/non-normal-prefix "C-")
-
 (evil-mode 1)
-(evil-set-toggle-key "C-a")
+
+(setq evil-leader/leader "SPC"
+      evil-leader/in-all-states t
+      evil-leader/non-normal-prefix "C-"
+      evil-leader/no-prefix-mode-rx
+      '("magit-.*-mode"
+	"gnus-.*-mode"))
+
+
+;;(evil-set-toggle-key "C-a")
 (setq evil-default-state 'normal)
 (setq undo-tree-enable-undo-in-region 'nil)
 
+;; start in a state that immediately supports typing or direct emacs keybindings
+(add-hook 'with-editor-mode-hook 'evil-insert-state)
+(add-hook 'with-presentation-mode-hook 'evil-insert-state)
+
 
 (evil-leader/set-key
-  "e" 'flycheck-next-error
-  "w" 'flycheck-previous-error
+  "e"		'flycheck-next-error
+  "w"		'flycheck-previous-error
+  ")"		'evil-next-close-paren
+  "o"		'other-window
+  "xc"		'save-buffers-kill-terminal
 
-  "f"   'projectile-find-file
-  "prt" 'projectile-regenerate-tags
-  "c"   'projectile-compile-project
-  "b"   'projectile-switch-to-buffer
-  "xc"  'save-buffers-kill-terminal
+  "f"		'projectile-find-file
+  "prt"		'projectile-regenerate-tags
+  "c"		'projectile-compile-project
+  "b"		'projectile-switch-to-buffer
 
   ;; currently overlapping to see which i prefer
-  "(" 'insert-parentheses
-  "9" 'insert-parentheses
+  "("		'insert-parentheses
+  "9"		'insert-parentheses
 
-  "U" 'browse-url-chromium
+  "U"		'browse-url-chromium
+
+  "gpgr"	'epa-sign-region
+  "gpgf"	'epa-sign-file
+  "gpgvr"	'epa-verify-region
+  "gpgvf"	'epa-verify-file
   )
 
-(require 'etags-select)
-(setq tags-revert-without-query 1)
-(setq tags-case-fold-search 't)
 
-;;(define-key evil-motion-state-map "f" 'find-tag)
+(require 'etags-select)
+
+(setq tags-revert-without-query 1)
+(setq tags-case-fold-search nil) ;; case-insensitive
+(setq tags-add-tables t)
+
+
+(define-key evil-motion-state-map "f" 'find-tag)
 ;;(define-key evil-motion-state-map "f" 'haskell-mode-jump-to-def-or-tag)
-(define-key evil-motion-state-map "f" 'etags-select-find-tag)
+;;(define-key evil-motion-state-map "f" 'etags-select-find-tag)
+;;(define-key evil-motion-state-map "f" 'my-ido-find-tag)
+
 (define-key evil-normal-state-map "s" 'pop-tag-mark)
 (define-key evil-normal-state-map ";" 'evil-ex)
 (define-key evil-normal-state-map (kbd "\\") 'smex)
 (define-key evil-insert-state-map (kbd "C-\\") 'smex)
 (define-key evil-insert-state-map "j" #'evil-maybe-exit)
+
+(defun evil-paste-after-from-0 ()
+  (interactive)
+  (let ((evil-this-register ?0))
+    (call-interactively 'evil-paste-after)))
+
+(define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
 
 ;; exit insert mode if I lean on 'j' button
 (evil-define-command evil-maybe-exit ()
@@ -405,10 +464,6 @@ With argument ARG, do this that many times."
 (setq magit-completing-read-function 'magit-ido-completing-read)
 (setq git-commit-summary-max-length 73)
 
-(add-hook 'with-editor-mode-hook 'evil-insert-state)
-(add-hook 'with-presentation-mode-hook 'evil-insert-state)
-
-(evil-set-initial-state 'magit-refs-mode 'emacs)
 (evil-set-initial-state 'magit-log-edit-mode 'emacs)
 (evil-set-initial-state 'magit-status-mode 'emacs)
 (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
@@ -431,7 +486,6 @@ With argument ARG, do this that many times."
   "S" 'magit-stage-all
   "U" 'magit-unstage-all
   "X" 'magit-reset-working-tree
-  ;"d" 'magit-discard-item
   "i" 'magit-ignore-item
   "s" 'magit-stage-item
   "u" 'magit-unstage-item
@@ -439,7 +493,8 @@ With argument ARG, do this that many times."
 (evil-define-key evil-magit-state magit-mode-map
   "p" 'magit-section-backward
   "n" 'magit-section-forward)
-
+(evil-leader/set-key-for-mode 'magit-status-mode
+  "SPC" 'magit-stash-show)
 
 
 ;; flycheck
@@ -474,22 +529,13 @@ With argument ARG, do this that many times."
 (add-to-list 'interpreter-mode-alist '("stack"      . haskell-mode))
 (add-to-list 'interpreter-mode-alist '("runhaskell" . haskell-mode))
 
-;; This is a flycheck plugin for stack I wrote before support wass added
-;; to flycheck-haskell. It doesn't work quite as well as flycheck's, as
-;; it's not based around ghci/runghc w/ optimized ghc flags.
-;;
-;; (add-to-list 'load-path (substitute-in-file-name "$HOME/.emacs.d/flycheck-haskell-stack/"))
-;; (require 'flycheck-haskell-stack)
-;; (flycheck-select-checker 'haskell-stack)
-
 (require 'flycheck-haskell)
-
 (setq flycheck-ghc-args '("-Wall"))
 (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
 
 (add-hook 'haskell-mode-hook
 	  (lambda ()
-            (turn-on-haskell-indentation)
+
             (haskell-doc-mode)
             (haskell-decl-scan-mode)
 
@@ -510,15 +556,25 @@ With argument ARG, do this that many times."
             (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
             (define-key haskell-mode-map (kbd "C-c C-;") 'haskell-process-load-file)
             (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-reload)
-            (define-key haskell-mode-map (kbd "C-c i") 'haskell-navigate-imports-go)
-            (define-key haskell-mode-map (kbd "C-c I") 'haskell-navigate-imports-return)
+            (define-key haskell-mode-map (kbd "C-c i")   'haskell-navigate-imports-go)
+            (define-key haskell-mode-map (kbd "C-c I")   'haskell-navigate-imports-return)
             (define-key haskell-mode-map (kbd "C-c C-j") 'haskell-run-function-under-cursor)
+
+	    (require 'hindent)
+            (turn-on-haskell-indentation)
+	    (hindent-mode)
+
+	    (evil-leader/set-key-for-mode 'haskell-mode
+	      "hir" 'hindent-reformat-region
+	      "hid" 'hindent-reformat-decl-or-fill
+	      "f" 'haskell-mode-jump-to-def-or-tag
+	      "l" 'haskell-process-load-or-reload
+	      )
             ))
 
 ;;; Web-mode setup
 
 (require 'web-mode)
-(require 'flycheck)
 
 (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
 
@@ -579,6 +635,4 @@ With argument ARG, do this that many times."
             (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
             (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] ")))
 
-
-
-(setq custom-file "~/.emacs.d/emacs-custom.el")
+(setq custom-file "~/.emacs.d/custom.el")
