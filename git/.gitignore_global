@@ -5,6 +5,8 @@
 .\#*
 *\#
 
+*.tags
+
 # build artifacts
 *.o
 *.so
