@@ -35,6 +35,7 @@ install/reinstall xmonad config:
 
 - `M-f1` open new terminal
 - `M-f2` open new emacs session
+- `M-SHIFT-f2` open new emacsclient session
 - `M-p`  open any program
 
 `xmonad` can be re-compiled on the fly using `stack`:
@@ -86,9 +87,10 @@ restarted. Themes are generated using Xresources. Default settings can be
 found in `x11/.Xresources`.
 
 
-## hacks
+## misc. posts & hacks
 
 - [self-documenting Makefiles](docs/self-documenting-makefiles.md)
+- [`flycheck-haskell` in stack projects](docs/flycheck-haskell-in-stack-projects.md)
 
 ---
 
