@@ -36,8 +36,8 @@ main = do
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
                                manageDocks
-                             , className =? "Chromium" --> doF (W.shift "8")
                              , namedScratchpadManageHook scratchpads
+                             , className =? "Chromium" --> doF (W.shift "8")
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h
