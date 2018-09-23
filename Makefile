@@ -69,15 +69,12 @@ $(THEME_DIR):
 	@git submodule update --init $(shell dirname $(THEME_DIR))
 
 dotemacs:
-	@emacs --batch --debug-init -l emacs/.emacs -eval "(progn \
-		  (print window-system) \
-		  (print \"emacs config initialized successfully\") \
-		)"
+	@emacs --batch --debug-init -l emacs/.emacs --eval '(load "~/.emacs")'
 
 elpa:
 	rm -rf $(HOME)/.emacs.d/elpa
 	$(MAKE) dotemacs
 
 emacsdaemon:
-	emacsclient -e '(kill-emacs)'
+	-emacsclient -e '(kill-emacs)'
 	emacs --daemon
