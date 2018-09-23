@@ -47,6 +47,7 @@ $(XMOBAR_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
 
 # New base16 themes: https://github.com/chriskempson/base16
 theme: $(THEME_DIR)
+	@fc-cache -vf
 	@xrdb -remove
 	@xrdb -merge ~/.Xresources
 	@xrdb -merge $(THEME_DIR)/base16-$(THEME).Xresources
