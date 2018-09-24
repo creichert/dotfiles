@@ -102,6 +102,11 @@
 
 (setq-default fill-column 80)
 
+;; Write backup and auto-save files to /tmp
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
 
 ;; minibuffer history
 ;;
