@@ -13,7 +13,7 @@ xrdb -merge ~/.local/share/base16-xresources/xresources/base16-mocha-256.Xresour
 
 xset r rate 250 60
 xset b off
-
+xsetroot -cursor_name left_ptr
 setxkbmap -option ctrl:nocaps
 
 # test if on laptop and set env var
@@ -24,7 +24,6 @@ if [ -d /proc/acpi/ibm ]; then
 else
 
     export USING_LAPTOP="false"
-    xrandr --output DVI-D-1 --auto --left-of DVI-I-1
     xrandr --output DVI-D-1 --auto --right-of DVI-I-1
 fi
 
