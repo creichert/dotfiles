@@ -1,8 +1,12 @@
 [include]
+	# includes personal/private info like github oauth tokens, email, and
+	# pgp key id.
 	path = ~/.gitconfig.local
 [core]
 	excludesfile = ~/.gitignore_global
 	autocrlf = false
+[tag]
+	forceSignAnnotated = true
 [color]
 	ui = auto
 [help]
