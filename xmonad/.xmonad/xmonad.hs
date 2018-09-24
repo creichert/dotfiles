@@ -57,7 +57,7 @@ main = do
     runStartupHook :: X ()
     runStartupHook = do
         spawnOnce "xflux -z 77006"
-        spawnOnce "feh --scale-bg ~/.xmonad/wallpaper"
+        spawnOnce "feh --bg-scale ~/.xmonad/wallpaper"
 
 -- This merges key' map with old keylist
 newKeys :: XPConfig -> XConfig Layout -> Map (KeyMask, KeySym) (X ())
