@@ -1,0 +1,9 @@
+
+style "user-font"
+{
+        font_name="monofur for Powerline 12"
+}
+
+widget_class "*" style "user-font"
+
+gtk-font-name="monofur for Powerline 12"
