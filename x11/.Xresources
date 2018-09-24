@@ -1,4 +1,6 @@
 
+#define FONT1 xft:monofur:style=Regular:size=12,xft:DejaVu Serif:style=Regular:size=12
+
 *VT100.Translations: #override \
 <Key>Delete: string(0x04) \n\
 <Key>BackSpace: string(0x7F)
@@ -6,20 +8,24 @@
 XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
 *VT100*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
 
-xterm*scrollBar: false
-xterm*faceName: Monofur:style=Light:size=12
-!XTerm*faceSize: 12
-XTerm*colorBD: black
-XTerm*colorIT: black
-XTerm*colorUL: black
-XTerm*urlLauncher: chromium
-
-XTerm*termName: xterm
-XTerm*eightBitInput: false
-XTerm*eightBitOutput:  true
-xterm*utf8: 2
+xterm*faceName: FONT1
+xterm*renderFont: true
 
 *VT100*utf8:            1
 *VT100*eightBitInput:   false
 *VT100*eightBitControl: false
 *VT100*eightBitOutput:  true
+
+
+xterm*scrollBar: false
+xterm*letterSpace: 0
+xterm*forcePackedFont: false
+xterm*wideChars: true
+xterm*utf8: 2
+XTerm*colorBD: black
+XTerm*colorIT: black
+XTerm*colorUL: black
+XTerm*urlLauncher: chromium
+XTerm*termName: xterm
+XTerm*eightBitInput: false
+XTerm*eightBitOutput:  true
