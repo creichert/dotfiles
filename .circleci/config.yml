@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/dotfiles/dotfiles
+    docker:
+      - image: assertible/ci
+    steps:
+      - checkout
+
+      - run: apt update
+      - run: |
+          apt install -y --no-install-recommends   \
+                      xvfb xinit x11-xserver-utils \
+                      xserver-xorg libx11-dev      \
+                      libxrandr-dev libxft-dev
+
+      - run: apt install stow emacs -y --no-install-recommends
+
+      # avoid stow tree-folding the whole dir
+      - run: mkdir -p ~/.stack/{programs,snapshots}
+
+      # remove pre-existing dotfiles (stow will not)
+      - run: rm ~/.profile ~/.bashrc ~/.gitconfig
+
+      - run: make dotfiles
+      - run: xvfb-run make dotemacs
+      - run: xvfb-run make theme
+
+      - restore_cache:
+          keys:
+            - v1-dotcache-{{ .Branch }}
+            - v1-dotcache
+
+      - run: xvfb-run make xmonad
+
+      - save_cache:
+          key: v1-dotcache-{{ .Branch }}
+          paths:
+            - ~/.stack/
+
+      # - run: cd $HOME && xvfb-run startx
