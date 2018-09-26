@@ -93,6 +93,7 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
         , ((modm .|. shiftMask, xK_e),  namedScratchpadAction scratchpads "emacs")
         , ((modm .|. shiftMask, xK_g),  namedScratchpadAction scratchpads "ghci")
         , ((modm .|. shiftMask, xK_r),  namedScratchpadAction scratchpads "psql")
+        , ((modm .|. shiftMask, xK_m),  namedScratchpadAction scratchpads "gnus")
 
           -- Take a selective screenshot using the command specified by mySelectScreenshot.
         , ((modm .|. shiftMask, xK_p), spawn screenshotRegion)
@@ -124,4 +125,6 @@ scratchpads = [
     , NS "psql" "xterm -title psql -e sudo su postgres -c psql" (title =? "psql")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
 
+    , NS "gnus" "emacs-gtk -f gnus --title mail" (title =? "mail")
+          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
     ]
