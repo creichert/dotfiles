@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  dotfiles:
+    working_directory: ~/dotfiles/dotfiles
+    docker:
+      - image: assertible/ci
+    steps:
+      - checkout
+      - run: apt update && apt install stow -y --no-install-recommends
+      - run: make dotfiles
+      - run: make dotemacs
