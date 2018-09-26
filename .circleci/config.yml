@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  dotfiles:
+  build:
     working_directory: ~/dotfiles/dotfiles
     docker:
       - image: assertible/ci
@@ -9,3 +9,5 @@ jobs:
       - run: apt update && apt install stow -y --no-install-recommends
       - run: make dotfiles
       - run: make dotemacs
+      - run: make xmonad
+      - run: make theme
