@@ -1,13 +1,13 @@
 
-# creichert dotfiles.
-#
 # This Makefile manages dotfiles using `stow` and also has helpers for
 # bootstrapping a new system with packages I use the most.
+#
+# See the README.md for more information about how symlinks are built.
 
 PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin
 
 # The location you want to install packages to
-PKG_DIR         ?= $(or $(pkg),$(HOME))
+PKG_DIR         ?= $(or $(target),$(HOME))
 STOW_FLAGS	:= --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
 STACK_VERSION	:= 1.7.1
 THEME           ?= $(or $(q),mocha-256)
