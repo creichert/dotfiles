@@ -28,6 +28,7 @@
     ;; haskell
     haskell-mode
     flycheck-haskell
+    hindent
 
     ;; misc modes
     web-mode
@@ -85,6 +86,9 @@
 (auto-compression-mode t)
 (global-linum-mode -1)
 (blink-cursor-mode 0)
+
+;; dont use any "gui" dialog boxes
+(setq use-dialog-box nil)
 (setq blink-cursor-delay 0)
 
 ;; make gui look like terminal
@@ -298,9 +302,6 @@
   "k" 'recompile-quietly
   )
 
-(add-to-list 'compilation-finish-functions
-	     'notify-compilation-result)
-
 ;; Fix some escape sequences in compilation buffer for complex output
 ;; like webpack
 (add-hook 'compilation-mode-hook
@@ -311,12 +312,15 @@
 	    (toggle-read-only)
 	    ))
 
+(add-to-list 'compilation-finish-functions
+	     'notify-compilation-result)
+
 (defun notify-compilation-result(buffer msg)
-  (if (string-match "^finished" msg)
+  (if (and (string-match "^finished" msg) (string= "*compilation*" buffer))
       (progn
 	;; frame-visible-p before... to determine whehter to add it
 	(delete-windows-on buffer)
-	(message "compilation successful"))
+	(message "compilation successful" buffer))
     (message "compilation failed: " (buffer-substring (- (point-max) 500) (point-max))))
   (setq current-frame (car (car (cdr (current-frame-configuration)))))
   (raise-frame current-frame))
@@ -380,6 +384,7 @@
       evil-leader/non-normal-prefix "C-"
       evil-leader/no-prefix-mode-rx
       '("magit-.*-mode"
+	"*Messages*"
 	"gnus-.*-mode"))
 
 
@@ -391,6 +396,7 @@
 (add-hook 'with-editor-mode-hook 'evil-insert-state)
 (add-hook 'with-presentation-mode-hook 'evil-insert-state)
 
+(setq browse-url-browser-function 'browse-url-chromium)
 
 (evil-leader/set-key
   "e"		'flycheck-next-error
@@ -551,12 +557,8 @@
                        "--ghci-options=-fshow-loaded-modules"
 	    	       ))
 
-	    (evil-leader/set-key "f" 'haskell-mode-jump-to-def-or-tag)
-
-            (define-key evil-motion-state-map "f" 'haskell-mode-jump-to-def-or-tag)
-            (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
-            (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
-
+	    ;;(define-key evil-motion-state-map "f" 'haskell-mode-tag-fine)
+            ;;(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
             (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
             (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
             (define-key haskell-mode-map (kbd "C-c C-;") 'haskell-process-load-file)
