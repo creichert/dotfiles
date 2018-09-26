@@ -8,7 +8,7 @@ jobs:
       - checkout
 
       - run: apt update
-      - run: apt install xinit libx11-dev libxrandr-dev libxft-dev xvfb -y --no-install-recommends
+      - run: apt install xinit x11-xserver-utils libx11-dev libxrandr-dev libxft-dev xvfb -y --no-install-recommends
       - run: apt install stow emacs -y --no-install-recommends
 
       - run: rm ~/.profile ~/.bashrc ~/.gitconfig
