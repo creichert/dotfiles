@@ -8,7 +8,7 @@ jobs:
       - checkout
 
       - run: apt update
-      - run: apt install libx11-dev libxrandr-dev libxft-dev xvfb -y --no-install-recommends
+      - run: apt install xinit libx11-dev libxrandr-dev libxft-dev xvfb -y --no-install-recommends
       - run: apt install stow emacs -y --no-install-recommends
 
       - run: rm ~/.profile ~/.bashrc ~/.gitconfig
@@ -27,3 +27,5 @@ jobs:
           key: v1-cache-{{ .Branch }}
           paths:
             - ~/.stack
+
+      - run: cd $HOME && xvfb-run startx
