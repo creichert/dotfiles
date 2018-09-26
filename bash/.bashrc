@@ -68,5 +68,5 @@ else
 fi
 
 # Export path w/ stack bins
-export PATH=${HOME}/.local/bin:`stack path --compiler-bin`:$PATH
+export PATH=${HOME}/.local/bin:$PATH
 eval "$(stack --bash-completion-script stack)"
