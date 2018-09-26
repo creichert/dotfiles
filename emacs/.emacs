@@ -520,13 +520,31 @@
 
 (require 'haskell-mode)
 
-(setq haskell-process-reload-with-fbytecode nil
-      haskell-process-use-presentation-mode t
-      haskell-process-type 'stack-ghci
-      haskell-stylish-on-save t
-      ;; haskell-process-log t
+(setq haskell-stylish-on-save t
+      haskell-interactive-mode-eval-mode t
+
+      ;; this is set automatically when there is a `stack.yaml`
+      ;; haskell-process-type 'stack-ghci
+      ;; print type info to presentation-mode instead
+      ;; of message area.
+      ;; haskell-process-use-presentation-mode t
+      ;;
+      ;; bytecode takes up more memory than object code.
+      ;; enable
+      ;; haskell-process-reload-with-fbytecode nil
+      ;;
+      ;; experimenting with brittany
       ;; haskell-mode-stylish-haskell-path "brittany"
-      haskell-indent-spaces 4)
+      ;;
+      ;; only needed if having issues
+      ;; haskell-process-log t
+
+      haskell-font-lock-quasi-quote-modes
+      (append
+       '(("yamlQQ" . yaml-mode)
+	 ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
+
+      haskell-indentation-starter-offset 4)
 
 ;; https://gist.github.com/989ad8be92f68682abff
 (defun haskell-run-function-under-cursor ()
