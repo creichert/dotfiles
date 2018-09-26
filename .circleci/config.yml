@@ -6,8 +6,24 @@ jobs:
       - image: assertible/ci
     steps:
       - checkout
-      - run: apt update && apt install stow -y --no-install-recommends
+
+      - run: apt update
+      - run: apt install x11-server-utils libx11-dev libxrandr-dev libxft-dev -y --no-install-recommends
+      - run: apt install stow emacs -y --no-install-recommends
+
+      - run: rm ~/.profile ~/.bashrc ~/.gitconfig
       - run: make dotfiles
-      - run: make dotemacs
-      - run: make xmonad
-      - run: make theme
+      - run: xvfb-run make dotemacs
+      - run: xvfb-run make theme
+
+      - restore_cache:
+          keys:
+            - v1-cache-{{ .Branch }}
+            - v1-cache
+
+      - run: xvfb-run make xmonad
+
+      - save_cache:
+          key: v1-cache-{{ .Branch }}
+          paths:
+            - ~/.stack
