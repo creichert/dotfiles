@@ -30,6 +30,10 @@
     flycheck-haskell
     hindent
 
+    ;; gnus
+    ido-gnus
+    bbdb
+
     ;; misc modes
     web-mode
     markdown-mode
@@ -316,12 +320,12 @@
 	     'notify-compilation-result)
 
 (defun notify-compilation-result(buffer msg)
-  (if (and (string-match "^finished" msg) (string= "*compilation*" buffer))
+  (if (and (string-match "^finished" msg) (string= "*compilation*" (buffer-name buffer)))
       (progn
 	;; frame-visible-p before... to determine whehter to add it
 	(delete-windows-on buffer)
-	(message "compilation successful" buffer))
-    (message "compilation failed: " (buffer-substring (- (point-max) 500) (point-max))))
+	(message (concat "compilation successful: " msg)))
+    (message (concat "compilation failed: " (buffer-substring (- (point-max) 1500) (point-max)))))
   (setq current-frame (car (car (cdr (current-frame-configuration)))))
   (raise-frame current-frame))
 
@@ -372,7 +376,6 @@
 
 (require 'evil)
 (require 'evil-leader)
-(require 'evil-commentary)
 
 ;; global-evil-leader-mode is enabled before evil-mode so initial buffers
 ;; (*scratch*, *Messages*, …)  are configured correctly.
