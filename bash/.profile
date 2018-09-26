@@ -21,4 +21,12 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-eval "$(ssh-agent)"
+if [ ! -S ~/.ssh/ssh_auth_sock ]; then
+  eval "$(ssh-agent)"
+  ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
+fi
+export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
+
+# 'AddKeysToAgent yes' is used so keys are added the first time they are used
+#
+# ssh-add -l | grep "The agent has no identities" && ssh-add
