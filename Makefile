@@ -8,23 +8,31 @@ PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin
 
 # The location you want to install packages to
 PKG_DIR         ?= $(or $(target),$(HOME))
-STOW_FLAGS	:= --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
-STACK_VERSION	:= 1.7.1
+
 THEME           ?= $(or $(q),mocha-256)
 THEME_DIR       := x11/.local/share/base16-xresources/xresources
+
+STACK_VERSION	:= 1.7.1
 XMONAD          := $(HOME)/.xmonad/xmonad-x86_64-linux
 XMOBAR_BIN      := $(HOME)/.local/bin/xmobar
 XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 
 
+STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
+STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
+
 .PHONY: simulate
 simulate: $(THEME_DIR)
-	@stow ${STOW_FLAGS} --verbose --simulate -v1 --target=$(PKG_DIR) ${PACKAGES}
+	@stow ${STOW_FLAGS} ${PACKAGES}
 
 
 .PHONY: dotfiles
 dotfiles: $(THEME_DIR)
 	@stow ${STOW_FLAGS} -v1 --target=$(PKG_DIR) ${PACKAGES}
+
+.PHONY: dotlocal
+dotlocal:
+	[ -d "./dotlocal" ] && make -C dotpriv/ dotfiles
 
 
 .PHONY: clean
