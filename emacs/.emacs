@@ -108,6 +108,14 @@
 (setq select-enable-clipboard t) ;; emacs 25.1
 
 
+;; Use spaces instead of tabs, unless a mode/lang explicitly requires tabs.
+;;
+;; https://www.reddit.com/r/emacs/comments/19egbz/default_to_soft_tabs_enable_hard_tabs_only_for/
+;;
+(setq-default c-basic-offset 4)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-always-indent t)
 (setq-default fill-column 80)
 
 ;; Write backup and auto-save files to /tmp
@@ -393,7 +401,7 @@
 
 ;;(evil-set-toggle-key "C-a")
 (setq evil-default-state 'normal)
-(setq undo-tree-enable-undo-in-region 'nil)
+(setq undo-tree-enable-undo-in-region nil)
 
 ;; start in a state that immediately supports typing or direct emacs keybindings
 (add-hook 'with-editor-mode-hook 'evil-insert-state)
@@ -545,8 +553,7 @@
       haskell-font-lock-quasi-quote-modes
       (append
        '(("yamlQQ" . yaml-mode)
-	 ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
-
+         ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
       haskell-indentation-starter-offset 4)
 
 ;; https://gist.github.com/989ad8be92f68682abff
@@ -578,7 +585,7 @@
                        "--ghci-options=-fshow-loaded-modules"
 	    	       ))
 
-	    ;;(define-key evil-motion-state-map "f" 'haskell-mode-tag-fine)
+            ;;(define-key evil-motion-state-map "f" 'haskell-mode-tag-fine)
             ;;(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
             (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
             (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
