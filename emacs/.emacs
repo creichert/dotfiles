@@ -201,7 +201,7 @@
 (setq projectile-enable-caching t
       projectile-indexing-method 'alien
       projectile-use-git-grep 't
-      projectile-project-search-path '("~/dev")
+      ;;projectile-project-search-path '("~/dev")
       projectile-globally-ignored-directories '("~/.stack/snapshots")
       projectile-tags-command "make tags")
 
