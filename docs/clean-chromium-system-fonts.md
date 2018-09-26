@@ -52,7 +52,7 @@ extension](https://chrome.google.com/webstore/detail/stylebot/oiaejidbmkiecgbjei
 In the stylebot css configuration, I use the following snippet.
 
 ```css
-body, p, td, h1, h2, h3, h4, h5, h6, tt, code, pre, a {
+body, p, td, h1, h2, h3, h4, h5, h6, tt, code, pre, a, cite, li {
     font-family: "monofur", monospace, sans-serif;
 }
 ```
