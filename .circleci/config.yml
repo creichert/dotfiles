@@ -28,4 +28,4 @@ jobs:
           paths:
             - ~/.stack
 
-      - run: cd $HOME && xvfb-run startx
+      # - run: cd $HOME && xvfb-run startx
