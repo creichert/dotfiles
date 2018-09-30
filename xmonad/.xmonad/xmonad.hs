@@ -126,5 +126,5 @@ scratchpads = [
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
 
     , NS "gnus" "emacs-gtk -f gnus --title mail" (title =? "mail")
-          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
+          (customFloating $ W.RationalRect (1/20) (1/20) (17/20) (17/20))
     ]
