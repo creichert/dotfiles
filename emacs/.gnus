@@ -141,18 +141,27 @@
         gnus-completing-read 'gnus-ido-completing-read
         gnus-ignored-mime-types '("text/x-vcard")
         gnus-asynchronous t
+        ;;gnus-use-header-prefetch t
+
         gnus-treat-highlight-signature 'last
         gnus-large-newsgroup 25
         gnus-list-groups-with-ticked-articles nil
         gnus-use-dribble-file nil
         gnus-use-cache t
         gnus-button-url 'browse-url-browser-function
+
         mm-text-html-renderer 'gnus-w3m
+
         gnus-mime-view-all-parts t
         gnus-mime-display-multipart-related-as-mixed t
         gnus-default-charset 'utf-8
         gnus-default-posting-charset 'utf-8
         gnus-extra-headers '(To Newsgroups X-GM-LABELS)
+
+        gnus-gcc-mark-as-read t
+        ;;gnus-fetch-old-headers t
+        ;;gnus-confirm-mail-reply-to-news t
+        ;;gnus-confirm-treat-mail-like-news t
 
         ;; only needed for compatibility w/ other mail readers
         gnus-save-newsrc-file nil
@@ -195,6 +204,8 @@
           ((gnus-seconds-year) . "%d %B")
           (t . "%d/%m/%Y %H:%M"))
 
+        )
+
         ;; Gmail system labels have the prefix [Gmail], which matches the default
         ;; value of gnus-ignored-newsgroups. That's why we redefine it.
         ;; gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
@@ -235,14 +246,9 @@
         ;; nnmail-message-id-cache-file "~/.gnus.d/mail/.nnmail-cache"
         ;; nnml-newsgroups-file         "~/.gnus.d/mail/newsgroup"
         ;; nndraft-directory            "~/.gnus.d/mail/drafts"
-        )
-  (add-to-list
-   'gnus-newsgroup-variables
-   '(gnus-buttonized-mime-types . '("multipart/encrypted"
-                                    "multipart/signed"
-                                    "multipart/alternative")))
 
   :init
+
   ;; (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   ;; Gnus/Evil keybindings (only use basics in some modes)
   (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
@@ -272,10 +278,6 @@
   ((gnus-after-exiting-gnus . kill-emacs))
   ((gnus-summary-exit       . gnus-summary-bubble-group))
 
-  ;; :custom-face
-  ;; (set-face-attribute 'gnus-group-mail-1 t :foreground (x-get-resource "color2" ""))
-  ;; (gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
-
   ((gnus-startup . (lambda ()
                      (split-window-horizontally)
                      (next-multiframe-window)
@@ -283,7 +285,19 @@
                      ;; assuming f10 is bound to (jump-to-register 9) in .emacs,
                      ;; use [f10] to restore original {group|info} frames.
                      (window-configuration-to-register 9))))
+  ;; (set-face-attribute 'gnus-group-mail-1 t :foreground (x-get-resource "color2" ""))
+  ;;:custom-face
+  ;;(gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
   )
+
+(use-package gnus-sum
+  :config
+  (add-to-list
+   'gnus-newsgroup-variables
+   '(gnus-buttonized-mime-types . '("multipart/encrypted"
+                                    "multipart/signed"
+                                    "multipart/alternative"))))
+
 
 (use-package gnus-topic
   :hook ((gnus-group-mode . gnus-topic-mode))
@@ -336,8 +350,10 @@
   ;; Message settings
   (setq
    ;; Add date to reply & quote
-   message-citation-line-function 'message-insert-formatted-citation-line
-   message-citation-line-format "\nOn %a, %b %d %Y, %f wrote:"
+   ;;message-citation-line-function 'message-insert-formatted-citation-line
+   ;;message-citation-line-format "\nOn %a, %b %d %Y, %f wrote:"
+   ;; when replying, look kind of like gmail
+
    ;;message-forward-as-mime nil
    ;; add Cc and Bcc headers to the message buffer
    message-default-mail-headers "Cc: \nBcc: \n"
@@ -354,7 +370,7 @@
   (unless (boundp 'message-fill-column)
     (add-hook 'message-mode-hook
               (lambda ()
-                (setq fill-column 80)
+                (setq fill-column 100)
                 (turn-on-auto-fill)))))
 
 ;;; contacts

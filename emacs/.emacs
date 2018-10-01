@@ -1,9 +1,9 @@
+
 ;;; creichert emacs configuration
 
 ;;; Code:
 
-
-;; initialize use-package
+;; bootstrap use-package
 
 (require 'package)
 
@@ -19,12 +19,7 @@
   (require 'use-package))
 (require 'bind-key)
 
-
-;;; core settings
-
-;; display
-;;
-;; minimal default display
+;; minor modes
 (global-font-lock-mode 1)
 (show-paren-mode 1)
 (line-number-mode 1)
@@ -38,7 +33,7 @@
 
 (setq custom-file "~/.emacs.d/custom.el")
 (setq inhibit-startup-screen t)
-(setq initial-scratch-message (format ";; startup took %s seconds" (emacs-init-time)))
+(setq initial-scratch-message (format ";; startup took %s\n\n" (emacs-init-time)))
 
 ;; dont use any "gui" dialog boxes
 (setq use-dialog-box nil)
@@ -90,6 +85,7 @@
 
 (use-package align
  :bind ("C-x /" . align-regexp))
+
 (use-package replace
  :bind ("C-x C-/" . replace-regexp))
 
@@ -164,17 +160,19 @@
 
 
 (use-package ido-at-point
-  :ensure t)
+  :ensure t
+  :config
+  (ido-at-point-mode))
 
 
 (use-package ido-completing-read+
   :ensure t
-  :no-require t
+  :after (ido)
   :init
-  (setq completing-read-function 'ido-completing-read+)
+  (setq completing-read-function 'ido-completing-read+
+        ido-cr+-max-items nil)
   :config
-  (ido-ubiquitous-mode t)
-  (ido-at-point-mode))
+  (ido-ubiquitous-mode t))
 
 
 (use-package projectile
@@ -202,13 +200,6 @@
    :test-suffix "Spec"))
 
 
-(setq dired-omit-files
-      (concat
-       "|\\TAGS\\" "|\\#$\\" "|\\.*~$\\"
-       "|\\.dyn_hi$\\" "|\\.dyn_o$\\"
-       "|\\.hi$\\" "|\\.o$"
-       ))
-
 (use-package smex
   :ensure t
   :bind
@@ -216,15 +207,13 @@
   ("M-X" . smex-major-mode-commands))
 
 
-;; (setq scroll-conservatively 1000)
-;; (setq scroll-margin 7)
-
 ;; start in a state that immediately supports typing or direct emacs keybindings
 (use-package etags
   :init
   (setq tags-revert-without-query 1)
   ;;(setq tags-case-fold-search nil) ;; case-insensitive
-  (setq tags-add-tables t))
+  (setq xref-etags-mode t)
+  )
 
 (use-package etags-select
   :load-path "~/.emacs.d/etags-select.el")
@@ -242,7 +231,9 @@
   :config (load-theme 'xresources t)
   :load-path "themes")
 
+
 (use-package gif-screencast
+  :ensure t
   :if window-system
   :config
   (print "gif-screencast loaded")
@@ -252,12 +243,13 @@
   (([f11] . gif-screencast)
    ([f12] . gif-screencast-stop)))
 
+
 (use-package ansi-color
-  :init
-  (defun colorize-compilation-buffer ()
-    (let ((inhibit-read-only t))
-      (ansi-color-apply-on-region (point-min) (point-max))))
-  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer))
+  :hook
+  (( compilation-filter . (lambda ()
+                            (let ((inhibit-read-only t))
+                              (ansi-color-apply-on-region (point-min) (point-max)))) )))
+
 
 (use-package compile
   ;;:hook ((compilation-mode . (lambda () (setq scroll-margin 0))
@@ -307,11 +299,12 @@
   (add-to-list 'compilation-finish-functions 'notify-compilation-result))
 
 (use-package whitespace
-  :init
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook 'delete-trailing-whitespace)
-              )))
+  :hook ((before-save
+          . (lambda ()
+              (when (not (memq major-mode (list
+                                           "term-mode"
+                                           "message-mode")))
+                         'delete-trailing-whitespace)))))
 
 (global-set-key [f10]
                 '(lambda ()
@@ -380,8 +373,8 @@
   (define-key minibuffer-inactive-mode-map    (kbd "C-k") 'previous-history-element)
   (define-key minibuffer-local-ns-map         (kbd "C-j") 'next-history-element)
   (define-key minibuffer-local-ns-map         (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-local-isearch-map          (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-local-isearch-map          (kbd "C-k") 'previous-history-element)
+  (define-key minibuffer-local-isearch-map    (kbd "C-j") 'next-history-element)
+  (define-key minibuffer-local-isearch-map    (kbd "C-k") 'previous-history-element)
   (define-key minibuffer-local-completion-map (kbd "C-j") 'next-history-element)
   (define-key minibuffer-local-completion-map (kbd "C-k") 'previous-history-element)
   (define-key minibuffer-local-must-match-map (kbd "C-j") 'next-history-element)
@@ -442,13 +435,14 @@
     "gpgvr"   'epa-verify-region
     "gpgvf"   'epa-verify-file
     "G"       'google-this
+    "isw"     'ispell-word
     ))
 
 
 (use-package w3m
  :ensure t
  :init (setq
-        browse-url-browser-function 'browse-url-chromium
+        browse-url-generic 'browse-url-browser-function
         browse-url-default-browser 'w3m-browse-url ;; browse-url-emacs
         browse-url-browser-function
         '(("github" . browse-url-chromium)
@@ -459,10 +453,13 @@
   :ensure t
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
-  :init (setq magit-completing-read-function 'magit-ido-completing-read
-              )
+  :init (setq magit-completing-read-function 'magit-ido-completing-read)
+  :after (evil evil-leader))
 
-  :after (evil evil-leader)
+
+(use-package evil-magit
+  :ensure t
+  :after (magit evil)
   :config
   (evil-set-initial-state 'magit-log-edit-mode 'emacs)
   (evil-set-initial-state 'magit-status-mode 'emacs)
@@ -498,10 +495,8 @@
   )
 
 
-(use-package evil-magit
-  :after (magit evil)
-  :ensure t)
-
+(use-package flyspell
+ :hook ((prog-mode . flyspell-prog-mode)))
 
 (use-package flycheck
   :ensure t
@@ -512,6 +507,7 @@
 
 (use-package haskell-mode
   :ensure t
+  :mode "\\.hs\\'"
   :interpreter
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
@@ -570,24 +566,25 @@
               ("C-c i"   . haskell-navigate-imports-go)
               ("C-c I"   . haskell-navigate-imports-return)
               ("C-c C-j" . haskell-run-function-under-cursor))
+
   )
 
 
 (use-package hindent
+  :ensure t
   ;; :init (hindent-mode)
   :after (haskell-mode)
-  :hook ((haskell-mode . hindent-mode))
-  )
+  :hook ((haskell-mode . hindent-mode)))
 
 (use-package flycheck-haskell
+  :ensure t
   :after (flycheck haskell-mode)
   :init (setq flycheck-ghc-args '("-Wall"))
-  :hook ((haskell-mode . flycheck-haskell-setup))
-  )
+  :hook ((haskell-mode . flycheck-haskell-setup)))
 
 
 (use-package web-mode
-  :ensure
+  :ensure t
   :mode "\\.js\\'"
   :init (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))
               ;; might have to set in web-mode-hook
@@ -619,8 +616,7 @@
 
 (use-package prettier-js
  :ensure t
- :config
-  (prettier-js-mode)
+ :hook ((web-mode . prettier-js-mode))
  :init
   (setq prettier-js-args '("--tab-width" "4"
                            "--trailing-comma" "es5"
@@ -652,7 +648,8 @@
   :mode "\\.inputrc\\'")
 
 
-(use-package markdown
+(use-package markdown-mode
+  :ensure t
   :mode ("\\.markdown\\'" . markdown-mode))
 
 
@@ -664,6 +661,9 @@
 (use-package dockerfile-mode
   :ensure t
   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
+
+
+(use-package yaml-mode :ensure t)
 
 
 (use-package google-this :ensure t)
@@ -699,19 +699,19 @@
 (use-package term
   :init
 
-  (defun remote-term (new-buffer-name cmd &rest switches)
-    (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
-    (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
-    (set-buffer term-ansi-buffer-name)
-    (term-mode)
-    (term-char-mode)
-    (term-set-escape-char ?\C-x)
-    (switch-to-buffer term-ansi-buffer-name))
+(defun remote-term (new-buffer-name cmd &rest switches)
+  (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
+  (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
+  (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
+  (set-buffer term-ansi-buffer-name)
+  (term-mode)
+  (term-char-mode)
+  (term-set-escape-char ?\C-x)
+  (switch-to-buffer term-ansi-buffer-name))
 
-  (defun ssh-shell (host)
-    (interactive "sHost: \n")
-    (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
+(defun ssh-shell (host)
+  (interactive "sHost: \n")
+  (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
 
 
 (add-to-list 'default-frame-alist '(font . "monofur 12"))
