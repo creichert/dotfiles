@@ -76,12 +76,10 @@
   "Reload init file without restarting Emacs."
   (interactive)
   (load-file user-init-file))
+
 (global-set-key (kbd "C-c :")       'reload-dotemacs)
 (global-unset-key (kbd "C-z"))      ;; don't allow freeze
 (global-unset-key (kbd "C-x C-z"))  ;; don't allow freeze
-
-;; (global-set-key (kbd "C-c S")       'first-error)
-
 
 (use-package align
  :bind ("C-x /" . align-regexp))
@@ -235,7 +233,7 @@
 (use-package gif-screencast
   :ensure t
   :if window-system
-  :config
+  :init
   (print "gif-screencast loaded")
   (setq gif-screencast-screenshot-directory "~/downloads/screencasts/tmp")
   (setq gif-screencast-output-directory "~/downloads/screencasts")
@@ -299,12 +297,10 @@
   (add-to-list 'compilation-finish-functions 'notify-compilation-result))
 
 (use-package whitespace
-  :hook ((before-save
+  :hook ((prog-mode
           . (lambda ()
-              (when (not (memq major-mode (list
-                                           "term-mode"
-                                           "message-mode")))
-                         'delete-trailing-whitespace)))))
+              (add-hook (make-local-variable 'before-save-hook)
+                        'delete-trailing-whitespace)))))
 
 (global-set-key [f10]
                 '(lambda ()
@@ -413,53 +409,66 @@
       (projectile-compile-project nil)))
 
   (evil-leader/set-key
-    "e"       'flycheck-next-error
-    "w"       'flycheck-previous-error
-    ")"       'evil-next-close-paren
     "o"       'other-window
     "xc"      'save-buffers-kill-terminal
+
+    "F"       'xref-find-definitions
+    "S"       'pop-tag-mark
+
+    "tc"      'toggle-compilation-visible
+    "v"       'recompile-quietly ;; still under projectile context
+    "k"       'recompile-quietly ;; still under projectile context
+
     "f"       'projectile-find-file
     "prt"     'projectile-regenerate-tags
     "c"       'projectile-compile-project
-    "v"       'recompile-quietly ;; still under projectile context
-    "k"       'recompile-quietly ;; still under projectile context
-    "ptt"     'projectile-toggle-between-implementation-and-test
-    "tc"      'toggle-compilation-visible
     "b"       'projectile-switch-to-buffer
-    ;; currently overlapping to see which i prefer
+    "ptt"     'projectile-toggle-between-implementation-and-test
+
+    "e"       'flycheck-next-error
+    "w"       'flycheck-previous-error
+
+    ")"       'evil-next-close-paren
     "("       'insert-parentheses
     "9"       'insert-parentheses
-    "U"       'browse-url-chromium
+
+    ;; currently overlapping to see which i prefer
     "gpgr"    'epa-sign-region
     "gpgf"    'epa-sign-file
     "gpgvr"   'epa-verify-region
     "gpgvf"   'epa-verify-file
-    "G"       'google-this
+
     "isw"     'ispell-word
+
+    "U"       'browse-url-chromium
+    "G"       'google-this
     ))
 
 
 (use-package w3m
  :ensure t
+ :commands (w3m-browse-url w3m-find-file)
  :init (setq
-        browse-url-generic 'browse-url-browser-function
-        browse-url-default-browser 'w3m-browse-url ;; browse-url-emacs
         browse-url-browser-function
-        '(("github" . browse-url-chromium)
-          ("." . browse-url-default-browser))))
+        '(("github.com" . browse-url-chromium)
+          ("slack.com" . browse-url-chromium)
+          ("rollbar.com" . browse-url-chromium)
+          ("app.drift.com" . browse-url-chromium)
+          ("gmail.com" . browse-url-chromium)
+          ("docusign.com\\|docusign.net" . browse-url-chromium)
+          ("." . w3m-browse-url))))
 
 
 (use-package magit
-  :ensure t
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
-  :init (setq magit-completing-read-function 'magit-ido-completing-read)
-  :after (evil evil-leader))
+  :config (setq magit-completing-read-function 'magit-ido-completing-read)
+  :ensure t)
 
 
 (use-package evil-magit
   :ensure t
-  :after (magit evil)
+  :requires (magit evil)
   :config
   (evil-set-initial-state 'magit-log-edit-mode 'emacs)
   (evil-set-initial-state 'magit-status-mode 'emacs)
@@ -542,7 +551,9 @@
   :hook ((haskell-mode . haskell-doc-mode))
         ((haskell-mode . haskell-decl-scan-mode))
         ((haskell-mode . haskell-indentation-mode))
+
   :config
+
   ;; https://gist.github.com/989ad8be92f68682abff
   (defun haskell-run-function-under-cursor ()
     "Send the word-at-point as a function to GHCi process."
@@ -551,6 +562,7 @@
     (haskell-process-send-string
      (haskell-session-process (haskell-session-maybe))
      (format "%s" (word-at-point))))
+
   ;;(require 'evil-leader)
   (evil-leader/set-key-for-mode 'haskell-mode
     "hir" 'hindent-reformat-region
@@ -663,10 +675,10 @@
   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
 
 
-(use-package yaml-mode :ensure t)
+(use-package yaml-mode :ensure t :defer)
 
 
-(use-package google-this :ensure t)
+(use-package google-this :ensure t :defer)
 
 
 ;; Mail
@@ -698,6 +710,43 @@
 
 (use-package term
   :init
+
+(use-package org
+  :bind (([f6]   . org-capture)
+         ([C-f6] . org-agenda-refile)
+         ;; inbox, anything scheduled can be seen w/ f8
+         ([f7]   . org-todo-list)
+         ([f8]   . org-agenda)
+         ([C-f8] . org-agenda-kill-all-agenda-buffers))
+
+  :config
+  (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
+  :init
+  (setq
+        org-completion-use-ido t
+        ;; org-archive-location "~/org/archive.org::*"
+
+
+        ;; after an item is scheduled, it will
+        ;; show in the agenda on that day. this
+        ;; is used to clear the inbox to categories
+        org-default-notes-file "~/org/inbox.org"
+        org-agenda-files '("~/org/inbox.org"
+                           "~/org/me.org"
+                           "~/org/projects.org")
+        ;; allow nesting when refiling
+        org-refile-targets '(("~/org/projects.org" :maxlevel . 3)
+                             ("~/org/me.org" :maxlevel . 3))
+        ))
+
+(use-package org-agenda
+  :after (org)
+  :init
+  (setq org-agenda-todo-ignore-scheduled 'future)
+  :bind (:map org-agenda-mode-map
+              ( "j"   . org-agenda-next-item )
+              ( "k"   . org-agenda-previous-item )))
+
 
 (defun remote-term (new-buffer-name cmd &rest switches)
   (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
