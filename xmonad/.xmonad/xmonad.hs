@@ -38,6 +38,7 @@ main = do
                                manageDocks
                              , namedScratchpadManageHook scratchpads
                              , className =? "Chromium" --> doF (W.shift "8")
+                             -- , title =? "org-capture" --> doFloat
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h

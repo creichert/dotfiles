@@ -212,7 +212,6 @@
         ;;
         ;; no local archives
         ;;gnus-message-archive-group nil
-        ;;gnus-permanently-visible-groups "^nnimap\\+simplyrets:INBOX"
         ;;
         ;; gnus-topic-indent-level 3
         ;;
@@ -350,7 +349,7 @@
   ;; Message settings
   (setq
    ;; Add date to reply & quote
-   ;;message-citation-line-function 'message-insert-formatted-citation-line
+   message-citation-line-function 'message-insert-formatted-citation-line
    ;;message-citation-line-format "\nOn %a, %b %d %Y, %f wrote:"
    ;; when replying, look kind of like gmail
 
