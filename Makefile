@@ -24,14 +24,13 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
 simulate: submodules
 	@stow ${STOW_FLAGS} --simulate ${PACKAGES}
 
-
 .PHONY: dotfiles
 dotfiles: submodules
 	@stow ${STOW_FLAGS} -v1 --target=$(PKG_DIR) ${PACKAGES}
 
 .PHONY: dotlocal
 dotlocal:
-	[ -d "./dotlocal" ] && make -C dotpriv/ dotfiles
+	[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
 
 
 .PHONY: clean
@@ -82,7 +81,13 @@ submodules:
 	fi
 
 dotemacs:
-	@emacs --batch --debug-init -l emacs/.emacs --eval '(load "~/.emacs")'
+	@emacs --batch --debug-init \
+		--eval='(setq use-package-verbose t)' \
+		--eval='(load "~/.emacs")' \
+		--eval='(use-package-report)' \
+		--eval='(message "%s" (with-current-buffer "*use-package statistics*" (buffer-string)))' \
+		--eval='(message "startup took %s" (emacs-init-time))' \
+		--eval='(message "use pkg min time  %s" use-package-minimum-reported-time)'
 
 elpa:
 	rm -rf $(HOME)/.emacs.d/elpa
@@ -90,4 +95,4 @@ elpa:
 
 emacsdaemon:
 	-emacsclient -e '(kill-emacs)'
-	emacs --daemon
+	emacs --daemon --eval '(use-package org-protocol :demand t)'
