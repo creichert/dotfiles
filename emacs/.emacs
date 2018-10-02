@@ -18,6 +18,8 @@
 (eval-when-compile
   (require 'use-package))
 (require 'bind-key)
+(setq use-package-compute-statistics t)
+
 
 ;; minor modes
 (global-font-lock-mode 1)
@@ -50,18 +52,12 @@
 ;; share clipboard across the entire system
 (setq save-interprogram-paste-before-kill t)
 (setq yank-pop-change-selection t)
-(setq select-enable-clipboard t) ;; emacs 25.1
-
 
 ;; Use spaces instead of tabs, unless a mode/lang explicitly requires tabs.
-;;
-;; https://www.reddit.com/r/emacs/comments/19egbz/default_to_soft_tabs_enable_hard_tabs_only_for/
-;;
-(setq c-basic-offset 4)
-(setq tab-width 4)
-(setq indent-tabs-mode nil)
-(setq tab-always-indent t)
-(setq fill-column 80)
+(setq-default c-basic-offset 4)
+(setq-default tab-always-indent t)
+(setq-default indent-tabs-mode nil)
+(setq-default fill-column 80)
 
 ;; Write backup and auto-save files to /tmp
 (setq backup-directory-alist
@@ -110,6 +106,7 @@
   (setq savehist-save-minibuffer-history t)
   (setq savehist-additional-variables
         '(kill-ring
+          compile-command
           search-ring
           regexp-search-ring))
 
@@ -117,13 +114,18 @@
 
 
 (use-package ido
+  :demand
   :bind
   ("C-x f" . ido-find-file)
   :config
-  (setq ido-ignore-files
-        '("\\.rej$" "\\.dyn_hi$" "\\.dyn_o$" "\\.hi$" "\\.o$"
-          "\\.tags$" "^\\.ghci$" "\\TAGS$" "\\#*#$")
-        ido-max-directory-size 20000 ;2000000
+  (add-to-list 'ido-ignore-files "\\.rej$")
+  (add-to-list 'ido-ignore-files "\\.dyn_hi$")
+  (add-to-list 'ido-ignore-files "\\.dyn_o$")
+  (add-to-list 'ido-ignore-files "\\.hi$")
+  (add-to-list 'ido-ignore-files "\\.o$")
+  (add-to-list 'ido-ignore-files "\\.tags$")
+  (add-to-list 'ido-ignore-files "\\TAGS$")
+  (setq ido-max-directory-size 100000
         ido-enable-flex-matching t
         ido-max-prospects 5
         ido-create-new-buffer 'always
@@ -138,12 +140,15 @@
 
 (use-package ido-vertical-mode
   :load-path "~/.emacs.d/ido-vertical-mode.el"
+  :requires (ido)
+  :config (ido-vertical-mode)
   :init
   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
 
 (use-package flx-ido
   :ensure t
+  :requires (ido)
   :config
   (flx-ido-mode)
   :init
@@ -151,21 +156,16 @@
   (setq flx-ido-threshold 1000))
 
 
-(use-package ido-vertical-mode
-  :ensure t
-  :config
-  (ido-vertical-mode))
-
-
 (use-package ido-at-point
   :ensure t
+  :requires (ido)
   :config
   (ido-at-point-mode))
 
 
 (use-package ido-completing-read+
   :ensure t
-  :after (ido)
+  :requires (ido)
   :init
   (setq completing-read-function 'ido-completing-read+
         ido-cr+-max-items nil)
@@ -175,6 +175,9 @@
 
 (use-package projectile
   :ensure t
+  :requires (ido)
+
+  :hook (( projectile-after-switch-project . magit-status ))
   :bind
   ("C-x C-f" . projectile-find-file)
   ("C-x C-d" . projectile-switch-project)
@@ -184,6 +187,8 @@
   :init
   (setq projectile-enable-caching t
         projectile-indexing-method 'alien
+        ;;projectile-sort-order 'recently-active
+        projectile-sort-order 'modification-time
         projectile-use-git-grep 't
         ;;projectile-project-search-path '("~/dev")
         projectile-globally-ignored-directories '("~/.stack/snapshots")
@@ -199,6 +204,7 @@
 
 
 (use-package smex
+  :commands (smex smex-major-mode-commands)
   :ensure t
   :bind
   ("M-x" . smex)
@@ -207,6 +213,7 @@
 
 ;; start in a state that immediately supports typing or direct emacs keybindings
 (use-package etags
+  :defer
   :init
   (setq tags-revert-without-query 1)
   ;;(setq tags-case-fold-search nil) ;; case-insensitive
@@ -214,6 +221,7 @@
   )
 
 (use-package etags-select
+  :requires (etags)
   :load-path "~/.emacs.d/etags-select.el")
 
 
@@ -234,7 +242,6 @@
   :ensure t
   :if window-system
   :init
-  (print "gif-screencast loaded")
   (setq gif-screencast-screenshot-directory "~/downloads/screencasts/tmp")
   (setq gif-screencast-output-directory "~/downloads/screencasts")
   :bind
@@ -250,6 +257,7 @@
 
 
 (use-package compile
+  :defer
   ;;:hook ((compilation-mode . (lambda () (setq scroll-margin 0))
   :init
   (setq compilation-read-command nil
@@ -270,6 +278,10 @@
           ))
 
   :config
+
+  (setq scroll-margin 0
+        scroll-step 1
+        scroll-conservatively 10000)
 
   (defvar compilation-buffer-visible nil)
 
@@ -297,6 +309,7 @@
   (add-to-list 'compilation-finish-functions 'notify-compilation-result))
 
 (use-package whitespace
+  :defer
   :hook ((prog-mode
           . (lambda ()
               (add-hook (make-local-variable 'before-save-hook)
@@ -320,25 +333,26 @@
 
 (use-package evil
   :ensure t
-  :hook ((with-editor-mode . evil-insert-state))
-        ((with-presentation-mode . evil-insert-state))
+  :hook
+  ((with-editor-mode . evil-insert-state))
+  ((with-presentation-mode . evil-insert-state))
 
   :init
-   (setq evil-default-state 'normal)
-     ;; setup evil leader
-   (use-package evil-leader
-     :ensure t
-     :init
-      (setq evil-leader/leader "SPC"
-            evil-leader/in-all-states t
-            evil-leader/non-normal-prefix "C-"
-            evil-leader/no-prefix-mode-rx
-            '("magit-.*-mode"
-              "*Messages*"
-              "gnus-.*-mode"))
-      (global-evil-leader-mode 1)
-     )
-   (evil-mode 1)
+  (setq evil-default-state 'normal)
+  ;; setup evil leader
+  (use-package evil-leader
+    :ensure t
+    :init
+    (setq evil-leader/leader "SPC"
+          evil-leader/in-all-states t
+          evil-leader/non-normal-prefix "C-"
+          evil-leader/no-prefix-mode-rx
+          '("magit-.*-mode"
+            "*Messages*"
+            "gnus-.*-mode"))
+    (global-evil-leader-mode 1)
+    )
+  (evil-mode 1)
 
   :config
   (define-key evil-motion-state-map "f" 'xref-find-definitions)
@@ -440,6 +454,7 @@
 
     "isw"     'ispell-word
 
+    "u"       'browse-url
     "U"       'browse-url-chromium
     "G"       'google-this
     ))
@@ -463,13 +478,8 @@
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
   :config (setq magit-completing-read-function 'magit-ido-completing-read)
-  :ensure t)
-
-
-(use-package evil-magit
   :ensure t
-  :requires (magit evil)
-  :config
+  :init
   (evil-set-initial-state 'magit-log-edit-mode 'emacs)
   (evil-set-initial-state 'magit-status-mode 'emacs)
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
@@ -495,17 +505,19 @@
     "i" 'magit-ignore-item
     "s" 'magit-stage-item
     "u" 'magit-unstage-item
+    "K" 'magit-discard
     "z" 'magit-key-mode-popup-stashing)
   (evil-define-key evil-magit-state magit-mode-map
     "p" 'magit-section-backward
     "n" 'magit-section-forward)
   (evil-leader/set-key-for-mode 'magit-status-mode
-    "SPC" 'magit-stash-show)
-  )
+    "SPC" 'magit-stash-show))
 
 
-(use-package flyspell
- :hook ((prog-mode . flyspell-prog-mode)))
+(use-package evil-magit
+  :ensure t
+  :requires (magit evil))
+
 
 (use-package flycheck
   :ensure t
@@ -514,9 +526,14 @@
   )
 
 
+(use-package flyspell
+  :requires (flycheck)
+  :hook ((prog-mode . flyspell-prog-mode)))
+
+
 (use-package haskell-mode
   :ensure t
-  :mode "\\.hs\\'"
+  :mode ("\\.hs\\'" "\\.lhs\\'")
   :interpreter
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
@@ -546,6 +563,8 @@
         ;; haskell-process-log t
         ;; haskell-font-lock-quasi-quote-modes
         ;; (append '(("yamlQQ" . yaml-mode) ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
+        haskell-indentation-layout-offset 4
+        haskell-indentation-left-offset 4
         haskell-indentation-starter-offset 4)
 
   :hook ((haskell-mode . haskell-doc-mode))
@@ -639,9 +658,10 @@
 
 
 (use-package sql
- :init
-  (setq sql-postgres-options '("--no-psqlrc"))
-  (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
+  :defer
+  :init
+  ;;(setq sql-postgres-options '("--no-psqlrc"))
+  ;;(setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
   (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] "))
 
 
@@ -698,6 +718,7 @@
         read-mail-command 'gnus-user-agent))
 
 (use-package mm-decode
+  :defer t
   :init
   (setq
    mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8)
@@ -705,11 +726,9 @@
    mm-decrypt-option 'always))
 
 (use-package epa
+  :defer t
   :init
   (setq epa-pinentry-mode 'loopback))
-
-(use-package term
-  :init
 
 (use-package org
   :bind (([f6]   . org-capture)
@@ -718,14 +737,12 @@
          ([f7]   . org-todo-list)
          ([f8]   . org-agenda)
          ([C-f8] . org-agenda-kill-all-agenda-buffers))
-
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
   :init
   (setq
         org-completion-use-ido t
         ;; org-archive-location "~/org/archive.org::*"
-
 
         ;; after an item is scheduled, it will
         ;; show in the agenda on that day. this
@@ -735,33 +752,44 @@
                            "~/org/me.org"
                            "~/org/projects.org")
         ;; allow nesting when refiling
-        org-refile-targets '(("~/org/projects.org" :maxlevel . 3)
-                             ("~/org/me.org" :maxlevel . 3))
+        org-refile-targets '(("~/org/projects.org" :maxlevel . 2)
+                             ("~/org/me.org" :maxlevel . 2))
         ))
 
 (use-package org-agenda
   :after (org)
+  :hook
+  (( org-capture-after-finalize . org-save-all-org-buffers ))
+  (( org-capture-prepare-finalize . org-save-all-org-buffers ))
+
   :init
   (setq org-agenda-todo-ignore-scheduled 'future)
+  (setq org-agenda-window-setup 'current-window)
+
+  (advice-add 'org-refile :after
+              (lambda (&rest _)
+                (org-save-all-org-buffers)))
+
   :bind (:map org-agenda-mode-map
               ( "j"   . org-agenda-next-item )
               ( "k"   . org-agenda-previous-item )))
 
+(use-package term
+  :commands (make-term term ssh-shell)
+  :config
+    (defun remote-term (new-buffer-name cmd &rest switches)
+      (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
+      (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
+      (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
+      (set-buffer term-ansi-buffer-name)
+      (term-mode)
+      (term-char-mode)
+      (term-set-escape-char ?\C-x)
+      (switch-to-buffer term-ansi-buffer-name))
 
-(defun remote-term (new-buffer-name cmd &rest switches)
-  (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
-  (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-  (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
-  (set-buffer term-ansi-buffer-name)
-  (term-mode)
-  (term-char-mode)
-  (term-set-escape-char ?\C-x)
-  (switch-to-buffer term-ansi-buffer-name))
-
-(defun ssh-shell (host)
-  (interactive "sHost: \n")
-  (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
-
+    (defun ssh-shell (host)
+      (interactive "sHost: \n")
+      (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
 
 (add-to-list 'default-frame-alist '(font . "monofur 12"))
 (set-face-attribute 'default t :font '"monofur 12")
