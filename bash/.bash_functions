@@ -84,3 +84,40 @@ function man() {
     LESS_TERMCAP_us=$'\e[01;32m' \
     command man "$@"
 }
+
+function bootstrap_lang() {
+
+    case "$1" in
+        # Rust
+        node)
+            export NVM_DIR="$HOME/.nvm"
+            # Loads nvm
+            [ -s "$NVM_DIR/nvm.sh" ]          && . "$NVM_DIR/nvm.sh"
+            # This loads nvm bash_completion
+            [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+            ;;
+
+        rust)
+            # Rust
+            export RSVM_DIR="$HOME/.rsvm"
+            if [[ -s "$RSVM_DIR/rsvm.sh" ]]; then
+                . "$RSVM_DIR/rsvm.sh"
+            else
+                echo "rsvm not installed."
+            fi
+            ;;
+
+        golang)
+            status anacron
+            export GOVM_ROOT="$HOME/.govm"
+            if [[ -d "$GOVM_ROOT" ]]; then
+                export PATH="$GOVM_ROOT/bin:$PATH"
+                export PATH="$GOVM_ROOT/versions/current/bin:$PATH"
+            else
+                echo "govm not installed."
+            fi
+            ;;
+        *)
+            echo $"Usage: $0 {node|rust|golang|haskell}"
+    esac
+}

@@ -44,28 +44,8 @@ PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
 export NIL_UUID=00000000-0000-0000-0000-000000000000
 
-# Nodejs
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ]          && . "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
-# Rust
-export RSVM_DIR="$HOME/.rsvm"
-if [[ -s "$RSVM_DIR/rsvm.sh" ]]; then
-    . "$RSVM_DIR/rsvm.sh"
-else
-    echo "rsvm not installed."
-fi
-
-# Go
-export GOVM_ROOT="$HOME/.govm"
-if [[ -d "$GOVM_ROOT" ]]; then
-    export PATH="$GOVM_ROOT/bin:$PATH"
-    export PATH="$GOVM_ROOT/versions/current/bin:$PATH"
-else
-    echo "govm not installed."
-fi
+# use node/npm using nvm by default
+bootstrap_lang node
 
 # Export path w/ stack bins
 export PATH=${HOME}/.local/bin:$PATH
