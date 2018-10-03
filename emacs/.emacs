@@ -748,12 +748,11 @@
         ;; show in the agenda on that day. this
         ;; is used to clear the inbox to categories
         org-default-notes-file "~/org/inbox.org"
-        org-agenda-files '("~/org/inbox.org"
-                           "~/org/me.org"
-                           "~/org/projects.org")
+        org-agenda-files '("~/org/")
+        org-agenda-diary-file "~/org/journal.org"
+        org-refile-use-outline-path 'file
         ;; allow nesting when refiling
-        org-refile-targets '(("~/org/projects.org" :maxlevel . 2)
-                             ("~/org/me.org" :maxlevel . 2))
+        org-refile-targets '((org-agenda-files :maxlevel . 3))
         ))
 
 (use-package org-agenda
