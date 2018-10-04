@@ -125,21 +125,22 @@
   (add-to-list 'ido-ignore-files "\\.o$")
   (add-to-list 'ido-ignore-files "\\.tags$")
   (add-to-list 'ido-ignore-files "\\TAGS$")
+  (add-to-list 'ido-ignore-buffers "*Compile-Log*")
+  (add-to-list 'ido-ignore-buffers "*Help*")
+  (add-to-list 'ido-ignore-buffers "TAGS")
+  (ido-mode 1)
+  (ido-everywhere 1)
+  :init
   (setq ido-max-directory-size 100000
         ido-enable-flex-matching t
         ido-max-prospects 5
         ido-create-new-buffer 'always
         ido-use-faces t
-        ido-use-filename-at-point 'nil)
-  (add-to-list 'ido-ignore-buffers "*Compile-Log*")
-  (add-to-list 'ido-ignore-buffers "*Help*")
-  (add-to-list 'ido-ignore-buffers "TAGS")
-  (ido-mode 1)
-  (ido-everywhere 1))
+        ido-use-filename-at-point 'nil))
 
 
 (use-package ido-vertical-mode
-  :load-path "~/.emacs.d/ido-vertical-mode.el"
+  :load-path "~/.emacs.d/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :init
@@ -222,7 +223,7 @@
 
 (use-package etags-select
   :requires (etags)
-  :load-path "~/.emacs.d/etags-select.el")
+  :load-path "~/.emacs.d/etags-select.el/")
 
 
 ;; Xresource based styles
@@ -466,10 +467,13 @@
  :init (setq
         browse-url-browser-function
         '(("github.com" . browse-url-chromium)
+          ("accounts.google.com" . browse-url-chromium)
+          ("assertible.com" . browse-url-chromium)
           ("slack.com" . browse-url-chromium)
           ("rollbar.com" . browse-url-chromium)
           ("app.drift.com" . browse-url-chromium)
           ("gmail.com" . browse-url-chromium)
+          ("aws.amazon.com" . browse-url-chromium)
           ("docusign.com\\|docusign.net" . browse-url-chromium)
           ("." . w3m-browse-url))))
 
@@ -538,13 +542,14 @@
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
   :init
-  (setq haskell-process-args-stack-ghci
-        '("--no-load"
-          "--ghci-options=-O0"
-          "--ghci-options=-ferror-spans"
-          "--ghci-options=-fshow-loaded-modules"
-          ))
+  (setq haskell-process-args-stack-ghci '("--ghci-options=-O0"))
   (setq haskell-stylish-on-save t
+
+        ;;haskell-process-suggest-hoogle-imports t
+        ;;haskell-process-suggest-haskell-docs-imports t
+        ;;haskell-process-suggest-remove-import-lines t
+        ;;haskell-process-suggest-restart nil
+
         ;;haskell-interactive-mode-eval-mode t
         ;; this is set automatically when there is a `stack.yaml`
         ;; haskell-process-type 'stack-ghci
@@ -582,7 +587,6 @@
      (haskell-session-process (haskell-session-maybe))
      (format "%s" (word-at-point))))
 
-  ;;(require 'evil-leader)
   (evil-leader/set-key-for-mode 'haskell-mode
     "hir" 'hindent-reformat-region
     "hid" 'hindent-reformat-decl-or-fill
@@ -731,29 +735,57 @@
   (setq epa-pinentry-mode 'loopback))
 
 (use-package org
+
   :bind (([f6]   . org-capture)
          ([C-f6] . org-agenda-refile)
          ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
          ([f8]   . org-agenda)
-         ([C-f8] . org-agenda-kill-all-agenda-buffers))
+         ([C-f8] . org-agenda-kill-all-agenda-buffers)
+         ("C-c C-/" . org-toggle-timestamp-type))
+
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
-  :init
-  (setq
-        org-completion-use-ido t
-        ;; org-archive-location "~/org/archive.org::*"
 
-        ;; after an item is scheduled, it will
-        ;; show in the agenda on that day. this
-        ;; is used to clear the inbox to categories
-        org-default-notes-file "~/org/inbox.org"
-        org-agenda-files '("~/org/")
-        org-agenda-diary-file "~/org/journal.org"
-        org-refile-use-outline-path 'file
-        ;; allow nesting when refiling
-        org-refile-targets '((org-agenda-files :maxlevel . 3))
-        ))
+  :init
+  ;; executable from org
+  ;; (setq org-babel-C-compiler
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (js . t)
+     (haskell . t)
+     (makefile . t)
+     (scheme . t)
+     (sql . t)
+     (C . t)
+     (sh . t)))
+
+  (setq
+
+   org-completion-use-ido t
+   ;; org-archive-location "~/org/archive.org::*"
+   ;;org-stuck-projects '("TODO={.+}/-DONE" nil nil "SCHEDULED:\\|DEADLINE:"))
+
+   ;; after an item is scheduled, it will
+   ;; show in the agenda on that day. this
+   ;; is used to clear the inbox to categories
+   org-default-notes-file "~/org/inbox.org"
+
+   org-agenda-files '("~/org/")
+
+   ;;org-agenda-include-diary
+   org-agenda-insert-diary-extract-time t
+
+   org-agenda-diary-file "~/org/journal.org"
+
+   org-refile-use-outline-path 'file
+   org-refile-targets '((org-agenda-files :maxlevel . 3))
+
+   org-src-fontify-natively t
+   org-src-strip-leading-and-trailing-blank-lines t
+   org-confirm-babel-evaluate nil
+   ))
 
 (use-package org-agenda
   :after (org)
@@ -765,9 +797,16 @@
   (setq org-agenda-todo-ignore-scheduled 'future)
   (setq org-agenda-window-setup 'current-window)
 
+  (setq org-log-done 'time)
+  (setq org-agenda-custom-commands
+        ;; today
+        '(("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2"
+           ((org-agenda-overriding-header "Uncategorized todos")))))
+
   (advice-add 'org-refile :after
               (lambda (&rest _)
                 (org-save-all-org-buffers)))
+
 
   :bind (:map org-agenda-mode-map
               ( "j"   . org-agenda-next-item )
