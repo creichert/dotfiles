@@ -123,33 +123,49 @@
 
 ;;; Code:
 
+(require 'use-package)
+
 ;; my gnus-private file contains various email accounts info.
 ;;
 ;; - gnus-parameters
 ;; - gnus-topic-topology
 ;; - gnus-select-method
 ;;
-;;(load-file "~/.emacs.d/lisp/gnus-private.el")
+;; (load-file "~/.emacs.d/lisp/gnus-private.el")
+;;
+;; only load if this file exists
 (use-package gnus-private
+  :if (file-exists-p "~/.emacs.d/lisp/gnus-private.el")
   :load-path "lisp/")
 
 
 (use-package gnus
   :after (gnus-private)
+
+  :bind
+  (:map gnus-summary-mode-map
+        (";" . bbdb-mua-edit-field))
+
+  :init
+  (bbdb-initialize 'gnus 'message)
+  (bbdb-mua-auto-update-init 'gnus 'message)
+  (setq bbdb-completion-display-record nil)
+  (setq bbdb-mua-update-interactive-p '(query . create))
+  (setq bbdb-message-all-addresses t)
+
   :config
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-ignored-mime-types '("text/x-vcard")
         gnus-asynchronous t
-        ;;gnus-use-header-prefetch t
 
         gnus-treat-highlight-signature 'last
         gnus-large-newsgroup 25
         gnus-list-groups-with-ticked-articles nil
-        gnus-use-dribble-file nil
         gnus-use-cache t
         gnus-button-url 'browse-url-browser-function
 
+        ;; set in w3m config, not here
         mm-text-html-renderer 'gnus-w3m
 
         gnus-mime-view-all-parts t
@@ -159,17 +175,11 @@
         gnus-extra-headers '(To Newsgroups X-GM-LABELS)
 
         gnus-gcc-mark-as-read t
-        ;;gnus-fetch-old-headers t
-        ;;gnus-confirm-mail-reply-to-news t
-        ;;gnus-confirm-treat-mail-like-news t
-
         ;; only needed for compatibility w/ other mail readers
         gnus-save-newsrc-file nil
         gnus-read-newsrc-file nil
 
         ;; Group line
-        ;; gnus-group-line-format " %S [%5y] | %-20s | %G\n"
-        ;; gnus-group-line-format "%P|%B|%M%o%S%L[%6t|%3i]%6y :%(%~(pad-right 65)g%):%6,6~(cut 2)d\n"
         gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
 
         ;; Summary line
@@ -189,7 +199,6 @@
           "^User-Agent" "^X-Newsreader" "^X-Mailer" "^Organization"
           "^X-Troll" "^Cc" "^Reply-To" "^Content-Type" "^X-Originating-IP"
           "^X-Priority" "^Message-ID" "^X-PGP-Key"
-          ;;"^X-GMail-DKIM-Signature" "^DKIM-Signature" "^Resent-From"
           )
 
         gnus-signature-separator
@@ -205,46 +214,6 @@
           (t . "%d/%m/%Y %H:%M"))
 
         )
-
-        ;; Gmail system labels have the prefix [Gmail], which matches the default
-        ;; value of gnus-ignored-newsgroups. That's why we redefine it.
-        ;; gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
-        ;;
-        ;; no local archives
-        ;;gnus-message-archive-group nil
-        ;;
-        ;; gnus-topic-indent-level 3
-        ;;
-        ;; local archives split to folders
-        ;;gnus-message-archive-group
-        ;;    (("home" "nnimap+home:[Gmail]/All Mail")
-        ;;     ("work" "nnimap+work:[Gmail]/All Mail")
-        ;;     (".*" ,(format-time-string "sent/%Y-%m"))))
-        ;;
-        ;;gnus-check-new-newsgroups nil
-        ;;gnus-check-bogus-newsgroups nil
-        ;;gnus-auto-center-summary nil
-        ;;gnus-nov-is-evil nil
-        ;;gnus-show-threads t
-        ;;gnus-use-cross-reference nil
-        ;;
-        ;; gnus-agent
-        ;;
-        ;; _might_ make imap slower. enabled by default
-        ;;gnus-agent nil
-        ;;gnus-agent-queue-mail t
-        ;;gnus-agent-go-online t
-        ;;gnus-inhibit-images nil
-        ;;gnus-fetch-old-headers 'some
-        ;;
-        ;; gnus-sync-global-vars '(gnus-topic-topology gnus-topic-alist)
-        ;; gnus-startup-file "~/.newsrc"
-        ;; mail-source-directory        "~/.gnus.d/incoming/"
-        ;; message-directory            "~/.gnus.d/mail/"
-        ;; message-auto-save-directory  "~/.gnus.d/mail/drafts/"
-        ;; nnmail-message-id-cache-file "~/.gnus.d/mail/.nnmail-cache"
-        ;; nnml-newsgroups-file         "~/.gnus.d/mail/newsgroup"
-        ;; nndraft-directory            "~/.gnus.d/mail/drafts"
 
   :init
 
@@ -275,7 +244,8 @@
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
   ((gnus-after-exiting-gnus . kill-emacs))
-  ((gnus-summary-exit       . gnus-summary-bubble-group))
+  ;;((gnus-summary-exit       . gnus-summary-bubble-group))
+
 
   ((gnus-startup . (lambda ()
                      (split-window-horizontally)
@@ -298,10 +268,16 @@
                                     "multipart/alternative"))))
 
 
+(use-package gnus-srvr
+  :bind
+  ( :map gnus-browse-mode-map
+         ( "q" .  'gnus-browse-exit )))
+
+
 (use-package gnus-topic
   :hook ((gnus-group-mode . gnus-topic-mode))
   ;; :init
-  ;; (setq-default gnus-topic-display-empty-topics t)
+  (setq-default gnus-topic-display-empty-topics t)
   ;; (setq-default gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
   ;; (setq-default gnus-subscribe-newsgroup-method 'my-gnus-subscribe-topics)
   )
