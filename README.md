@@ -7,29 +7,31 @@
 
 - [`xmonad`](#xmonad)
 - [`emacs`](#emacs)
-
   - [`haskell`](#haskell)
-
+  - [`gnus`](#gnus)
 - [`themes`](#themes)
 
-All dotfiles in this repo are installed using in a minimally invasive way
-and will not overwrite any existing data on your system
+All dotfiles in this repo are installed using in a minimally invasive way and
+will not overwrite any existing data on your system. I work between a desktop
+and laptop and prefer to have as few differences between the two systems.
 
-visualize how the install will affect your system:
+Use `make` to:
 
-    $ make simulate
+- visualize how the install will affect your system:
 
-install all dotfiles with `stow`:
+      $ make simulate
 
-    $ make dotfiles
+- install all dotfiles with `stow`:
 
-install a single dotfile with `stow`:
+      $ make dotfiles
 
-    $ make dotfiles pkg=emacs
+- install a single dotfile with `stow`:
 
-install/reinstall xmonad config:
+      $ make dotfiles pkg=emacs
 
-    $ make xmonad
+- install/reinstall xmonad config:
+
+      $ make xmonad
 
 ## xmonad
 
