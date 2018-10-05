@@ -78,12 +78,12 @@ submodules:
 	fi
 
 dotemacs:
-	@emacs --batch --debug-init \
-		--eval='(setq use-package-verbose t)' \
-		--eval='(load "~/.emacs")' \
-		--eval='(use-package-report)' \
-		--eval='(message "%s" (with-current-buffer "*use-package statistics*" (buffer-string)))' \
-		--eval='(message "startup took %s" (emacs-init-time))' \
+	@emacs --batch --debug-init										\
+		--eval='(setq use-package-verbose t)'								\
+		--eval='(load "~/.emacs")'									\
+		--eval='(use-package-report)'									\
+		--eval='(message "%s" (with-current-buffer "*use-package statistics*" (buffer-string)))'	\
+		--eval='(message "startup took %s" (emacs-init-time))'						\
 		--eval='(message "use pkg min time  %s" use-package-minimum-reported-time)'
 
 elpa:

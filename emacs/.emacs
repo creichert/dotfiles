@@ -474,6 +474,7 @@
           ("app.drift.com" . browse-url-chromium)
           ("gmail.com" . browse-url-chromium)
           ("aws.amazon.com" . browse-url-chromium)
+          ("youtube.com" . browse-url-chromium)
           ("docusign.com\\|docusign.net" . browse-url-chromium)
           ("." . w3m-browse-url))))
 
@@ -511,16 +512,17 @@
     "u" 'magit-unstage-item
     "K" 'magit-discard
     "z" 'magit-key-mode-popup-stashing)
-  (evil-define-key evil-magit-state magit-mode-map
-    "p" 'magit-section-backward
-    "n" 'magit-section-forward)
   (evil-leader/set-key-for-mode 'magit-status-mode
     "SPC" 'magit-stash-show))
 
 
 (use-package evil-magit
   :ensure t
-  :requires (magit evil))
+  :requires (magit evil)
+  :config
+  (evil-define-key evil-magit-state magit-mode-map
+    "p" 'magit-section-backward
+    "n" 'magit-section-forward))
 
 
 (use-package flycheck
@@ -546,8 +548,8 @@
   (setq haskell-stylish-on-save t
 
         ;;haskell-process-suggest-hoogle-imports t
-        ;;haskell-process-suggest-haskell-docs-imports t
-        ;;haskell-process-suggest-remove-import-lines t
+        haskell-process-suggest-haskell-docs-imports t
+        haskell-process-suggest-remove-import-lines t
         ;;haskell-process-suggest-restart nil
 
         ;;haskell-interactive-mode-eval-mode t
@@ -573,6 +575,7 @@
         haskell-indentation-starter-offset 4)
 
   :hook ((haskell-mode . haskell-doc-mode))
+        ((haskell-mode . haskell-collapse-mode))
         ((haskell-mode . haskell-decl-scan-mode))
         ((haskell-mode . haskell-indentation-mode))
 
@@ -591,6 +594,7 @@
     "hir" 'hindent-reformat-region
     "hid" 'hindent-reformat-decl-or-fill
     "f" 'haskell-mode-jump-to-def-or-tag
+    "TAB" 'haskell-hide-toggle
     "l" 'haskell-process-load-or-reload)
 
   :bind (:map haskell-mode-map
@@ -752,14 +756,15 @@
   ;; (setq org-babel-C-compiler
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((emacs-lisp . t)
-     (js . t)
-     (haskell . t)
-     (makefile . t)
-     (scheme . t)
-     (sql . t)
-     (C . t)
-     (sh . t)))
+        '((emacs-lisp . t)
+          (js . t)
+          (haskell . t)
+          (sqlite . t)
+          (makefile . t)
+          (scheme . t)
+          (sql . t)
+          (C . t)
+          (sh . t)))
 
   (setq
 
@@ -796,13 +801,9 @@
   :init
   (setq org-agenda-todo-ignore-scheduled 'future)
   (setq org-agenda-window-setup 'current-window)
+  (setq org-deadline-warning-days 7)
 
   (setq org-log-done 'time)
-  (setq org-agenda-custom-commands
-        ;; today
-        '(("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2"
-           ((org-agenda-overriding-header "Uncategorized todos")))))
-
   (advice-add 'org-refile :after
               (lambda (&rest _)
                 (org-save-all-org-buffers)))
@@ -810,7 +811,45 @@
 
   :bind (:map org-agenda-mode-map
               ( "j"   . org-agenda-next-item )
-              ( "k"   . org-agenda-previous-item )))
+              ( "k"   . org-agenda-previous-item ))
+
+  :config
+  (add-to-list 'org-agenda-custom-commands
+        '("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2")))
+
+
+(use-package bbdb
+  :ensure t
+  :commands (bbdb)
+
+  :bind (:bbdb-mode-map
+         ( "?\t"  . bbdb-complete-name )
+         :message-mode-map
+         ( "?\t"  . bbdb-complete-name ))
+
+  :init
+
+  (bbdb-initialize 'gnus 'message)
+  (bbdb-mua-auto-update-init 'gnus 'message 'mail)
+
+  ;;(setq bbdb-completion-display-record nil)
+  ;;(setq bbdb-mua-update-interactive-p '(query . create))
+  (setq bbdb-message-all-addresses t)
+
+  ;; 2000 is the default value which is added to a message's score if the
+  ;; message is from a person in the BBDB database.
+  (setq bbdb-complete-mail-allow-cycling t)
+  (setq bbdb/gnus-score-default 2000)
+
+  :config
+
+  (evil-define-key 'motion bbdb-mode-map
+    "\C-k"       'bbdb-delete-field-or-record
+    "\C-x\C-s"   'bbdb-save)
+
+  (bbdb-initialize 'gnus 'message)
+  (bbdb-mua-auto-update-init 'message)) ;; use 'gnus for incoming messages too
+
 
 (use-package term
   :commands (make-term term ssh-shell)
@@ -828,6 +867,7 @@
     (defun ssh-shell (host)
       (interactive "sHost: \n")
       (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
+
 
 (add-to-list 'default-frame-alist '(font . "monofur 12"))
 (set-face-attribute 'default t :font '"monofur 12")
