@@ -704,8 +704,6 @@
 
 
 (use-package yaml-mode :ensure t :defer)
-
-
 (use-package google-this :ensure t :defer)
 
 
@@ -716,7 +714,6 @@
 ;; "gnus-parameters [gnus]").
 (use-package gnus
   :commands gnus
-  ;; :defer 5
   :init
   (setq gnus-treat-from-gravatar t
         mail-user-agent 'gnus-user-agent
@@ -740,6 +737,7 @@
 
 (use-package org
 
+  :defer t
   :bind (([f6]   . org-capture)
          ([C-f6] . org-agenda-refile)
          ;; inbox, anything scheduled can be seen w/ f8
@@ -748,10 +746,9 @@
          ([C-f8] . org-agenda-kill-all-agenda-buffers)
          ("C-c C-/" . org-toggle-timestamp-type))
 
+
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
-
-  :init
   ;; executable from org
   ;; (setq org-babel-C-compiler
   (org-babel-do-load-languages
@@ -764,8 +761,9 @@
           (scheme . t)
           (sql . t)
           (C . t)
-          (sh . t)))
+          (shell . t)))
 
+  :init
   (setq
 
    org-completion-use-ido t
@@ -780,7 +778,7 @@
    org-agenda-files '("~/org/")
 
    ;;org-agenda-include-diary
-   org-agenda-insert-diary-extract-time t
+   ;;org-agenda-insert-diary-extract-time t
 
    org-agenda-diary-file "~/org/journal.org"
 
@@ -820,53 +818,29 @@
 
 (use-package bbdb
   :ensure t
+  :defer
   :commands (bbdb)
 
-  :bind (:bbdb-mode-map
-         ( "?\t"  . bbdb-complete-name )
-         :message-mode-map
-         ( "?\t"  . bbdb-complete-name ))
+  :bind (:map bbdb-mode-map
+         ( "\t"  . bbdb-complete-mail ))
 
   :init
-
   (bbdb-initialize 'gnus 'message)
   (bbdb-mua-auto-update-init 'gnus 'message 'mail)
-
   ;;(setq bbdb-completion-display-record nil)
   ;;(setq bbdb-mua-update-interactive-p '(query . create))
   (setq bbdb-message-all-addresses t)
-
   ;; 2000 is the default value which is added to a message's score if the
   ;; message is from a person in the BBDB database.
   (setq bbdb-complete-mail-allow-cycling t)
   (setq bbdb/gnus-score-default 2000)
 
   :config
-
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"       'bbdb-delete-field-or-record
-    "\C-x\C-s"   'bbdb-save)
-
+    "\C-x \C-s"   'bbdb-save)
   (bbdb-initialize 'gnus 'message)
   (bbdb-mua-auto-update-init 'message)) ;; use 'gnus for incoming messages too
-
-
-(use-package term
-  :commands (make-term term ssh-shell)
-  :config
-    (defun remote-term (new-buffer-name cmd &rest switches)
-      (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
-      (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-      (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
-      (set-buffer term-ansi-buffer-name)
-      (term-mode)
-      (term-char-mode)
-      (term-set-escape-char ?\C-x)
-      (switch-to-buffer term-ansi-buffer-name))
-
-    (defun ssh-shell (host)
-      (interactive "sHost: \n")
-      (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
 
 
 (add-to-list 'default-frame-alist '(font . "monofur 12"))

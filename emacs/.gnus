@@ -227,6 +227,8 @@
 ;;   smtpmail-debug-info t)
 ;;
 (use-package message
+  :bind (:map message-mode-map
+              ( "\t"  . bbdb-complete-mail ))
   :init
   (setq vc-follow-symlinks t)
   ;; Message settings
