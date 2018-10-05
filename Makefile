@@ -23,12 +23,12 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
 .PHONY: simulate
 simulate: submodules
 	@stow ${STOW_FLAGS} --simulate ${PACKAGES}
-	@[ -d "./dotlocal" ] && make -C dotlocal/ simulate
+	-@([ -d "./dotlocal" ] && make -C dotlocal/ simulate) || true
 
 .PHONY: dotfiles
 dotfiles: submodules
 	@stow ${STOW_FLAGS} -v1 --target=$(PKG_DIR) ${PACKAGES}
-	@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
+	-@([ -d "./dotlocal" ] && make -C dotlocal/ dotfiles) || true
 
 .PHONY: clean
 clean:
