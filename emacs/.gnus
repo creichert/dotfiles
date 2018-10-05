@@ -37,89 +37,15 @@
 ;;
 ;;   - News and mail are handled a little differently due to reply conventions.
 ;;     Posting a reply on a newsgroup is called follow up, whereas sending a
-;;     reply to an email message is called reply to .
+;;     reply to an email message is called reply-to.
 ;;
 ;; Keybindings:
 ;;
-;;   group mode (list of accounts, inboxes and labels):
-;;     - g   : scan all servers for new articles
-;;     - A s : show only subscribed mailboxes with new mail
-;;     - L   : show all imap mailboxes
-;;     - A A : show ALL mailboxes
-;;     - C-k : kill subscription.  For nntp, this marks group as `K'.
-;;
-;;
-;;   summary mode (list of emails):
-;;     - M C-c : Mark all articles in group as read
-;;     - d     : mark read
-;;     - D     : delete permanently
-;;     - E     : mark expired
-;;     - B m   : Move article from one group to another
-;;     - S w   : Reply "site-wide", e.g. to all To and Cc without quoting
-;;     - `gnus-summary-insert-old-articles`	: view "read" articles
-;;
-;;   article (single mail view):
-;;
-;;     - r   : Reply-To no quote
-;;
-;;     - R   : Reply-To and quote
-;;
-;;     - S L : Reply-To List by TO'ing the list and drop cc's
-;;
-;;             - this option is intended to not send two copies of mails to
-;;               someone you are replying to.  it's preferred to set a "to"
-;;               address for the group in `gnus-parameters`, to avoid this
-;;               problem.
-;;
-;;     - M-u : remove all readness marks from message
-;;     - S W : Reply "site-wide", e.g. to all To and Cc and quote the original.
-;;             fairly noisy reply.  Only do it when you are talking amongst a
-;;             conversation and trying to reply to a person directly.
-;;     - K v : View the Mime Part (attachment)
-;;     - K o : View the Mime Part (attachment)
-;;     - K O : View the Mime Part (attachment), prompt for filename
-;;
-;;   nntp / newsgroup "mode" settings (gmane, gwene, etc):
-;;
-;;    misc:
-;;      - L L - show ALL groups
-;;      - ^   - Select a source
-;;      - u   - Subscribe / Unsubscribe to a newsgroup
-;;
-;;    message statuses:
-;;      - U   - unsubscribed
-;;      - ' ' - subscribed
-;;      - K   - ??
-;;
-;; PGP / gpg signing
-;;
-;;    - A good PGP setup is to have a master key, encryption key, and additional
-;;      subkeys where the master key is offline.  This has many benefits, all
-;;      explained along with a how-to here:
-;;
-;;      - blog: https://alexcabal.com/creating-the-perfect-gpg-keypair/
-;;      - script: https://gist.github.com/creichert/44060f9fd82607dc5f019e2b558edca0
-;;      - removing master key: https://incenp.org/notes/2015/using-an-offline-gnupg-master-key.html
-;;      - debian guide; http://keyring.debian.org/creating-key.html
-;;
-;;    Keybindings:
-;;      - `C-c C-m s p' -> sign email via gpg
-;;      - `C-c C-m c p' -> encrypt email via gpg
-;;      - `;'           -> bbdb-mua-edit
-;;
-;;
-;; Gnus resoures and config examples:
-;;   - http://www.bobnewell.net/publish/35years/gmailhacks.html
-;;   - https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
-;;   - http://qsdfgh.com/articles/gnus-configuration-example.html
-;;   - https://lists.gnu.org/archive/html/help-gnu-emacs/2009-10/msg00307.html
-;;   - https://github.com/vanicat/emacs24-starter-kit/blob/my-change/moi/gnus-config.org
-;;   - http://sachachua.com/notebook/emacs/dotgnus.el
-;;   - http://sachachua.com/blog/2008/05/emacs-gnus-searching-mail
-;;   - http://blog.binchen.org/posts/notes-on-using-gnus.html
-;;   - http://www.cataclysmicmutation.com/2010/11/multiple-gmail-accounts-in-gnus/
-;;   - https://www.gnu.org/software/emacs/manual/html_node/gnus/ding-Gnus.html
-;;   - http://www.emacswiki.org/emacs/GnusAttachmentReminder
+;;   - g   :
+;;   - ^   : view servers
+;;   - r   : reply
+;;   - R   : reply & cite
+;;   - SW  : "site-wide" reply & quote (all cc's)
 
 ;;; Code:
 
@@ -140,28 +66,18 @@
 
 
 (use-package gnus
+
   :after (gnus-private)
-
-  :bind
-  (:map gnus-summary-mode-map
-        (";" . bbdb-mua-edit-field))
-
-  :init
-  (bbdb-initialize 'gnus 'message)
-  (bbdb-mua-auto-update-init 'gnus 'message)
-  (setq bbdb-completion-display-record nil)
-  (setq bbdb-mua-update-interactive-p '(query . create))
-  (setq bbdb-message-all-addresses t)
 
   :config
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
-        gnus-ignored-mime-types '("text/x-vcard")
         gnus-asynchronous t
 
-        gnus-treat-highlight-signature 'last
-        gnus-large-newsgroup 25
-        gnus-list-groups-with-ticked-articles nil
+        gnus-default-charset 'utf-8
+        gnus-default-posting-charset 'utf-8
+
+        gnus-large-newsgroup 100
         gnus-use-cache t
         gnus-button-url 'browse-url-browser-function
 
@@ -170,11 +86,9 @@
 
         gnus-mime-view-all-parts t
         gnus-mime-display-multipart-related-as-mixed t
-        gnus-default-charset 'utf-8
-        gnus-default-posting-charset 'utf-8
-        gnus-extra-headers '(To Newsgroups X-GM-LABELS)
 
         gnus-gcc-mark-as-read t
+
         ;; only needed for compatibility w/ other mail readers
         gnus-save-newsrc-file nil
         gnus-read-newsrc-file nil
@@ -191,28 +105,18 @@
         ;;   - "%U%R%z%B%(%[%4L: %-23,23f%]%) %s")
         ;;
         gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f | %B%s%)\n"
+
+        ;; improve gmail support
         gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
         gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
 
-        gnus-visible-headers
-        '("^To" "^From" "^Subject" "^Date" "^Newsgroups" "^Followup-To"
-          "^User-Agent" "^X-Newsreader" "^X-Mailer" "^Organization"
-          "^X-Troll" "^Cc" "^Reply-To" "^Content-Type" "^X-Originating-IP"
-          "^X-Priority" "^Message-ID" "^X-PGP-Key"
-          )
 
-        gnus-signature-separator
-        '("^-- $" "^-- *$" "^-------*$" "^ *--------*$" "^________*$" "^========*$")
+        ;;gnus-score-find-score-files-function
+        ;;'(gnus-score-find-bnews.span class=compcode>bbdb/gnus-score)
 
-        ;; Date specific format
-        gnus-user-date-format-alist
-        '(((gnus-seconds-today) . "Today, %H:%M")
-          ((+ 86400 (gnus-seconds-today)) . "Yesterday, %H:%M")
-          (604800 . "%A %H:%M")
-          ((gnus-seconds-month) . "%A %d")
-          ((gnus-seconds-year) . "%d %B")
-          (t . "%d/%m/%Y %H:%M"))
 
+        ;;gnus-treat-highlight-signature 'last
+        ;;gnus-list-groups-with-ticked-articles nil
         )
 
   :init
@@ -269,17 +173,19 @@
 
 
 (use-package gnus-srvr
-  :bind
-  ( :map gnus-browse-mode-map
-         ( "q" .  'gnus-browse-exit )))
+  :bind (:map gnus-browse-mode-map
+              ( "q" .  'gnus-browse-exit )))
 
 
 (use-package gnus-topic
   :hook ((gnus-group-mode . gnus-topic-mode))
-  ;; :init
-  (setq-default gnus-topic-display-empty-topics t)
-  ;; (setq-default gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
-  ;; (setq-default gnus-subscribe-newsgroup-method 'my-gnus-subscribe-topics)
+  :bind (:map gnus-topic-mode-map
+              ("?\t" . gnus-topic-select-group))
+
+  :init
+  ;;(setq-default gnus-topic-display-empty-topics t)
+  (setq-default gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
+  (setq-default gnus-subscribe-newsgroup-method         'gnus-subscribe-topics)
   )
 
 
@@ -322,17 +228,12 @@
 ;;
 (use-package message
   :init
+  (setq vc-follow-symlinks t)
   ;; Message settings
   (setq
    ;; Add date to reply & quote
+   message-confirm-send t
    message-citation-line-function 'message-insert-formatted-citation-line
-   ;;message-citation-line-format "\nOn %a, %b %d %Y, %f wrote:"
-   ;; when replying, look kind of like gmail
-
-   ;;message-forward-as-mime nil
-   ;; add Cc and Bcc headers to the message buffer
-   message-default-mail-headers "Cc: \nBcc: \n"
-
    message-send-mail-function 'message-send-mail-with-sendmail
    sendmail-program "/usr/bin/msmtp"
    smtpmail-use-starttls t
@@ -348,17 +249,5 @@
                 (setq fill-column 100)
                 (turn-on-auto-fill)))))
 
-;;; contacts
-(use-package bbdb
-  :ensure t
-  :commands (bbdb)
-  :init
-  (setq bbdb-mua-auto-update-p 'query) ;; or 'create to create without asking
-  :config
-  (bbdb-initialize 'gnus 'message)
-  (bbdb-mua-auto-update-init 'message) ;; use 'gnus for incoming messages too
-
-  :hook ((message-mode . (lambda () (local-set-key "<TAB>" 'bbdb-complete-name))))
-  )
 
 ;;; .gnus ends here
