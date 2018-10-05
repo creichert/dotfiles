@@ -239,16 +239,6 @@
   :load-path "themes")
 
 
-(use-package gif-screencast
-  :ensure t
-  :if window-system
-  :init
-  (setq gif-screencast-screenshot-directory "~/downloads/screencasts/tmp")
-  (setq gif-screencast-output-directory "~/downloads/screencasts")
-  :bind
-  (([f11] . gif-screencast)
-   ([f12] . gif-screencast-stop)))
-
 
 (use-package ansi-color
   :hook
@@ -665,6 +655,7 @@
                            )))
 
 
+
 (use-package sql
   :defer
   :init
@@ -855,3 +846,11 @@
 ;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
 (set-face-attribute 'mode-line nil :box '(:width 0.5))
 (set-face-attribute 'mode-line-inactive nil :box nil)
+
+
+;; extra emacs packages & utilities I use which aren't "core"
+(use-package extra
+  :if (file-exists-p "~/.emacs.d/lisp/extra.el")
+  :load-path "lisp/")
+
+;;; .emacs ends here
