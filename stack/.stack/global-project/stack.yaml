@@ -12,6 +12,7 @@ packages: []
 flags:
   xmobar:
     with_xft: true
+    with_mpris: true
 
 ghc-options:
   "$locals":

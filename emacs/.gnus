@@ -57,12 +57,10 @@
 ;; - gnus-topic-topology
 ;; - gnus-select-method
 ;;
-;; (load-file "~/.emacs.d/lisp/gnus-private.el")
-;;
 ;; only load if this file exists
 (use-package gnus-private
-  :if (file-exists-p "~/.emacs.d/lisp/gnus-private.el")
-  :load-path "lisp/")
+  :if (file-exists-p "~/.emacs.d/site-lisp/gnus-private.el")
+  :load-path "site-lisp/")
 
 
 (use-package gnus

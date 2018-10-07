@@ -18,22 +18,25 @@ XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 
 
 STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
-STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
+STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
+		--ignore=".*.pem"		\
+		--ignore=".*.swp"		\
+		--ignore=".*~"			\
+		--ignore="dotlocal/"
 
 .PHONY: simulate
 simulate: submodules
-	@stow ${STOW_FLAGS} --simulate ${PACKAGES}
+	@stow $(STOW_FLAGS) --simulate $(PACKAGES)
 	-@[ -d "./dotlocal" ] && make -C dotlocal/ simulate
 
 .PHONY: dotfiles
 dotfiles: submodules
-	mkdir -p ~/.emacs.d/lisp/
-	@stow ${STOW_FLAGS} -v1 --target=$(PKG_DIR) ${PACKAGES}
+	@stow $(STOW_FLAGS) -v1 --target=$(PKG_DIR) $(PACKAGES)
 	-@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
 
 .PHONY: clean
 clean:
-	@stow -D -v1 ${PACKAGES}
+	@stow -D $(STOW_FLAGS) $(PACKAGES)
 
 
 # https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/
@@ -46,7 +49,7 @@ $(XMONAD): xmonad/.xmonad/xmonad.hs $(XMONAD_BIN) $(XMOBAR_BIN)
 $(XMONAD_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
 	cd $(PWD) && stack install xmonad xmonad-contrib
 $(XMOBAR_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
-	cd $(PWD) && stack install xmobar --flag "xmobar:with_mpris"
+	cd $(PWD) && stack install xmobar --flag "xmobar:with_mpris" --flag "xmobar:with_xft"
 
 
 # New base16 themes: https://github.com/chriskempson/base16
@@ -57,6 +60,7 @@ theme: submodules
 	@xrdb -remove
 
 	@# The .Xresources.d/theme script is sourced in the `.Xresources` file.
+	@mkdir -p x11/.Xresources.d
 	@cat $(THEME_DIR)/base16-$(THEME).Xresources > x11/.Xresources.d/theme
 
 

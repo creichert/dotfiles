@@ -861,5 +861,5 @@
   :load-path "lisp/")
 
 (use-package extra-private
-  :if (file-exists-p "~/.emacs.d/lisp/extra-private.el")
-  :load-path "lisp/")
+  :if (file-exists-p "~/.emacs.d/site-lisp/extra-private.el")
+  :load-path "site-lisp/")
