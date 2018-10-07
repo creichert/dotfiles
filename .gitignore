@@ -1,0 +1,7 @@
+
+*_rsa
+*_dsa
+*.local
+
+# this is a folder designed for you to keep
+dotlocal/
