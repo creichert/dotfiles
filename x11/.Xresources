@@ -1,5 +1,7 @@
 
-#define FONT1 xft:monofur:style=Regular:size=12,xft:DejaVu Serif:style=Regular:size=12
+#include ".Xresources.d/theme"
+
+#define FONT1 xft:monofur:style=Regular:size=12
 
 *VT100.Translations: #override \
 <Key>Delete: string(0x04) \n\
@@ -19,9 +21,13 @@ xterm*scrollBar: false
 xterm*letterSpace: 0
 xterm*forcePackedFont: false
 xterm*wideChars: true
-XTerm*colorBD: black
-XTerm*colorIT: black
-XTerm*colorUL: black
+! XTerm*colorBD: black
+! XTerm*colorIT: black
+! XTerm*colorUL: black
+
+! *customization: -color define #COLOR? system-wide...
+! disable color overrides, always use xresources. this is defined by the COLOR... in /etc/X11/Xresources
+*customization:
 XTerm*urlLauncher: chromium
 XTerm*termName: xterm-256color
 XTerm*eightBitInput: false

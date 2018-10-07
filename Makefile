@@ -23,12 +23,13 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg" --ignore=.*.pem
 .PHONY: simulate
 simulate: submodules
 	@stow ${STOW_FLAGS} --simulate ${PACKAGES}
-	-@([ -d "./dotlocal" ] && make -C dotlocal/ simulate) || true
+	-@[ -d "./dotlocal" ] && make -C dotlocal/ simulate
 
 .PHONY: dotfiles
 dotfiles: submodules
+	mkdir -p ~/.emacs.d/lisp/
 	@stow ${STOW_FLAGS} -v1 --target=$(PKG_DIR) ${PACKAGES}
-	-@([ -d "./dotlocal" ] && make -C dotlocal/ dotfiles) || true
+	-@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
 
 .PHONY: clean
 clean:
@@ -45,16 +46,29 @@ $(XMONAD): xmonad/.xmonad/xmonad.hs $(XMONAD_BIN) $(XMOBAR_BIN)
 $(XMONAD_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
 	cd $(PWD) && stack install xmonad xmonad-contrib
 $(XMOBAR_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
-	cd $(PWD) && stack install xmobar
+	cd $(PWD) && stack install xmobar --flag "xmobar:with_mpris"
 
 
 # New base16 themes: https://github.com/chriskempson/base16
 theme: submodules
+
 	@fc-cache -vf
+	@# clears all xresources
 	@xrdb -remove
-	@xrdb -merge ~/.Xresources
-	@xrdb -merge $(THEME_DIR)/base16-$(THEME).Xresources
-	@xrdb -override $(THEME_DIR)/base16-$(THEME).Xresources
+
+	@# The .Xresources.d/theme script is sourced in the `.Xresources` file.
+	@cat $(THEME_DIR)/base16-$(THEME).Xresources > x11/.Xresources.d/theme
+
+
+	@# The default
+	@# `startx` using `.xsession` will use my Xresources file as long as it\'s allowed
+	@# in `/etc/X11/xsession.options`. See `man xsession` & `man xsession.options` for
+	@# more info.
+	@#
+	@# Technically, the override shouldn\'t be needed but it\'s possible that in the
+	@# future some system "default" xsession scripts initialize resources that conflict
+	@# with my colors. So, override.
+	@xrdb -merge -override ~/.Xresources
 
 
 themes-list: submodules
