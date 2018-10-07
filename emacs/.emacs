@@ -761,8 +761,7 @@
           (scheme . t)
           (sql . t)
           (C . t)
-          (sh . t)
-          ))
+          (sh . t)))
 
   :init
   (setq
