@@ -509,6 +509,15 @@
 (use-package evil-magit
   :ensure t
   :requires (magit evil)
+
+  :bind (:map evil-normal-state-map
+              ( "\\" . smex)
+              :map evil-insert-state-map
+              ( "C-\\" . smex)
+              :map magit-status-mode-map
+              ( "\\" . smex)
+              ( "C-\\" . smex))
+
   :config
   (evil-define-key evil-magit-state magit-mode-map
     "p" 'magit-section-backward
@@ -752,12 +761,14 @@
           (scheme . t)
           (sql . t)
           (C . t)
-          (sh . t)))
+          (sh . t)
+          ))
 
   :init
   (setq
 
    org-completion-use-ido t
+
    ;; org-archive-location "~/org/archive.org::*"
    ;;org-stuck-projects '("TODO={.+}/-DONE" nil nil "SCHEDULED:\\|DEADLINE:"))
 
@@ -766,15 +777,10 @@
    ;; is used to clear the inbox to categories
    org-default-notes-file "~/org/inbox.org"
 
-   org-agenda-files '("~/org/")
-
-   ;;org-agenda-include-diary
-   ;;org-agenda-insert-diary-extract-time t
-
-   org-agenda-diary-file "~/org/journal.org"
-
    org-refile-use-outline-path 'file
    org-refile-targets '((org-agenda-files :maxlevel . 3))
+
+   org-hide-leading-stars nil
 
    org-src-fontify-natively t
    org-src-strip-leading-and-trailing-blank-lines t
@@ -788,11 +794,14 @@
   (( org-capture-prepare-finalize . org-save-all-org-buffers ))
 
   :init
-  (setq org-agenda-todo-ignore-scheduled 'future)
-  (setq org-agenda-window-setup 'current-window)
-  (setq org-deadline-warning-days 7)
+  (setq org-agenda-todo-ignore-scheduled 'future
+        org-agenda-window-setup 'current-window
+        org-agenda-files '("~/org/")
+        org-agenda-diary-file "~/org/journal.org"
+        org-deadline-warning-days 7
+        org-agenda-include-diary t
+        org-log-done 'time)
 
-  (setq org-log-done 'time)
   (advice-add 'org-refile :after
               (lambda (&rest _)
                 (org-save-all-org-buffers)))
@@ -818,8 +827,7 @@
   :init
   (bbdb-initialize 'gnus 'message)
   (bbdb-mua-auto-update-init 'gnus 'message 'mail)
-  ;;(setq bbdb-completion-display-record nil)
-  ;;(setq bbdb-mua-update-interactive-p '(query . create))
+  (setq bbdb-mua-update-interactive-p '(query . create))
   (setq bbdb-message-all-addresses t)
   ;; 2000 is the default value which is added to a message's score if the
   ;; message is from a person in the BBDB database.
@@ -853,4 +861,6 @@
   :if (file-exists-p "~/.emacs.d/lisp/extra.el")
   :load-path "lisp/")
 
-;;; .emacs ends here
+(use-package extra-private
+  :if (file-exists-p "~/.emacs.d/lisp/extra-private.el")
+  :load-path "lisp/")
