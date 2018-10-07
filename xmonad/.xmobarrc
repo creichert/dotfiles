@@ -7,7 +7,7 @@ Config {
   , lowerOnStart = True
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { <fc=#d0c8c6>%date%</fc> "
+  , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { %mpris2% :: <fc=#d0c8c6>%date%</fc> "
   , commands = [
 
         Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
@@ -39,6 +39,10 @@ Config {
                      ] 50
 
       , Run StdinReader
+
+      , Run Mpris2 "spotify" [
+                "-t", "<artist> - <title>"
+              ] 10
       , Run PipeReader "default text:~/.xmonad/xmonad.errors" "xmonad"
 
         -- laptop
