@@ -1,6 +1,10 @@
+
+
 (require 'use-package)
 
+
 (use-package gif-screencast
+  :defer
   :ensure t
   :if window-system
   :init
@@ -12,7 +16,9 @@
 
 
 (use-package password-store
+  :defer
   :ensure t)
+
 
 (use-package magit-gh-pulls
   :ensure t
@@ -20,6 +26,11 @@
   :init
   (setq magit-gh-pulls-pull-detail-limit 30)
   (setq magit-gh-pulls-status-documentation t))
+
+
+(use-package github-clone
+  :defer
+  :ensure t)
 
 
 (use-package term

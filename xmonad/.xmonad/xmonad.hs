@@ -90,13 +90,14 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
         , ((modm .|. shiftMask, xK_w), passPrompt xpCfg )
         , ((modm .|. shiftMask, xK_s), sshPrompt xpCfg)
         -- scratchpads
-        , ((modm .|. shiftMask, xK_k),  namedScratchpadAction scratchpads "terminal")
         , ((modm .|. shiftMask, xK_j),  namedScratchpadAction scratchpads "terminal2")
-        , ((modm .|. shiftMask, xK_g),  namedScratchpadAction scratchpads "ghci")
         , ((modm .|. shiftMask, xK_r),  namedScratchpadAction scratchpads "psql")
+
+        , ((modm, xK_j),  namedScratchpadAction scratchpads "terminal")
         , ((modm, xK_k),  namedScratchpadAction scratchpads "emacs")
         , ((modm, xK_o),  namedScratchpadAction scratchpads "spotify")
         , ((modm, xK_m),  namedScratchpadAction scratchpads "gnus")
+        , ((modm, xK_g),  namedScratchpadAction scratchpads "ghci")
 
           -- Take a selective screenshot using the command specified by mySelectScreenshot.
         , ((modm .|. shiftMask, xK_p), spawn screenshotRegion)

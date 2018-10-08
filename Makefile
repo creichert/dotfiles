@@ -36,7 +36,7 @@ dotfiles: submodules
 
 .PHONY: clean
 clean:
-	@stow -D $(STOW_FLAGS) $(PACKAGES)
+	@stow $(STOW_FLAGS) -D $(PACKAGES)
 
 
 # https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/
@@ -94,6 +94,8 @@ submodules:
 	@if git submodule status | egrep -q '^[-]'; then \
 		git submodule update --init;                 \
 	fi
+
+## Emacs recipes
 
 dotemacs:
 	@emacs --batch --debug-init										\

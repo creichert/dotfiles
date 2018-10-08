@@ -22,16 +22,20 @@
 
 
 ;; minor modes
-(global-font-lock-mode 1)
-(show-paren-mode 1)
-(line-number-mode 1)
-(column-number-mode 1)
-(size-indication-mode 1)
-(transient-mark-mode 1)
-(delete-selection-mode 1)
-(auto-compression-mode t)
-(global-linum-mode -1)
-(blink-cursor-mode 0)
+;;(use-package font-core
+;;  :config (global-font-lock-mode 1))
+;;
+;;(use-package delsel
+;;  :config (delete-selection-mode 1))
+;;
+;;(use-package jka-cmpr-hook
+;;  :config (auto-compression-mode t))
+;;
+;;(use-package frame
+;;  :config (blink-cursor-mode 0))
+;;
+;;(use-package linum
+;;  :config (global-linum-mode -1))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (setq inhibit-startup-screen t)
@@ -91,6 +95,8 @@
   ("C-c E"       . first-error)
   ("C-c e"       . next-error)
   ("C-c C-e p"   . previous-error)
+  :config
+  ;;(transient-mark-mode 1)
   :init
   (setq
    mail-user-agent  'gnus-user-agent
@@ -345,14 +351,6 @@
     )
   (evil-mode 1)
 
-  :config
-  (define-key evil-motion-state-map "f" 'xref-find-definitions)
-  (define-key evil-normal-state-map "s" 'pop-tag-mark)
-  (define-key evil-normal-state-map ";" 'evil-ex)
-  (define-key evil-normal-state-map (kbd "\\") 'smex)
-  (define-key evil-insert-state-map (kbd "C-\\") 'smex)
-  (define-key evil-insert-state-map "j" #'evil-maybe-exit)
-
   ;; vim-like bindings in the minibuffer
   ;;
   ;; doing it this way is a little tricky:
@@ -366,29 +364,41 @@
   ;;   - C-k : prev history
   ;;   - C-j : next history
   ;;
-  (define-key minibuffer-local-map            (kbd "C-w") 'evil-delete-backward-word)
-  (define-key minibuffer-local-map            (kbd "C-p") 'evil-paste-after-from-0)
-  (define-key minibuffer-local-map            (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-local-map            (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-inactive-mode-map    (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-inactive-mode-map    (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-local-ns-map         (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-local-ns-map         (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-local-isearch-map    (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-local-isearch-map    (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-local-completion-map (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-local-completion-map (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-local-must-match-map (kbd "C-j") 'next-history-element)
-  (define-key minibuffer-local-must-match-map (kbd "C-k") 'previous-history-element)
-  (define-key minibuffer-local-must-match-map (kbd "C-k") 'previous-history-element)
+  :bind (:map evil-motion-state-map
+              ("f" . xref-find-definitions)
+              :map evil-normal-state-map
+              ("s" . pop-tag-mark)
+              (";" . evil-ex)
+              ("\\" . smex)
+              :map evil-insert-state-map
+              ("C-\\" . smex)
+              ("j" . evil-maybe-exit)
 
-  (defun evil-paste-after-from-0 ()
-    (interactive)
-    (let ((evil-this-register ?0))
-      (call-interactively 'evil-paste-after)))
+              :map minibuffer-local-map
+              ("C-j" . next-history-element)
+              ("C-k" . previous-history-element)
+              ("C-w" . evil-delete-backward-word)
 
-  (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
+              :map minibuffer-inactive-mode-map
+              ("C-j" . next-history-element)
+              ("C-k" . previous-history-element)
 
+              :map minibuffer-local-ns-map
+              ("C-j" . next-history-element)
+              ("C-k" . previous-history-element)
+
+              :map minibuffer-local-isearch-map
+              ("C-j" . next-history-element)
+              ("C-k" . previous-history-element)
+
+              :map minibuffer-local-completion-map
+              ("C-j" . next-history-element)
+              ("C-k" . previous-history-element)
+
+              :map minibuffer-local-must-match-map
+              ("C-j" . next-history-element)
+              ("C-k" . previous-history-element))
+  :config
   ;; exit insert mode if I lean on 'j' button
   (evil-define-command evil-maybe-exit ()
     :repeat change
@@ -542,6 +552,15 @@
   :interpreter
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
+  :bind (:map haskell-mode-map
+              ("C-c C-t" . haskell-process-do-type)
+              ("C-c C-i" . haskell-process-do-info)
+              ("C-c C-;" . haskell-process-load-file)
+              ("C-c C-l" . haskell-process-reload)
+              ("C-c i"   . haskell-navigate-imports-go)
+              ("C-c I"   . haskell-navigate-imports-return)
+              ("C-c C-j" . haskell-run-function-under-cursor))
+
   :init
   (setq haskell-process-args-stack-ghci '("--ghci-options=-O0"))
   (setq haskell-stylish-on-save t
@@ -571,12 +590,15 @@
         ;; (append '(("yamlQQ" . yaml-mode) ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
         haskell-indentation-layout-offset 4
         haskell-indentation-left-offset 4
-        haskell-indentation-starter-offset 4)
+        ;;haskell-indentation-starter-offset 4
+        )
 
   :hook ((haskell-mode . haskell-doc-mode))
         ((haskell-mode . haskell-collapse-mode))
         ((haskell-mode . haskell-decl-scan-mode))
         ((haskell-mode . haskell-indentation-mode))
+        ((haskell-mode . electric-pair-local-mode))
+        ((haskell-mode . electric-indent-local-mode))
 
   :config
 
@@ -596,16 +618,7 @@
     "TAB" 'haskell-hide-toggle
     "l" 'haskell-process-load-or-reload)
 
-  :bind (:map haskell-mode-map
-              ("C-c C-t" . haskell-process-do-type)
-              ("C-c C-i" . haskell-process-do-info)
-              ("C-c C-;" . haskell-process-load-file)
-              ("C-c C-l" . haskell-process-reload)
-              ("C-c i"   . haskell-navigate-imports-go)
-              ("C-c I"   . haskell-navigate-imports-return)
-              ("C-c C-j" . haskell-run-function-under-cursor))
-
-  )
+  (setq electric-layout-rules '((?\{) (?\} . around))))
 
 
 (use-package hindent
@@ -739,7 +752,6 @@
 
   :defer t
   :bind (([f6]   . org-capture)
-         ([C-f6] . org-agenda-refile)
          ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
          ([f8]   . org-agenda)

@@ -210,20 +210,6 @@
         mm-verify-option 'always))
 
 ;; Outgoing messages sent via msmtp (config in ~/.msmptrc)
-;;
-;; TODO: use smtpmail-send-it (depends on gnutls-cli)
-;;
-;; (setq
-;;   message-send-mail-function 'smtpmail-send-it
-;;   send-mail-funtion 'smtpmail-send-it
-;;   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-;;   ;smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
-;;   smtpmail-auth-credentials '(("smtp.gmail.com" 587 user-mail-address nil))
-;;   smtpmail-default-smtp-server "smtp.gmail.com"
-;;   smtpmail-smtp-server "smtp.gmail.com"
-;;   smtpmail-smtp-service 587
-;;   smtpmail-debug-info t)
-;;
 (use-package message
   :bind (:map message-mode-map
               ( "\t"  . bbdb-complete-mail ))
@@ -236,8 +222,17 @@
    message-citation-line-function 'message-insert-formatted-citation-line
    message-send-mail-function 'message-send-mail-with-sendmail
    sendmail-program "/usr/bin/msmtp"
-   smtpmail-use-starttls t
-   )
+   smtpmail-use-starttls t)
+  ;;(setq message-send-mail-function 'smtpmail-send-it
+  ;;      ;;smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+  ;;      ;;smtpmail-auth-credentials '(("smtp.gmail.com" 587 "email@example.com" nil))
+  ;;      ;;smtpmail-default-smtp-server "smtp.gmail.com"
+  ;;      ;;smtpmail-smtp-server "smtp.gmail.com"
+  ;;      ;;smtpmail-smtp-service 587
+  ;;      ;;starttls-gnutls-program "/usr/local/bin/gnutls-cli"
+  ;;      ;;starttls-extra-arguments nil
+  ;;      ;;starttls-use-gnutls t
+  ;;      )
   :config
   (add-hook 'message-mode-hook
             (lambda ()
