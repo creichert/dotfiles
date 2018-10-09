@@ -72,6 +72,9 @@
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
 
+        ;;gnus-list-groups-with-ticked-articles nil
+        gnus-group-list-inactive-groups nil ;; list-groups-with-ticked-articles nil
+
         gnus-default-charset 'utf-8
         gnus-default-posting-charset 'utf-8
 
@@ -112,11 +115,21 @@
         ;;gnus-score-find-score-files-function
         ;;'(gnus-score-find-bnews.span class=compcode>bbdb/gnus-score)
 
-
         ;;gnus-treat-highlight-signature 'last
         ;;gnus-list-groups-with-ticked-articles nil
-        )
 
+        ;;gnus-cloud-synced-files
+        ;;'("~/.authinfo.gpg"
+        ;;  "~/.gnus"
+        ;;  "~/.emacs.d/bbdb"
+        ;;  ;;"~/.emacs.d/gnus/*"
+        ;;  ;;"~/.emacs.d/gnus/*"
+        ;;  ;;(:directory "~/Mail" :match ".*")
+        ;;  ;;(:directory "~/emacs.d/gnus" :match ".*")
+        ;;  (:directory "~/org" :match ".*.org\\'")
+        ;;  (:directory "~/org" :match ".*.org_archive\\'")
+        ;;  ))
+        )
   :init
 
   ;; (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
@@ -179,18 +192,72 @@
   :hook ((gnus-group-mode . gnus-topic-mode))
   :bind (:map gnus-topic-mode-map
               ("?\t" . gnus-topic-select-group))
-
   :init
   ;;(setq-default gnus-topic-display-empty-topics t)
   (setq-default gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
-  (setq-default gnus-subscribe-newsgroup-method         'gnus-subscribe-topics)
-  )
+  (setq-default gnus-subscribe-newsgroup-method         'gnus-subscribe-topics))
 
+
+;; Outgoing messages sent via msmtp (config in ~/.msmptrc)
+(use-package message
+  :bind (:map message-mode-map
+              ( "\t"  . bbdb-complete-mail ))
+  :init
+  (setq
+   vc-follow-symlinks t
+   ;; message-sendmail-f-is-evil nil
+   mail-envelope-from 'header
+   mail-specify-envelope-from 'header
+   message-send-mail-function 'message-send-mail-with-sendmail
+   message-kill-buffer-on-exit t
+
+   message-confirm-send t
+   ;; Default citation. I prefer inline, but gmail and it's users prefer
+   ;; citation above for most replies.
+   message-citation-line-function 'message-insert-formatted-citation-line
+   message-send-mail-function 'message-send-mail-with-sendmail
+   ;; Use the "From" field to determine the sender.
+   message-sendmail-envelope-from 'header
+   mail-specify-envelope-from 'header)
+
+  ;; Message settings
+  (setq sendmail-program "/usr/bin/msmtp")
+
+  ;;(setq message-send-mail-function 'smtpmail-send-it
+  ;;      send-mail-function 'smtpmail-send-it
+  ;;      smtpmail-debug-info t
+  ;;      smtpmail-debug-verb t
+  ;;      message-alternative-emails nil
+  ;;      smtpmail-auth-credentials '(password-store)
+  ;;      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "email@example.com" nil))
+  ;;      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+  ;;      smtpmail-default-smtp-server "smtp.gmail.com"
+  ;;      smtpmail-smtp-server "smtp.gmail.com"
+  ;;      smtpmail-smtp-service 587
+  ;;      starttls-gnutls-program "/usr/local/bin/gnutls-cli"
+  ;;      starttls-extra-arguments nil
+  ;;      starttls-use-gnutls t
+  ;;      smtpmail-use-starttls t)
+
+  :config
+  (add-hook 'message-mode-hook
+            (lambda ()
+              (flyspell-mode 1)))
+
+  (unless (boundp 'message-fill-column)
+    (add-hook 'message-mode-hook
+              (lambda ()
+                (setq fill-column 100)
+                (turn-on-auto-fill)))))
 
 (use-package mml
   :hook ((gnus-message-setup . mml-secure-message-sign-pgpmime))
   :init
   (setq
+   ;; mime-edit-pgp-signers '("C84EF897")
+   ;; mime-edit-pgp-encrypt-to-self t
+   ;; mml2015-encrypt-to-self t
+   ;; mml2015-sign-with-sender t
    ;; You need to replace this key ID with your own key ID!
    mml-secure-openpgp-signers '("ACBE1F5C")
    ;; We want to be able to read the emails we wrote.
@@ -209,40 +276,38 @@
         mm-decrypt-option 'always
         mm-verify-option 'always))
 
-;; Outgoing messages sent via msmtp (config in ~/.msmptrc)
-(use-package message
-  :bind (:map message-mode-map
-              ( "\t"  . bbdb-complete-mail ))
+(use-package gnus-icalendar
+  :requires (gnus)
   :init
-  (setq vc-follow-symlinks t)
-  ;; Message settings
-  (setq
-   ;; Add date to reply & quote
-   message-confirm-send t
-   message-citation-line-function 'message-insert-formatted-citation-line
-   message-send-mail-function 'message-send-mail-with-sendmail
-   sendmail-program "/usr/bin/msmtp"
-   smtpmail-use-starttls t)
-  ;;(setq message-send-mail-function 'smtpmail-send-it
-  ;;      ;;smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-  ;;      ;;smtpmail-auth-credentials '(("smtp.gmail.com" 587 "email@example.com" nil))
-  ;;      ;;smtpmail-default-smtp-server "smtp.gmail.com"
-  ;;      ;;smtpmail-smtp-server "smtp.gmail.com"
-  ;;      ;;smtpmail-smtp-service 587
-  ;;      ;;starttls-gnutls-program "/usr/local/bin/gnutls-cli"
-  ;;      ;;starttls-extra-arguments nil
-  ;;      ;;starttls-use-gnutls t
-  ;;      )
+  (setq gnus-icalendar-org-capture-file "~/org/cal.org")
+  (setq gnus-icalendar-org-capture-headline '("Calendar"))
   :config
-  (add-hook 'message-mode-hook
-            (lambda ()
-              (flyspell-mode 1)))
+  (require 'org-agenda)
+  (gnus-icalendar-setup)
+  (gnus-icalendar-org-setup))
 
-  (unless (boundp 'message-fill-column)
-    (add-hook 'message-mode-hook
-              (lambda ()
-                (setq fill-column 100)
-                (turn-on-auto-fill)))))
+(use-package bbdb
+  :ensure t
+  :defer
+  :commands (bbdb)
+
+  :bind (:map bbdb-mode-map
+         ( "\t"  . bbdb-complete-mail ))
+
+  :init
+  (setq bbdb-mua-update-interactive-p '(query . create))
+  (setq bbdb-message-all-addresses t)
+  ;; 2000 is the default value which is added to a message's score if the
+  ;; message is from a person in the BBDB database.
+  (setq bbdb-complete-mail-allow-cycling t)
+  (setq bbdb/gnus-score-default 2000)
+
+  :config
+  (evil-define-key 'motion bbdb-mode-map
+    "\C-k"       'bbdb-delete-field-or-record
+    "\C-x \C-s"   'bbdb-save)
+  (bbdb-initialize 'gnus 'message)
+  (bbdb-mua-auto-update-init 'gnus 'message)) ;; use 'gnus for incoming messages too
 
 
 ;;; .gnus ends here
