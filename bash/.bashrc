@@ -20,15 +20,17 @@ set -o vi
 shopt -s histappend
 shopt -s checkwinsize
 
-export ALTERNATE_EDITOR="emacsclient -t -nw"
-export EDITOR="emacsclient -t -nw"
-export GIT_EDITOR="emacsclient -t -nw"
-export SYSTEMD_EDITOR="emacsclient -t -nw"
+#export EDITOR="emacsclient -t -nw"
+export EDITOR=emacs
+
+export ALTERNATE_EDITOR=$EDITOR
+export GIT_EDITOR=$EDITOR
+export SYSTEMD_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 
 export BROWSER=chromium
-export TERM=xterm
-export GPG_TTY=$(tty)
+#export TERM=xterm
+#export GPG_TTY=$(tty)
 
 HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
 HISTFILESIZE=1000000
@@ -42,7 +44,6 @@ PS1_DIR='\[[0;35m\]\w\[[00m\]\[[1;30m\]\[[0;37m\]'
 PS1_GITBRANCH='`__git_ps1 " (%s)"`\[[00m\]\[[0;37m\]'
 PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
-export NIL_UUID=00000000-0000-0000-0000-000000000000
 
 # use node/npm using nvm by default
 bootstrap_lang node
