@@ -14,25 +14,6 @@
   (([f11] . gif-screencast)
    ([f12] . gif-screencast-stop)))
 
-
-(use-package password-store
-  :defer
-  :ensure t)
-
-
-(use-package magit-gh-pulls
-  :ensure t
-  :hook (magit-status-mode . magit-gh-pulls-mode)
-  :init
-  (setq magit-gh-pulls-pull-detail-limit 30)
-  (setq magit-gh-pulls-status-documentation t))
-
-
-(use-package github-clone
-  :defer
-  :ensure t)
-
-
 (use-package term
   :commands (make-term term ssh-shell)
   :config
@@ -49,6 +30,19 @@
     (defun ssh-shell (host)
       (interactive "sHost: \n")
       (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
+
+
+(use-package magit-gh-pulls
+  :ensure t
+  :hook (magit-status-mode . magit-gh-pulls-mode)
+  :init
+  (setq magit-gh-pulls-pull-detail-limit 30)
+  (setq magit-gh-pulls-status-documentation t))
+
+
+(use-package github-clone
+  :defer
+  :ensure t)
 
 
 (provide 'extra)

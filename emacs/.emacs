@@ -36,6 +36,8 @@
 ;;
 ;;(use-package linum
 ;;  :config (global-linum-mode -1))
+(use-package paren
+  :hook ((prog-mode . show-paren-mode)))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (setq inhibit-startup-screen t)
@@ -103,11 +105,10 @@
    read-mail-command 'gnus))
 
 
-;; minibuffer history
+;; history
 ;;
 (use-package savehist
   :init
-  (setq history-length t)
   (setq history-delete-duplicates t)
   (setq savehist-save-minibuffer-history t)
   (setq savehist-additional-variables
@@ -116,7 +117,8 @@
           search-ring
           regexp-search-ring))
 
-  :config (savehist-mode 1))
+  :config
+  (savehist-mode 1))
 
 
 (use-package ido
@@ -333,6 +335,7 @@
   :hook
   ((with-editor-mode . evil-insert-state))
   ((with-presentation-mode . evil-insert-state))
+  ((archive-mode-hook . evil-motion-state))
 
   :init
   (setq evil-default-state 'normal)
@@ -836,13 +839,13 @@
          ( "\t"  . bbdb-complete-mail ))
 
   :init
-  (bbdb-initialize 'gnus 'message)
   (bbdb-mua-auto-update-init 'gnus 'message 'mail)
+  (bbdb-initialize 'gnus 'message)
   (setq bbdb-mua-update-interactive-p '(query . create))
   (setq bbdb-message-all-addresses t)
+  (setq bbdb-complete-mail-allow-cycling t)
   ;; 2000 is the default value which is added to a message's score if the
   ;; message is from a person in the BBDB database.
-  (setq bbdb-complete-mail-allow-cycling t)
   (setq bbdb/gnus-score-default 2000)
 
   :config
