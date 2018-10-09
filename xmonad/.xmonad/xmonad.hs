@@ -14,10 +14,10 @@ import XMonad.StackSet as W
 
 -- XMonad contrib
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.FloatNext
 import XMonad.Hooks.ManageDocks
 import XMonad.Layout.NoBorders
 import XMonad.Prompt
+import XMonad.Prompt.Man
 import XMonad.Prompt.Pass
 import XMonad.Prompt.Ssh
 import XMonad.Util.Loggers
@@ -83,18 +83,16 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
         , ((modm, 0x1008ff11), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
         , ((modm, 0x1008ff13), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
 
-        -- quick emacs access
         , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
         , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
-        -- pass
-        , ((modm .|. shiftMask, xK_w), passPrompt xpCfg )
-        , ((modm .|. shiftMask, xK_s), sshPrompt xpCfg)
-        -- scratchpads
-        , ((modm .|. shiftMask, xK_j),  namedScratchpadAction scratchpads "terminal2")
-        , ((modm .|. shiftMask, xK_r),  namedScratchpadAction scratchpads "psql")
 
-        , ((modm, xK_j),  namedScratchpadAction scratchpads "terminal")
-        , ((modm, xK_k),  namedScratchpadAction scratchpads "emacs")
+        , ((modm, xK_apostrophe),      passPrompt xpCfg)
+        , ((modm, xK_s),               sshPrompt xpCfg)
+        , ((modm .|. shiftMask, xK_m), manPrompt xpCfg)
+
+        , ((modm, xK_r),  namedScratchpadAction scratchpads "psql")
+        , ((modm, xK_k),  namedScratchpadAction scratchpads "terminal")
+        , ((modm, xK_j),  namedScratchpadAction scratchpads "emacs")
         , ((modm, xK_o),  namedScratchpadAction scratchpads "spotify")
         , ((modm, xK_m),  namedScratchpadAction scratchpads "gnus")
         , ((modm, xK_g),  namedScratchpadAction scratchpads "ghci")
@@ -114,13 +112,10 @@ screenshotRegion = L.intercalate ";" [
 scratchpads :: [NamedScratchpad]
 scratchpads = [
       NS "terminal" "xterm -T terminal" (title =? "terminal")
-          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
-
-    , NS "terminal2" "xterm -T terminal2" (title =? "terminal2")
-          (customFloating $ W.RationalRect (1/10) (1/5) (3/4) (6/10))
+          (customFloating $ W.RationalRect (1/10) (1/6) (12/15) (2/3))
 
     , NS "emacs" "emacs --title org" (title =? "org")
-          (customFloating $ W.RationalRect (1/20) (1/20) (19/20) (19/20))
+          (customFloating $ W.RationalRect (1/8) (1/8) (7/9) (4/5))
 
     , NS "ghci" "xterm -title ghci -e stack exec ghci" (title =? "ghci")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
@@ -128,7 +123,8 @@ scratchpads = [
     , NS "psql" "xterm -title psql -e sudo su postgres -c psql" (title =? "psql")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
 
-    , NS "gnus" "emacs-gtk -f gnus --title mail" (title =? "mail")
+    --, NS "gnus" "~/dev/emacs/src/emacs -f gnus --title mail" (title =? "mail")
+    , NS "gnus" "emacs -f gnus --title mail" (title =? "mail")
           (customFloating $ W.RationalRect (1/20) (1/20) (17/20) (17/20))
 
     , NS "spotify" "spotify" (className =? "Spotify")
