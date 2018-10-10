@@ -102,6 +102,7 @@ submodules:
 
 dotemacs:
 	@emacs --batch --debug-init										\
+		--eval='(package-refresh-contents)'								\
 		--eval='(setq use-package-verbose t)'								\
 		--eval='(load "~/.emacs")'									\
 		--eval='(use-package-report)'									\
