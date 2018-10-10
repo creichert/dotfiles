@@ -115,4 +115,4 @@ elpa:
 
 emacsdaemon:
 	-emacsclient -e '(kill-emacs)'
-	emacs --daemon --eval '(use-package org-protocol :demand t)'
+	emacs --daemon
