@@ -77,9 +77,11 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
         , ((modm, xK_p), spawn "dmenu_run_history -nb '#3b3228' -nf '#d0c8c6' -fn 'monofur-11'")
 
         -- audio (amixer & mpris)
+        , ((0, 0x1008ff12), spawn "amixer set Master toggle")
+        , ((modm, 0x1008ff12), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
+
         , ((0, 0x1008ff11), spawn "amixer -c 0 set 'Master,0' 5%- > /dev/null")
         , ((0, 0x1008ff13), spawn "amixer -c 0 set Master 5%+ unmute > /dev/null")
-        , ((0, 0x1008ff12), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
         , ((modm, 0x1008ff11), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
         , ((modm, 0x1008ff13), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
 
