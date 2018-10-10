@@ -30,7 +30,7 @@ export VISUAL=$EDITOR
 
 export BROWSER=chromium
 #export TERM=xterm
-#export GPG_TTY=$(tty)
+export GPG_TTY=$(tty)
 
 HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
 HISTFILESIZE=1000000
