@@ -203,25 +203,26 @@
   :bind (:map message-mode-map
               ( "\t"  . bbdb-complete-mail ))
   :init
+  (setq vc-follow-symlinks t)
+  (setq sendmail-program "/usr/bin/msmtp")
   (setq
-   vc-follow-symlinks t
+   message-confirm-send t
+
    ;; message-sendmail-f-is-evil nil
    mail-envelope-from 'header
    mail-specify-envelope-from 'header
    message-send-mail-function 'message-send-mail-with-sendmail
    message-kill-buffer-on-exit t
 
-   message-confirm-send t
    ;; Default citation. I prefer inline, but gmail and it's users prefer
    ;; citation above for most replies.
-   message-citation-line-function 'message-insert-formatted-citation-line
-   message-send-mail-function 'message-send-mail-with-sendmail
+   ;; message-citation-line-function 'message-insert-formatted-citation-line
+
    ;; Use the "From" field to determine the sender.
    message-sendmail-envelope-from 'header
    mail-specify-envelope-from 'header)
 
   ;; Message settings
-  (setq sendmail-program "/usr/bin/msmtp")
 
   ;;(setq message-send-mail-function 'smtpmail-send-it
   ;;      send-mail-function 'smtpmail-send-it
