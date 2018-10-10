@@ -46,11 +46,13 @@
 
 (use-package auth-source-pass
   :ensure t
+  :defer
   :config
   (auth-source-pass-enable))
 
 
 (use-package alert
+  :defer
   :ensure t)
 
 
@@ -69,7 +71,7 @@
     (erc-spelling-mode 1))
 
   :custom
-  (erc-user-full-name "creichert"
+  (erc-user-full-name "creichert")
   (erc-autojoin-timing 'ident)
   (erc-nick-uniquifier "_")
   (erc-server-auto-reconnect t)

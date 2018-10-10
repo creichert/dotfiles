@@ -830,26 +830,23 @@
 
 (use-package bbdb
   :ensure t
-  :defer
   :commands (bbdb)
 
   :bind (:map bbdb-mode-map
          ( "\t"  . bbdb-complete-mail ))
 
-  :init
-  (bbdb-mua-auto-update-init 'gnus 'message 'mail)
-  (bbdb-initialize 'gnus 'message)
-  (setq bbdb-mua-update-interactive-p '(query . create))
-  (setq bbdb-message-all-addresses t)
-  (setq bbdb-complete-mail-allow-cycling t)
+  :custom
+  (bbdb-mua-update-interactive-p '(query . create))
+  (bbdb-message-all-addresses t)
+  (bbdb-complete-mail-allow-cycling t)
   ;; 2000 is the default value which is added to a message's score if the
   ;; message is from a person in the BBDB database.
-  (setq bbdb/gnus-score-default 2000)
+  (bbdb/gnus-score-default 2000)
 
   :config
   (evil-define-key 'motion bbdb-mode-map
-    "\C-k"       'bbdb-delete-field-or-record
-    "\C-x \C-s"   'bbdb-save)
+    "\C-k"         'bbdb-delete-field-or-record
+    "\C-x \C-s"    'bbdb-save)
   (bbdb-initialize 'gnus 'message)
   (bbdb-mua-auto-update-init 'message)) ;; use 'gnus for incoming messages too
 
