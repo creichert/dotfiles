@@ -101,13 +101,14 @@
    "\\([-a-zA-Z0-9_=!?#$@~`%&*+\\/:;,]+\\.\\)+[-a-zA-Z0-9_=!?#$@~`%&*+\\/:;,]*[-a-zA-Z0-9\\/]"
    erc-autojoin-channels-alist
    '((".*\\.freenode.net"
-      "#haskell"
-      "#emacs"
-      "#debian"
-      "#gnus"
       "#hlug"
-      "#xmonad"
-      "#yesod")))
+      ;;"#haskell"
+      ;;"#emacs"
+      ;;"#debian"
+      ;;"#gnus"
+      ;;"#xmonad"
+      ;;"#yesod"
+      )))
   )
 
 

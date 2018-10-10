@@ -175,11 +175,11 @@
 (use-package ido-completing-read+
   :ensure t
   :requires (ido)
+  :config
+  (ido-ubiquitous-mode t)
   :init
   (setq completing-read-function 'ido-completing-read+
-        ido-cr+-max-items nil)
-  :config
-  (ido-ubiquitous-mode t))
+        ido-cr+-max-items nil))
 
 
 (use-package projectile
