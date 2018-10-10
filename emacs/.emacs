@@ -478,6 +478,7 @@
           ("gmail.com" . browse-url-chromium)
           ("aws.amazon.com" . browse-url-chromium)
           ("youtube.com" . browse-url-chromium)
+          ("facebook.com" . browse-url-chromium)
           ("docusign.com\\|docusign.net" . browse-url-chromium)
           ("." . w3m-browse-url))))
 
@@ -680,13 +681,10 @@
                            )))
 
 
-
 (use-package sql
   :defer
-  :init
-  ;;(setq sql-postgres-options '("--no-psqlrc"))
-  ;;(setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
-  (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] "))
+  :config
+  (add-to-list sql-postgres-options '("--no-psqlrc")))
 
 
 (use-package sh
