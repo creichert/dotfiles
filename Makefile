@@ -101,7 +101,7 @@ submodules:
 ## Emacs recipes
 
 dotemacs:
-	@time --portability emacs --batch --debug-init										\
+	@emacs --batch --debug-init										\
 		--eval='(setq use-package-verbose t)'								\
 		--eval='(load "~/.emacs")'									\
 		--eval='(use-package-report)'									\
