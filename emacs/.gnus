@@ -155,21 +155,21 @@
                  (vertical 33 (group 1.0))
                  (vertical 1.0 (summary 1.0 point)))))
 
-
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
   ((gnus-after-exiting-gnus . kill-emacs))
   ;;((gnus-summary-exit       . gnus-summary-bubble-group))
-
-
-  ((gnus-startup . (lambda ()
-                     (split-window-horizontally)
-                     (next-multiframe-window)
-                     (info "Gnus")
-                     ;; assuming f10 is bound to (jump-to-register 9) in .emacs,
-                     ;; use [f10] to restore original {group|info} frames.
-                     (window-configuration-to-register 9))))
-  ;; (set-face-attribute 'gnus-group-mail-1 t :foreground (x-get-resource "color2" ""))
+  ;;startup gnus docs when gnus starts
+  ;;((gnus-startup . (lambda ()
+  ;;                   (split-window-horizontally)
+  ;;                   (next-multiframe-window)
+  ;;                   (info "Gnus")
+  ;;                   ;; assuming f10 is bound to (jump-to-register 9) in .emacs,
+  ;;                   ;; use [f10] to restore original {group|info} frames.
+  ;;                   (window-configuration-to-register 9))))
+  ;;
+  ;;(set-face-attribute 'gnus-group-mail-1 t
+  ;;                    :foreground (x-get-resource "color2" ""))
   ;;:custom-face
   ;;(gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
   )

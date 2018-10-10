@@ -467,6 +467,7 @@
 (use-package w3m
  :ensure t
  :commands (w3m-browse-url w3m-find-file)
+ ;;:ensure-system-package ("w3m")
  :init (setq
         browse-url-browser-function
         '(("github.com" . browse-url-chromium)
@@ -525,12 +526,12 @@
   :requires (magit evil)
 
   :bind (:map evil-normal-state-map
-              ( "\\" . smex)
+              ("\\" . smex)
               :map evil-insert-state-map
-              ( "C-\\" . smex)
+              ("C-\\" . smex)
               :map magit-status-mode-map
-              ( "\\" . smex)
-              ( "C-\\" . smex))
+              ("\\" . smex)
+              ("C-\\" . smex))
 
   :config
   (evil-define-key evil-magit-state magit-mode-map
@@ -565,44 +566,43 @@
               ("C-c I"   . haskell-navigate-imports-return)
               ("C-c C-j" . haskell-run-function-under-cursor))
 
-  :init
-  (setq haskell-process-args-stack-ghci '("--ghci-options=-O0"))
-  (setq haskell-stylish-on-save t
-
-        ;;haskell-process-suggest-hoogle-imports t
-        haskell-process-suggest-haskell-docs-imports t
-        haskell-process-suggest-remove-import-lines t
-        ;;haskell-process-suggest-restart nil
-
-        ;;haskell-interactive-mode-eval-mode t
-        ;; this is set automatically when there is a `stack.yaml`
-        ;; haskell-process-type 'stack-ghci
-        ;; print type info to presentation-mode instead
-        ;; of message area.
-        ;; haskell-process-use-presentation-mode t
-        ;;
-        ;; bytecode takes up more memory than object code.
-        ;; enable
-        ;; haskell-process-reload-with-fbytecode nil
-        ;;
-        ;; experimenting with brittany
-        ;; haskell-mode-stylish-haskell-path "brittany"
-        ;;
-        ;; only needed if having issues
-        ;; haskell-process-log t
-        ;; haskell-font-lock-quasi-quote-modes
-        ;; (append '(("yamlQQ" . yaml-mode) ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
-        haskell-indentation-layout-offset 4
-        haskell-indentation-left-offset 4
-        ;;haskell-indentation-starter-offset 4
-        )
+  :custom
+  (haskell-indentation-electric-flag t)
+  (haskell-process-args-stack-ghci '("--ghci-options=-O0"))
+  (haskell-process-suggest-haskell-docs-imports t)
+  (haskell-process-suggest-restart nil)
+  ;;(haskell-process-suggest-hoogle-imports t)
+  (haskell-process-suggest-remove-import-lines t)
+  (haskell-indentation-layout-offset 4)
+  (haskell-indentation-left-offset 4)
+  (haskell-stylish-on-save t)
+  ;;haskell-interactive-mode-eval-mode t
+  ;; this is set automatically when there is a `stack.yaml`
+  ;; haskell-process-type 'stack-ghci
+  ;; print type info to presentation-mode instead
+  ;; of message area.
+  ;; haskell-process-use-presentation-mode t
+  ;;
+  ;; bytecode takes up more memory than object code.
+  ;; enable
+  ;; haskell-process-reload-with-fbytecode nil
+  ;;
+  ;; experimenting with brittany
+  ;; haskell-mode-stylish-haskell-path "brittany"
+  ;;
+  ;; only needed if having issues
+  ;; haskell-process-log t
+  ;; haskell-font-lock-quasi-quote-modes
+  ;; (append '(("yamlQQ" . yaml-mode) ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
+  ;;haskell-indentation-starter-offset 4
 
   :hook ((haskell-mode . haskell-doc-mode))
-        ((haskell-mode . haskell-collapse-mode))
-        ((haskell-mode . haskell-decl-scan-mode))
-        ((haskell-mode . haskell-indentation-mode))
-        ((haskell-mode . electric-pair-local-mode))
-        ((haskell-mode . electric-indent-local-mode))
+  ((haskell-mode . haskell-collapse-mode))
+  ((haskell-mode . haskell-decl-scan-mode))
+  ((haskell-mode . haskell-indentation-mode))
+  ((haskell-mode . electric-pair-local-mode))
+  ((haskell-mode . electric-indent-local-mode))
+  ((haskell-mode . electric-layout-mode))
 
   :config
 
@@ -622,7 +622,10 @@
     "TAB" 'haskell-hide-toggle
     "l" 'haskell-process-load-or-reload)
 
-  (setq electric-layout-rules '((?\{) (?\} . around))))
+  (add-to-list 'electric-layout-rules
+               '((?\{) (?\} . around)))
+  (add-to-list 'electric-layout-rules
+               '((?\[) (?\] . around))))
 
 
 (use-package hindent
@@ -634,7 +637,7 @@
 (use-package flycheck-haskell
   :ensure t
   :after (flycheck haskell-mode)
-  :init (setq flycheck-ghc-args '("-Wall"))
+  :custom (flycheck-ghc-args '("-Wall"))
   :hook ((haskell-mode . flycheck-haskell-setup)))
 
 
@@ -736,29 +739,30 @@
         gnus-directory               "~/.emacs.d/gnus/"
         read-mail-command 'gnus-user-agent))
 
+
 (use-package mm-decode
-  :defer t
-  :init
-  (setq
-   mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8)
-   mm-verify-option 'always
-   mm-decrypt-option 'always))
+  :custom
+   (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
+   (mm-verify-option 'always)
+   (mm-decrypt-option 'always))
+
 
 (use-package epa
   :defer t
   :init
   (setq epa-pinentry-mode 'loopback))
 
-(use-package org
 
+(use-package org
   :defer t
   :bind (([f6]   . org-capture)
          ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
          ([f8]   . org-agenda)
          ([C-f8] . org-agenda-kill-all-agenda-buffers)
-         ("C-c C-/" . org-toggle-timestamp-type))
-
+         ("C-c C-/" . org-toggle-timestamp-type)
+         :map org-agenda-mode-map
+         ("\\"   . smex))
 
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
@@ -770,9 +774,9 @@
           (js . t)
           (haskell . t)
           (sqlite . t)
+          (sql . t)
           (makefile . t)
           (scheme . t)
-          (sql . t)
           (C . t)
           (sh . t)))
 
