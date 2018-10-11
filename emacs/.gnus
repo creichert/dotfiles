@@ -307,8 +307,7 @@
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"       'bbdb-delete-field-or-record
     "\C-x \C-s"   'bbdb-save)
-  (bbdb-initialize 'gnus 'message)
+  (bbdb-initialize 'gnus 'message 'pgp)
   (bbdb-mua-auto-update-init 'gnus 'message)) ;; use 'gnus for incoming messages too
-
 
 ;;; .gnus ends here

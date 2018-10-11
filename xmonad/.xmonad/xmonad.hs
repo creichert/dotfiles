@@ -85,7 +85,7 @@ newKeys xPCfg x = keys' x `Map.union` keys def x
         , ((modm, 0x1008ff11), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
         , ((modm, 0x1008ff13), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
 
-        , ((modm .|. shiftMask, xK_F1), spawn "export GDK_SCALE=2; export GDK_DPI_SCALE=0.5; emacs -fs")
+        , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
         , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
 
         , ((modm, xK_apostrophe),      passPrompt xpCfg)

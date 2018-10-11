@@ -39,6 +39,10 @@
 (use-package paren
   :hook ((prog-mode . show-paren-mode)))
 
+(use-package help
+  :custom
+  (help-window-select t))
+
 (setq custom-file "~/.emacs.d/custom.el")
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message (format ";; startup took %s\n\n" (emacs-init-time)))
@@ -350,8 +354,7 @@
           '("magit-.*-mode"
             "*Messages*"
             "gnus-.*-mode"))
-    (global-evil-leader-mode 1)
-    )
+    (global-evil-leader-mode 1))
   (evil-mode 1)
 
   ;; vim-like bindings in the minibuffer
@@ -480,6 +483,7 @@
           ("aws.amazon.com" . browse-url-chromium)
           ("youtube.com" . browse-url-chromium)
           ("facebook.com" . browse-url-chromium)
+          ("upwork.com" . browse-url-chromium)
           ("docusign.com\\|docusign.net" . browse-url-chromium)
           ("." . w3m-browse-url))))
 
@@ -495,6 +499,7 @@
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
   (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
   (evil-add-hjkl-bindings magit-diff-mode-map 'emacs)
+  ;; (evil-set-initial-state 'special-mode 'emacs)
   (evil-add-hjkl-bindings magit-branch-manager-mode-map 'emacs
     "K" 'magit-discard
     "L" 'magit-key-mode-popup-logging)
@@ -559,6 +564,7 @@
   ("runhaskell" . haskell-mode)
   :bind (:map haskell-mode-map
               ("C-c C-t" . haskell-process-do-type)
+              ("C-c C-c C-t" . haskell-session-change-target)
               ("C-c C-i" . haskell-process-do-info)
               ("C-c C-;" . haskell-process-load-file)
               ("C-c C-l" . haskell-process-reload)
@@ -567,12 +573,12 @@
               ("C-c C-j" . haskell-run-function-under-cursor))
 
   :custom
-  (haskell-indentation-electric-flag t)
+  ;;(haskell-indentation-electric-flag t)
   (haskell-process-args-stack-ghci '("--ghci-options=-O0"))
-  (haskell-process-suggest-haskell-docs-imports t)
-  (haskell-process-suggest-restart nil)
+  ;;(haskell-process-suggest-haskell-docs-imports t)
+  ;;(haskell-process-suggest-restart nil)
   ;;(haskell-process-suggest-hoogle-imports t)
-  (haskell-process-suggest-remove-import-lines t)
+  ;;(haskell-process-suggest-remove-import-lines t)
   (haskell-indentation-layout-offset 4)
   (haskell-indentation-left-offset 4)
   (haskell-stylish-on-save t)
@@ -596,7 +602,8 @@
   ;; (append '(("yamlQQ" . yaml-mode) ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
   ;;haskell-indentation-starter-offset 4
 
-  :hook ((haskell-mode . haskell-doc-mode))
+  :hook
+  ((haskell-mode . haskell-doc-mode))
   ((haskell-mode . haskell-collapse-mode))
   ((haskell-mode . haskell-decl-scan-mode))
   ((haskell-mode . haskell-indentation-mode))
@@ -604,8 +611,7 @@
   ((haskell-mode . electric-indent-local-mode))
   ((haskell-mode . electric-layout-mode))
 
-  :config
-
+  :preface
   ;; https://gist.github.com/989ad8be92f68682abff
   (defun haskell-run-function-under-cursor ()
     "Send the word-at-point as a function to GHCi process."
@@ -614,6 +620,10 @@
     (haskell-process-send-string
      (haskell-session-process (haskell-session-maybe))
      (format "%s" (word-at-point))))
+
+  :config
+  (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
+  (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
 
   (evil-leader/set-key-for-mode 'haskell-mode
     "hir" 'hindent-reformat-region
@@ -687,7 +697,7 @@
 (use-package sql
   :defer
   :config
-  (add-to-list sql-postgres-options '("--no-psqlrc")))
+  (add-to-list 'sql-postgres-options "--no-psqlrc"))
 
 
 (use-package sh
@@ -778,7 +788,10 @@
           (makefile . t)
           (scheme . t)
           (C . t)
-          (sh . t)))
+          (ledger . t)
+          (shell . t)
+          ;;(sh . t)
+          ))
 
   :init
   (setq
@@ -840,19 +853,15 @@
          ( "\t"  . bbdb-complete-mail ))
 
   :custom
-  (bbdb-mua-update-interactive-p '(query . create))
   (bbdb-message-all-addresses t)
   (bbdb-complete-mail-allow-cycling t)
-  ;; 2000 is the default value which is added to a message's score if the
-  ;; message is from a person in the BBDB database.
-  (bbdb/gnus-score-default 2000)
 
   :config
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"         'bbdb-delete-field-or-record
     "\C-x \C-s"    'bbdb-save)
-  (bbdb-initialize 'gnus 'message)
-  (bbdb-mua-auto-update-init 'message)) ;; use 'gnus for incoming messages too
+  (bbdb-initialize 'gnus 'message 'pgp 'anniv)
+  (bbdb-mua-auto-update-init 'gnus 'message))
 
 
 (add-to-list 'default-frame-alist '(font . "monofur 12"))

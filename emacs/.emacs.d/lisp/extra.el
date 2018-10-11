@@ -56,42 +56,65 @@
   :ensure t)
 
 
+(use-package org-gcal
+  :after (auth-source-pass)
+  :ensure t
+  :commands (org-gcal-fetch org-gcal-sync)
+  :defer
+  :config
+  (setq org-gcal-client-id (auth-source-pass-get "user" "developers.google.com/org-gcal")
+        org-gcal-file-alist '(("creichert07@gmail.com" . "~/org/cal.org"))
+        org-gcal-client-secret (auth-source-pass-get 'secret "developers.google.com/org-gcal")))
+
+
 (use-package erc
+  :requires (auth-source-pass)
   :commands (erc)
   :defer
   :hook
   ((erc-mode . erc-spelling-mode)
+   ;; (erc-mode . erc-track-mode)
    (erc-mode . (lambda ()
                  (set (make-local-variable 'scroll-conservatively) 100))))
 
-  :preface
-  (defun erc-start ()
-    (interactive)
-    (erc-tls :server "irc.freenode.net" :port 6697 :nick "creichert")
-    (erc-spelling-mode 1))
 
   :custom
   (erc-user-full-name "creichert")
-  (erc-autojoin-timing 'ident)
   (erc-nick-uniquifier "_")
+  (erc-autojoin-timing 'ident)
   (erc-server-auto-reconnect t)
   (erc-prompt-for-nickserv-password nil)
   (erc-hide-list '("JOIN" "PART" "QUIT"))
 
+  :preface
+  (defun erc-creichert ()
+    (interactive)
+    (erc-tls :server "irc.freenode.net" :port 6697 :nick "creichert"))
+
+  :config
+  (erc-track-minor-mode 1)
+  (erc-track-mode 1)
+
   :init
   (setq
    erc-log-channels-directory "~/.emacs.d/erc/logs/"
+   ;; erc-log-write-after-insert t
+
    erc-auto-discard-away t
    erc-input-line-position -2
+
    ;;Kill buffers for channels after /part
-   erc-kill-buffer-on-part t
-   erc-save-buffer-on-part t
+   ;;erc-kill-buffer-on-part t
+
    ;;Kill buffers for private queries after quitting the server
-   erc-kill-queries-on-quit t
+   ;;erc-kill-queries-on-quit t
+
    ;;Kill buffers for server messages after quitting the server
-   erc-kill-server-buffer-on-quit t
+   ;;erc-kill-server-buffer-on-quit t
+
    ;; utf-8 always and forever
    erc-server-coding-system '(utf-8 . utf-8)
+
    ;;TEST: Interpret mIRC-style color commands in IRC chats
    erc-interpret-mirc-color t
    ;;If someone sends a /notice don't just show it in the server buffer,
@@ -101,7 +124,7 @@
    "\\([-a-zA-Z0-9_=!?#$@~`%&*+\\/:;,]+\\.\\)+[-a-zA-Z0-9_=!?#$@~`%&*+\\/:;,]*[-a-zA-Z0-9\\/]"
    erc-autojoin-channels-alist
    '((".*\\.freenode.net"
-      "#hlug"
+      ;;"#hlug"
       ;;"#haskell"
       ;;"#emacs"
       ;;"#debian"
