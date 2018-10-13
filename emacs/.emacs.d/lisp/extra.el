@@ -146,9 +146,9 @@
   )
 
 
-(use-package noflet :ensure t
+(use-package noflet
+  :ensure t
   :disabled)
-
 (use-package kill-ring-ido
   :disabled
   :requires (ido noflet)
