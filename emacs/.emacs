@@ -56,13 +56,6 @@
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-
-;; clipboard
-;;
-;; share clipboard across the entire system
-(setq save-interprogram-paste-before-kill t)
-(setq yank-pop-change-selection t)
-
 ;; Use spaces instead of tabs, unless a mode/lang explicitly requires tabs.
 (setq-default c-basic-offset 4)
 (setq-default tab-always-indent t)
@@ -101,6 +94,14 @@
   ("C-c E"       . first-error)
   ("C-c e"       . next-error)
   ("C-c C-e p"   . previous-error)
+  :custom
+
+  ;; clipboard
+  ;;
+  ;; share clipboard across the entire system
+  (yank-pop-change-selection t)
+  (save-interprogram-paste-before-kill t)
+  (kill-do-not-save-duplicates t)
   :config
   ;;(transient-mark-mode 1)
   :init
@@ -109,20 +110,24 @@
    read-mail-command 'gnus))
 
 
-;; history
-;;
 (use-package savehist
+  :custom
+  (history-length 10000)
+  (history-delete-duplicates t)
+  (savehist-save-minibuffer-history t)
   :init
-  (setq history-delete-duplicates t)
-  (setq savehist-save-minibuffer-history t)
   (setq savehist-additional-variables
-        '(kill-ring
+        '( ;;kill-ring  adds photos & other very large files
           compile-command
           search-ring
           regexp-search-ring))
-
   :config
   (savehist-mode 1))
+
+(use-package vc
+  :custom
+  (vc-follow-symlinks t))
+
 
 
 (use-package ido
@@ -130,16 +135,6 @@
   :bind
   ("C-x f" . ido-find-file)
   :config
-  (add-to-list 'ido-ignore-files "\\.rej$")
-  (add-to-list 'ido-ignore-files "\\.dyn_hi$")
-  (add-to-list 'ido-ignore-files "\\.dyn_o$")
-  (add-to-list 'ido-ignore-files "\\.hi$")
-  (add-to-list 'ido-ignore-files "\\.o$")
-  (add-to-list 'ido-ignore-files "\\.tags$")
-  (add-to-list 'ido-ignore-files "\\TAGS$")
-  (add-to-list 'ido-ignore-buffers "*Compile-Log*")
-  (add-to-list 'ido-ignore-buffers "*Help*")
-  (add-to-list 'ido-ignore-buffers "TAGS")
   (ido-mode 1)
   (ido-everywhere 1)
   :init
@@ -185,7 +180,6 @@
   (setq completing-read-function 'ido-completing-read+
         ido-cr+-max-items nil))
 
-
 (use-package projectile
   :ensure t
   :requires (ido)
@@ -227,15 +221,11 @@
 ;; start in a state that immediately supports typing or direct emacs keybindings
 (use-package etags
   :defer
-  :init
-  (setq tags-revert-without-query 1)
-  ;;(setq tags-case-fold-search nil) ;; case-insensitive
-  (setq xref-etags-mode t)
-  )
-
-(use-package etags-select
-  :requires (etags)
-  :load-path "~/.emacs.d/etags-select.el/")
+  ;;:hook ((xref? . xref-etags-mode))
+  :custom
+  (tags-revert-without-query t)
+  :config
+  (setq tags-add-tables nil))
 
 
 ;; Xresource based styles
@@ -249,7 +239,6 @@
   :if window-system ;; display-graphic-p
   :config (load-theme 'xresources t)
   :load-path "themes")
-
 
 
 (use-package ansi-color
@@ -300,63 +289,54 @@
         (cond
          ((and (string-match "^finished" msg) (string= "*compilation*" (buffer-name)))
           (progn
-            (unless compilation-buffer-visible (delete-windows-on buffer))
-            ))
+            (unless compilation-buffer-visible (delete-windows-on buffer))))
          ((string= "*compilation*" (buffer-name))
           (progn
-            ))
-         )
+            ;; nothing todo
+            )))
         (setq current-frame (car (car (cdr (current-frame-configuration)))))
         (raise-frame current-frame))))
 
   (add-to-list 'compilation-finish-functions 'notify-compilation-result))
 
+
 (use-package whitespace
   :defer
-  :hook ((prog-mode
-          . (lambda ()
-              (add-hook (make-local-variable 'before-save-hook)
-                        'delete-trailing-whitespace)))))
-
-(global-set-key [f10]
-                '(lambda ()
-                   (interactive)
-                   (jump-to-register 9)
-                   ;; make sure to put compilation-buffer at end here.
-                   (message "Windows disposition loaded")))
-
-(global-set-key [C-f10]
-                '(lambda ()
-                   (interactive)
-           (window-configuration-to-register 9)
-                   (message "Windows disposition saved")))
+  :preface
+  (defun whitespace-local-mode ()
+    (add-hook (make-local-variable 'before-save-hook)
+              'delete-trailing-whitespace))
+  :hook ((prog-mode . whitespace-local-mode)))
 
 
-;; evil
+(use-package register
+  :bind
+  (([f10] . (lambda ()
+              (interactive)
+              (jump-to-register 9)
+              ;; make sure to put compilation-buffer at end here.
+              (message "Windows disposition loaded"))))
+  (([C-f10] . (lambda ()
+                (interactive)
+                (window-configuration-to-register 9)
+                (message "Windows disposition saved")))))
+
 
 (use-package evil
   :ensure t
   :hook
   ((with-editor-mode . evil-insert-state))
-  ((with-presentation-mode . evil-insert-state))
-  ((archive-mode-hook . evil-motion-state))
-
-  :init
-  (setq evil-default-state 'normal)
-  ;; setup evil leader
-  (use-package evil-leader
-    :ensure t
-    :init
-    (setq evil-leader/leader "SPC"
-          evil-leader/in-all-states t
-          evil-leader/non-normal-prefix "C-"
-          evil-leader/no-prefix-mode-rx
-          '("magit-.*-mode"
-            "*Messages*"
-            "gnus-.*-mode"))
-    (global-evil-leader-mode 1))
-  (evil-mode 1)
-
+  ((with-presentation-mode . evil-motion-state))
+  ((archive-mode . evil-motion-state))
+  ((prog-mode . (lambda ()
+                  (progn
+                    (defalias #'forward-evil-word #'forward-evil-symbol)))))
+  :config
+  ;;((special-mode . evil-emacs-state))
+  ;;((xref--show-xref-buffer-mode . evil-emacs-state))
+  ;;((prog-mode . (lambda ()
+  ;;                (defalias #'forward-evil-word #'forward-evil-symbol))
+  ;;
   ;; vim-like bindings in the minibuffer
   ;;
   ;; doing it this way is a little tricky:
@@ -372,39 +352,53 @@
   ;;
   :bind (:map evil-motion-state-map
               ("f" . xref-find-definitions)
+              ("s" . xref-pop-marker-stack)
               :map evil-normal-state-map
-              ("s" . pop-tag-mark)
+              ("f" . xref-find-definitions)
+              ("s" . xref-pop-marker-stack)
               (";" . evil-ex)
               ("\\" . smex)
               :map evil-insert-state-map
               ("C-\\" . smex)
               ("j" . evil-maybe-exit)
-
               :map minibuffer-local-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element)
               ("C-w" . evil-delete-backward-word)
-
               :map minibuffer-inactive-mode-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element)
-
               :map minibuffer-local-ns-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element)
-
               :map minibuffer-local-isearch-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element)
-
               :map minibuffer-local-completion-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element)
-
               :map minibuffer-local-must-match-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element))
+  :init
+  (setq evil-default-state 'normal)
+  ;; :config not working w/ most of config. evil is simply loaded immediately
+  ;; instead of lazily
+  (use-package evil-leader
+    :ensure t
+    :init
+    (setq evil-leader/leader "SPC"
+          evil-leader/in-all-states t
+          evil-leader/non-normal-prefix "C-"
+          evil-leader/no-prefix-mode-rx
+          '("magit-.*-mode"
+            "*Messages*"
+            "gnus-.*-mode"))
+    (global-evil-leader-mode 1))
+  (evil-mode 1)
   :config
+  (defalias #'forward-evil-word #'forward-evil-symbol)
+
   ;; exit insert mode if I lean on 'j' button
   (evil-define-command evil-maybe-exit ()
     :repeat change
@@ -422,19 +416,20 @@
          (t (setq unread-command-events (append unread-command-events
                                                 (list evt))))))))
 
-
   (defun recompile-quietly ()
     "Re-compile without changing the window configuration."
     (interactive)
     (save-window-excursion
       (projectile-compile-project nil)))
 
+  (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
+
   (evil-leader/set-key
     "o"       'other-window
     "xc"      'save-buffers-kill-terminal
 
     "F"       'xref-find-definitions
-    "S"       'pop-tag-mark
+    "S"       'xref-pop-marker-stack
 
     "tc"      'toggle-compilation-visible
     "v"       'recompile-quietly ;; still under projectile context
@@ -446,8 +441,10 @@
     "b"       'projectile-switch-to-buffer
     "ptt"     'projectile-toggle-between-implementation-and-test
 
-    "e"       'flycheck-next-error
-    "w"       'flycheck-previous-error
+    ;; "e"       'flycheck-next-error
+    ;; "w"       'flycheck-previous-error
+    "e"       'next-error
+    "w"       'previous-error
 
     ")"       'evil-next-close-paren
     "("       'insert-parentheses
@@ -484,6 +481,7 @@
           ("youtube.com" . browse-url-chromium)
           ("facebook.com" . browse-url-chromium)
           ("upwork.com" . browse-url-chromium)
+          (".*\\.gov" . browse-url-chromium)
           ("docusign.com\\|docusign.net" . browse-url-chromium)
           ("." . w3m-browse-url))))
 
@@ -492,8 +490,9 @@
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
   :config (setq magit-completing-read-function 'magit-ido-completing-read)
+  :requires (evil)
   :ensure t
-  :init
+  :config
   (evil-set-initial-state 'magit-log-edit-mode 'emacs)
   (evil-set-initial-state 'magit-status-mode 'emacs)
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
@@ -523,7 +522,8 @@
     "K" 'magit-discard
     "z" 'magit-key-mode-popup-stashing)
   (evil-leader/set-key-for-mode 'magit-status-mode
-    "SPC" 'magit-stash-show))
+    "SPC" 'magit-stash-show)
+  )
 
 
 (use-package evil-magit
@@ -547,8 +547,8 @@
 (use-package flycheck
   :ensure t
   :hook ((after-init . global-flycheck-mode))
-  :init (setq flycheck-standard-error-navigation nil)
-  )
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit))
 
 
 (use-package flyspell
@@ -700,14 +700,14 @@
   (add-to-list 'sql-postgres-options "--no-psqlrc"))
 
 
-(use-package sh
+(use-package sh-script
   :mode
   ("\\.bash_functions.local\\'" . sh-mode)
   ("\\.bash_functions\\'"      . sh-mode)
   ("\\.bash_aliases\\'"        . sh-mode))
 
 
-(use-package javascript-mode
+(use-package js
   :mode "\\.json.template\\'")
 
 
@@ -736,18 +736,13 @@
 
 ;; Mail
 ;;
-;; Configuration required by Gnus in the .emacs file.  These do not work when
-;; set in .gnus as "Gnus" is mostly loaded from that file (see Info-goto-node
-;; "gnus-parameters [gnus]").
+;; Configuration required by Gnus in the .emacs file.
 (use-package gnus
   :commands gnus
-  :init
-  (setq gnus-treat-from-gravatar t
-        mail-user-agent 'gnus-user-agent
-        gnus-message-replysign t
-        gnus-treat-x-pgp-sig t
-        gnus-directory               "~/.emacs.d/gnus/"
-        read-mail-command 'gnus-user-agent))
+  :custom
+  (mail-user-agent 'gnus-user-agent)
+  (gnus-directory "~/.emacs.d/gnus/")
+  (read-mail-command 'gnus-user-agent))
 
 
 (use-package mm-decode
@@ -765,23 +760,22 @@
 
 (use-package org
   :defer t
+
   :bind (([f6]   . org-capture)
          ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
          ([f8]   . org-agenda)
          ([C-f8] . org-agenda-kill-all-agenda-buffers)
          ("C-c C-/" . org-toggle-timestamp-type)
-         :map org-agenda-mode-map
-         ("\\"   . smex))
+         ;;:map org-agenda-mode-map
+         ;;("\\"   . smex)
+         )
 
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
-  ;; executable from org
-  ;; (setq org-babel-C-compiler
   (org-babel-do-load-languages
    'org-babel-load-languages
         '((emacs-lisp . t)
-          (js . t)
           (haskell . t)
           (sqlite . t)
           (sql . t)
@@ -790,9 +784,7 @@
           (C . t)
           (ledger . t)
           (shell . t)
-          ;;(sh . t)
           ))
-
   :init
   (setq
 
@@ -821,7 +813,11 @@
   :hook
   (( org-capture-after-finalize . org-save-all-org-buffers ))
   (( org-capture-prepare-finalize . org-save-all-org-buffers ))
-
+  :bind (:map org-agenda-mode-map
+              ("C-c ="   . org-agenda-priority-up)
+              ("C-c -"   . org-agenda-priority-down)
+              ("j"   . org-agenda-next-item)
+              ("k"   . org-agenda-previous-item))
   :init
   (setq org-agenda-todo-ignore-scheduled 'future
         org-agenda-window-setup 'current-window
@@ -836,13 +832,11 @@
                 (org-save-all-org-buffers)))
 
 
-  :bind (:map org-agenda-mode-map
-              ( "j"   . org-agenda-next-item )
-              ( "k"   . org-agenda-previous-item ))
-
   :config
   (add-to-list 'org-agenda-custom-commands
-        '("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2")))
+               '("j" todo "TODO" ((org-agenda-max-entries 5))))
+  (add-to-list 'org-agenda-custom-commands
+               '("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2")))
 
 
 (use-package bbdb
@@ -855,13 +849,29 @@
   :custom
   (bbdb-message-all-addresses t)
   (bbdb-complete-mail-allow-cycling t)
+  (bbdb-case-fold-search t)
+  (bbdb-offer-save t)
+
+  :init
+  (setq bbdb-mua-update-interactive-p '(query . create))
+  (setq bbdb-message-all-addresses t)
+  ;; 2000 is the default value which is added to a message's score if the
+  ;; message is from a person in the BBDB database.
+  ;;(setq bbdb/gnus-score-default 2000)
+  ;;(bbdb-auto-notes-rules)
+  ;;(bbdb-message-summary-mark t)
 
   :config
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"         'bbdb-delete-field-or-record
     "\C-x \C-s"    'bbdb-save)
-  (bbdb-initialize 'gnus 'message 'pgp 'anniv)
+  (bbdb-initialize 'gnus 'message 'pgp)
   (bbdb-mua-auto-update-init 'gnus 'message))
+
+;; use 'gnus for incoming messages too
+(use-package bbdb-anniv
+  :after (bbdb)
+  :config (bbdb-initialize 'anniv))
 
 
 (add-to-list 'default-frame-alist '(font . "monofur 12"))

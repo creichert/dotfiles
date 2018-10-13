@@ -66,11 +66,19 @@
 (use-package gnus
 
   :after (gnus-private)
+  ;; :custom
+  ;;(gnus-check-new-newsgroups nil)
+  ;;(gnus-check-bogus-newsgroups nil)
 
   :config
+
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
+
+        ;;gnus-treat-from-gravatar t
+        ;;gnus-message-replysign t
+        ;;gnus-treat-x-pgp-sig t
 
         ;;gnus-list-groups-with-ticked-articles nil
         gnus-group-list-inactive-groups nil ;; list-groups-with-ticked-articles nil
@@ -111,7 +119,6 @@
         gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
         gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
 
-
         ;;gnus-score-find-score-files-function
         ;;'(gnus-score-find-bnews.span class=compcode>bbdb/gnus-score)
 
@@ -141,19 +148,24 @@
   (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs "D"
     'gnus-summary-delete-article)
 
-  (gnus-add-configuration
-   '(article
-     (horizontal 1.0
-                 (vertical 33 (group 1.0))
-                 (vertical 1.0
-                           (summary 0.16 point)
-                           (article 1.0)))))
-
-  (gnus-add-configuration
-   '(summary
-     (horizontal 1.0
-                 (vertical 33 (group 1.0))
-                 (vertical 1.0 (summary 1.0 point)))))
+  ;;(gnus-add-configuration
+  ;; '(article
+  ;;   (horizontal 1.0
+  ;;               (vertical 33 (group 1.0))
+  ;;               (vertical 1.0
+  ;;                         (summary 0.16 point)
+  ;;                         (article 1.0)))))
+  ;;
+  ;; (gnus-add-configuration
+  ;;  '(summary
+  ;;    (horizontal 1.0
+  ;;                (vertical 33 (group 1.0))
+  ;;                (vertical 1.0 (summary 1.0 point)))))
+  ;;
+  (gnus-add-configuration '(article
+                            (vertical 1.0
+                                      (summary .25 point)
+                                      (article 1.0))))
 
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
@@ -286,28 +298,5 @@
   (require 'org-agenda)
   (gnus-icalendar-setup)
   (gnus-icalendar-org-setup))
-
-(use-package bbdb
-  :ensure t
-  :defer
-  :commands (bbdb)
-
-  :bind (:map bbdb-mode-map
-         ( "\t"  . bbdb-complete-mail ))
-
-  :init
-  (setq bbdb-mua-update-interactive-p '(query . create))
-  (setq bbdb-message-all-addresses t)
-  ;; 2000 is the default value which is added to a message's score if the
-  ;; message is from a person in the BBDB database.
-  (setq bbdb-complete-mail-allow-cycling t)
-  (setq bbdb/gnus-score-default 2000)
-
-  :config
-  (evil-define-key 'motion bbdb-mode-map
-    "\C-k"       'bbdb-delete-field-or-record
-    "\C-x \C-s"   'bbdb-save)
-  (bbdb-initialize 'gnus 'message 'pgp)
-  (bbdb-mua-auto-update-init 'gnus 'message)) ;; use 'gnus for incoming messages too
 
 ;;; .gnus ends here

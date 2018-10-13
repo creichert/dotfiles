@@ -1,6 +1,17 @@
 
+;;; Code:
+
 (require 'use-package)
 
+(use-package ledger-mode
+  :ensure t
+  ;;:ensure-system-package "ledger"
+  :defer)
+
+(use-package flycheck-ledger
+  :after (flycheck ledger-mode)
+  :hook  ((ledger-mode . flycheck-ledger-mode))
+  :ensure t)
 
 (use-package gif-screencast
   :defer
@@ -14,8 +25,8 @@
    ([f12] . gif-screencast-stop)))
 
 (use-package term
-  :commands (make-term term ssh-shell)
-  :config
+  :commands (make-term term ssh-term)
+  :preface
     (defun remote-term (new-buffer-name cmd &rest switches)
       (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
       (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
@@ -26,7 +37,7 @@
       (term-set-escape-char ?\C-x)
       (switch-to-buffer term-ansi-buffer-name))
 
-    (defun ssh-shell (host)
+    (defun ssh-term (host)
       (interactive "sHost: \n")
       (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
 
@@ -135,4 +146,18 @@
   )
 
 
+(use-package noflet :ensure t
+  :disabled)
+
+(use-package kill-ring-ido
+  :disabled
+  :requires (ido noflet)
+  :custom (kill-ring-ido-shortage-length 40) ; where 6 is your value
+  :bind (("M-y" . kill-ring-ido))
+  :ensure f
+  :load-path "lisp/")
+
+
 (provide 'extra)
+
+;;; extra.el ends here
