@@ -122,7 +122,7 @@ scratchpads = [
     , NS "ghci" "xterm -title ghci -e stack exec ghci" (title =? "ghci")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
 
-    , NS "psql" "xterm -title psql -e sudo su postgres -c psql" (title =? "psql")
+    , NS "psql" "emacs -f sql-postgres --title psql" (title =? "psql")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
 
     --, NS "gnus" "~/dev/emacs/src/emacs -f gnus --title mail" (title =? "mail")
