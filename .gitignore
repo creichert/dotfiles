@@ -9,3 +9,4 @@ dotlocal/
 # hide ".$somerc.local" configs. They are used to store private files and
 # configurations not synced to github.
 \.*\.local
+\.uuid
