@@ -10,7 +10,7 @@ PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin
 PKG_DIR         ?= $(or $(target),$(HOME))
 
 THEME           ?= $(or $(q),mocha-256)
-THEME_DIR       := x11/.local/share/base16-xresources/xresources
+THEME_DIR       := docs/assets/base16-xresources/xresources
 
 XMONAD          := $(HOME)/.xmonad/xmonad-x86_64-linux
 XMOBAR_BIN      := $(HOME)/.local/bin/xmobar

@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# This script will run a debian root filesystem image with a linux kernel bz
+# image using qemu. Used for rapid kernel testing.
+#
+# Usage:
+#
+#   Run an existing kernel and root image:
+#
+#   $ kvm_run_deb arch/x86_64/boot/bzImage ../wheezy.img
+#
+#
+#   Create a kernel, root image, and run them:
+#
+#   $ git clone linux && cd linux
+#   $ make config
+#   $ make
+#
+#   $ kvm_debootstrap sid
+#   $ kvm_run_deb arch/x86_64/boot/bzImage ../wheezy.img
+
+if [ "$#" -eq 0 ]; then
+    echo "Run a Debian root image and Linux Kernel Image" 1>&2
+    echo "  usage: kvm_run_deb path/to/bzImage debian.img" 1>&2
+    echo
+    echo "  note: this script currently assumes a specific directory layout"
+    echo "  /home/you"
+    echo "  /home/you/c/linux \# the actual kernel source code"
+    exit 1
+fi
+
+BASE=${HOME}
+
+DIST=$1
+SHARED=${BASE}/dev
+DIST_IMG=${SHARED}/erase_me/sid.img # vms/img/debian/${DIST}.img
+KERNEL=${SHARED}/c/linux/arch/x86_64/boot/bzImage
+
+# Second command line, default to 4444
+# SSH_PORT=${2:-4444}
+SSH_PORT=4444
+
+MEM=1024
+
+#-net nic,model=virtio,macaddr=52:54:00:12:34:56          \
+#-net user,hostfwd=tcp:127.0.0.1:${SSH_PORT}-:22          \
+#
+#-netdev user,id=user.0 -device e1000,netdev=user.0       \
+#-netdev user,id=mynet0,net=192.168.1.0/24,dhcpstart=192.168.1.189 \
+#
+#-initrd initrd.gz \
+qemu-system-x86_64 -enable-kvm                                              \
+                   -net nic,model=e1000,macaddr=52:54:00:12:34:56           \
+                   -net user,hostfwd=tcp:127.0.0.1:${SSH_PORT}-:22          \
+                   -kernel ${KERNEL}                                        \
+                   -drive file=${DIST_IMG},if=virtio                        \
+                   -append 'root=/dev/vda rw console=hvc0'                  \
+                   -chardev stdio,id=stdio,mux=on                           \
+                   -device virtio-serial-pci                                \
+                   -device virtconsole,chardev=stdio                        \
+                   -mon chardev=stdio                                       \
+                   -cpu host -m ${MEM}                                      \
+                   -display none                                            \
+                   -fsdev local,id=fs1,path=${SHARED},security_model=none   \
+                   -device virtio-9p-pci,fsdev=fs1,mount_tag=shda

@@ -98,3 +98,4 @@ found in `x11/.Xresources`.
 ---
 
 > [_dotfiles.github.io_](https://dotfiles.github.io/)
+> [dotshare](http://dotshare.it/dots/1027/)

@@ -32,7 +32,7 @@ main = do
     xmonad $ docks $ def {
                terminal    = "xterm"
              , borderWidth = 1
-             , keys        = newKeys def
+             , keys        = keybindings def
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
                                manageDocks
@@ -42,9 +42,7 @@ main = do
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h
-             , startupHook = runStartupHook
-             , handleEventHook = mconcat [ docksEventHook
-                                         , handleEventHook def ]
+             , handleEventHook = mconcat [ docksEventHook, handleEventHook def ]
              , modMask = mod4Mask
              }
   where
@@ -56,14 +54,9 @@ main = do
                 ]
             }
 
-    runStartupHook :: X ()
-    runStartupHook = do
-        spawnOnce "xflux -z 77006"
-        spawnOnce "feh --bg-scale ~/.xmonad/wallpaper"
-
--- This merges key' map with old keylist
-newKeys :: XPConfig -> XConfig Layout -> Map (KeyMask, KeySym) (X ())
-newKeys xPCfg x = keys' x `Map.union` keys def x
+-- Merge my keybindings w/ the default keybindings.
+keybindings :: XPConfig -> XConfig Layout -> Map (KeyMask, KeySym) (X ())
+keybindings xPCfg x = keys' x `Map.union` keys def x
   where
     xpCfg = xPCfg { font = "xft:monofur:size=10:style=italic" }
     keys' XConfig { XMonad.modMask = modm } = Map.fromList [
@@ -125,7 +118,6 @@ scratchpads = [
     , NS "psql" "emacs -f sql-postgres --title psql" (title =? "psql")
           (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
 
-    --, NS "gnus" "~/dev/emacs/src/emacs -f gnus --title mail" (title =? "mail")
     , NS "gnus" "emacs -f gnus --title mail" (title =? "mail")
           (customFloating $ W.RationalRect (1/20) (1/20) (17/20) (17/20))
 

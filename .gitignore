@@ -10,3 +10,6 @@ dotlocal/
 # configurations not synced to github.
 \.*\.local
 \.uuid
+
+xmonad/.xmonad/xmonad-x86_64-linux
+xmonad/.xmonad/xmonad.errors

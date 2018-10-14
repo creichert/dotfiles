@@ -20,6 +20,9 @@
 (require 'bind-key)
 (setq use-package-compute-statistics t)
 
+;; Ensure system executables are installed for certain packages.
+;;(use-package use-package-ensure-system-package :ensure t)
+
 
 ;; minor modes
 ;;(use-package font-core
@@ -124,10 +127,11 @@
   :config
   (savehist-mode 1))
 
+
 (use-package vc
+  :defer
   :custom
   (vc-follow-symlinks t))
-
 
 
 (use-package ido
@@ -140,14 +144,13 @@
   :init
   (setq ido-max-directory-size 100000
         ido-enable-flex-matching t
-        ido-max-prospects 5
         ido-create-new-buffer 'always
         ido-use-faces t
         ido-use-filename-at-point 'nil))
 
 
 (use-package ido-vertical-mode
-  :load-path "~/.emacs.d/ido-vertical-mode.el/"
+  :load-path "~/.emacs.d/site-lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :init
@@ -180,22 +183,22 @@
   (setq completing-read-function 'ido-completing-read+
         ido-cr+-max-items nil))
 
+
 (use-package projectile
   :ensure t
   :requires (ido)
-
-  :hook (( projectile-after-switch-project . magit-status ))
+  ;;:hook (( projectile-after-switch-project . magit-status ))
   :bind
-  ("C-x C-f" . projectile-find-file)
-  ("C-x C-d" . projectile-switch-project)
-  ([f5]      . projectile-compile-project)
-  ("C-c g"   . projectile-grep)
-
+  (("C-x C-d" . projectile-switch-project)
+   (:map projectile-mode-map
+         ("C-x C-f" . projectile-find-file)
+         ([f5]      . projectile-compile-project)
+         ;;("f"       . projectile-find-tag))
+         ("C-c g"   . projectile-grep)))
   :init
   (setq projectile-enable-caching t
         projectile-indexing-method 'alien
-        ;;projectile-sort-order 'recently-active
-        projectile-sort-order 'modification-time
+        ;;projectile-sort-order 'modification-time
         projectile-use-git-grep 't
         ;;projectile-project-search-path '("~/dev")
         projectile-globally-ignored-directories '("~/.stack/snapshots")
@@ -310,6 +313,7 @@
 
 
 (use-package register
+  :defer
   :bind
   (([f10] . (lambda ()
               (interactive)
@@ -425,10 +429,16 @@
   (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
 
   (evil-leader/set-key
+    "1"       'delete-other-windows
     "o"       'other-window
     "xc"      'save-buffers-kill-terminal
 
-    "F"       'xref-find-definitions
+    "F"       'projectile-find-tag ;;xref-find-definitions
+    ;;"F"       (lamdba ()
+    ;;                  (cond
+    ;;                   ((fboundp 'projectile-find-tag) (projectile-find-tag))
+    ;;                   (t (xref-find-definitions))))
+
     "S"       'xref-pop-marker-stack
 
     "tc"      'toggle-compilation-visible
@@ -685,6 +695,8 @@
 (use-package prettier-js
  :ensure t
  :hook ((web-mode . prettier-js-mode))
+ ;; this is always managed on a project-by-project basis, when required
+ ;;:ensure-system-package ("prettier" . "npm install prettier")
  :init
   (setq prettier-js-args '("--tab-width" "4"
                            "--trailing-comma" "es5"
@@ -696,6 +708,7 @@
 
 (use-package sql
   :defer
+  ;;:ensure-system-package ("postgresql-client-common")
   :config
   (add-to-list 'sql-postgres-options "--no-psqlrc"))
 
@@ -717,6 +730,7 @@
 
 (use-package markdown-mode
   :ensure t
+  ;;:ensure-system-package ("markdown")
   :mode ("\\.markdown\\'" . markdown-mode))
 
 
@@ -727,11 +741,14 @@
 
 (use-package dockerfile-mode
   :ensure t
+  ;;:ensure-system-package ("docker.io")
   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
 
 
 (use-package yaml-mode :ensure t :defer)
-(use-package google-this :ensure t :defer)
+(use-package google-this
+  ;;:ensure-system-package ("chromium")
+  :ensure t :defer)
 
 
 ;; Mail
@@ -754,6 +771,7 @@
 
 (use-package epa
   :defer t
+  :ensure-system-package ("gnupg")
   :init
   (setq epa-pinentry-mode 'loopback))
 
@@ -761,34 +779,59 @@
 (use-package org
   :defer t
 
-  :bind (([f6]   . org-capture)
+  ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
+  :bind (;; capture task to inbox
+         ([f6]   . org-capture)
+
          ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
-         ([f8]   . org-agenda)
-         ([C-f8] . org-agenda-kill-all-agenda-buffers)
          ("C-c C-/" . org-toggle-timestamp-type)
+
          ;;:map org-agenda-mode-map
          ;;("\\"   . smex)
-         )
+         ([f8]   . org-agenda)
+         ([C-f8] . org-agenda-kill-all-agenda-buffers))
 
+  ;; todo
+  ;;:hook
+  ;;;; Highlight the result of source block
+  ;;((org-babel-after-execute .
+  ;;                          (lambda ()
+  ;;                            (when (eq this-command 'org-ctrl-c-ctrl-c)
+  ;;                              (creichert/org-babel-highlight-result)))))
+  ;;:preface
+  ;;(defun creichert/org-babel-highlight-result ()
+  ;;  "Highlight the result of the current source block. Adapt from `org-babel-remove-result'."
+  ;;  (interactive)
+  ;;  (let ((location (org-babel-where-is-src-block-result nil nil)))
+  ;;    (when location
+  ;;      (save-excursion
+  ;;        (goto-char location)
+  ;;        (when (looking-at (concat org-babel-result-regexp ".*$"))
+  ;;          (pulse-momentary-highlight-region
+  ;;           (1+ (match-end 0))
+  ;;           (progn (forward-line 1) (org-babel-result-end))))))))
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
   (org-babel-do-load-languages
    'org-babel-load-languages
-        '((emacs-lisp . t)
-          (haskell . t)
-          (sqlite . t)
-          (sql . t)
-          (makefile . t)
-          (scheme . t)
-          (C . t)
-          (ledger . t)
-          (shell . t)
-          ))
+   '((emacs-lisp . t)
+     (haskell . t)
+     (sqlite . t)
+     (sql . t)
+     (makefile . t)
+     (scheme . t)
+     (C . t)
+     (ledger . t)
+     (shell . t)
+     ))
+  :custom
+  (org-completion-use-ido t)
+  (org-log-done 'time)
+  ;; ALL incoming org captures go into my inbox.
+  (org-default-notes-file "~/org/inbox.org")
   :init
   (setq
-
-   org-completion-use-ido t
 
    ;; org-archive-location "~/org/archive.org::*"
    ;;org-stuck-projects '("TODO={.+}/-DONE" nil nil "SCHEDULED:\\|DEADLINE:"))
@@ -796,7 +839,6 @@
    ;; after an item is scheduled, it will
    ;; show in the agenda on that day. this
    ;; is used to clear the inbox to categories
-   org-default-notes-file "~/org/inbox.org"
 
    org-refile-use-outline-path 'file
    org-refile-targets '((org-agenda-files :maxlevel . 3))
@@ -808,6 +850,8 @@
    org-confirm-babel-evaluate nil
    ))
 
+;;support spotify uri?
+;;[[spotify:track:4cI0B5thREJ9g0RYpGVrhY][timebomb, Mr. 3-2 :: Str8 Drop]]
 (use-package org-agenda
   :after (org)
   :hook
@@ -873,9 +917,19 @@
   :after (bbdb)
   :config (bbdb-initialize 'anniv))
 
+(use-package bbdb-pgp
+  :disabled
+  :after (bbdb))
 
+(use-package org-bbdb
+  :disabled
+  :ensure t
+  :after (org bbdb))
+
+;; todo move up, set in xresources instead?
 (add-to-list 'default-frame-alist '(font . "monofur 12"))
 (set-face-attribute 'default t :font '"monofur 12")
+
 
 ;; minimal modeline
 ;;
@@ -890,9 +944,5 @@
 
 ;; extra emacs packages & utilities I use which aren't "core"
 (use-package extra
-  :if (file-exists-p "~/.emacs.d/lisp/extra.el")
-  :load-path "lisp/")
-
-(use-package extra-private
-  :if (file-exists-p "~/.emacs.d/site-lisp/extra-private.el")
-  :load-path "site-lisp/")
+  :load-path "lisp"
+  :if (file-exists-p "~/.emacs.d/lisp/extra.el"))

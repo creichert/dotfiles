@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# Create a lightweight debian filesystem for kernel development, testing, and
+# hacking linux source.
+#
+# https://blog.nelhage.com/2013/12/lightweight-linux-kernel-development-with-kvm
+
+# Usage:
+#
+#   $ kvm_debootstrap sid
+#   $ kvm_run_deb sid
+
+set -ex
+
+# Debian distribution to be installed
+DIST=$1
+DIST_DIR=$DIST
+ARCH=amd64
+
+ESSENTIAL_PKGS="openssh-server,dbus"
+EXTRA_PKGS="git,emacs,vim,xz-utils,gcc,stow,curl"
+
+# Essential and extra packages that are installed.
+PKGS=${ESSENTIAL_PKGS},${EXTRA_PKGS}
+
+if [ -z $1 ]; then
+    echo "Generate a Debian root image suitable for kvm using debootstrap" 1>&2
+    echo
+    echo "Usage: kvm_debootstrap (sid,testing,wheezy)" 1>&2
+    exit 1
+fi
+
+mkdir -p ${DIST}
+sudo debootstrap --include="${PKGS}" \
+            --arch=${ARCH}      \
+            --verbose           \
+            ${DIST}             \
+            ${DIST_DIR}
+
+# Perform some manual cleanup on the resulting chroot:
+#
+# Make root passwordless for convenience.
+sudo sed -i '/^root/ { s/:x:/::/ }' ${DIST_DIR}/etc/passwd
+
+# Add a getty on the virtio console
+echo 'V0:23:respawn:/sbin/getty 115200 hvc0' | sudo tee -a ${DIST_DIR}/etc/inittab
+
+# Automatically bring up eth0 using DHCP
+printf '\nauto enp0s3\niface enp0s3 inet dhcp\n' | sudo tee -a ${DIST_DIR}/etc/network/interfaces
+
+# Set up my ssh pubkey for root in the VM
+sudo mkdir -p ${DIST_DIR}/root/.ssh/
+
+# auto ssh
+cat ~/.ssh/id_?sa.pub | sudo tee ${DIST_DIR}/root/.ssh/authorized_keys
+
+# remove archives
+sudo rm -rf sid/var/cache/apt/archives/*.deb
+
+# Build a disk image
+dd if=/dev/zero of=${DIST_DIR}.img bs=1M seek=4095 count=1
+sudo mkfs.ext4 -F ${DIST_DIR}.img
+sudo mkdir -p /mnt/${DIST_DIR}
+sudo mount -o loop ${DIST_DIR}.img /mnt/${DIST_DIR}
+sudo cp -a ${DIST_DIR}/. /mnt/${DIST_DIR}/.
+sudo umount /mnt/${DIST_DIR}
+sudo rmdir /mnt/${DIST_DIR}

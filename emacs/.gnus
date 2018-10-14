@@ -59,8 +59,8 @@
 ;;
 ;; only load if this file exists
 (use-package gnus-private
-  :if (file-exists-p "~/.emacs.d/site-lisp/gnus-private.el")
-  :load-path "site-lisp/")
+  :if (file-exists-p "~/.emacs.d/gnus/gnus-private.el")
+  :load-path "gnus/")
 
 
 (use-package gnus
