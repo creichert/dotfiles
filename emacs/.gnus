@@ -51,6 +51,7 @@
 
 (require 'use-package)
 
+
 ;; my gnus-private file contains various email accounts info.
 ;;
 ;; - gnus-parameters
@@ -59,19 +60,17 @@
 ;;
 ;; only load if this file exists
 (use-package gnus-private
+  :demand
   :if (file-exists-p "~/.emacs.d/gnus/gnus-private.el")
   :load-path "gnus/")
 
 
 (use-package gnus
-
   :after (gnus-private)
   ;; :custom
   ;;(gnus-check-new-newsgroups nil)
   ;;(gnus-check-bogus-newsgroups nil)
-
   :config
-
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
@@ -167,24 +166,11 @@
                                       (summary .25 point)
                                       (article 1.0))))
 
-  :hook
-  ((gnus-select-group       . gnus-group-set-timestamp))
-  ((gnus-after-exiting-gnus . kill-emacs))
-  ;;((gnus-summary-exit       . gnus-summary-bubble-group))
-  ;;startup gnus docs when gnus starts
-  ;;((gnus-startup . (lambda ()
-  ;;                   (split-window-horizontally)
-  ;;                   (next-multiframe-window)
-  ;;                   (info "Gnus")
-  ;;                   ;; assuming f10 is bound to (jump-to-register 9) in .emacs,
-  ;;                   ;; use [f10] to restore original {group|info} frames.
-  ;;                   (window-configuration-to-register 9))))
-  ;;
-  ;;(set-face-attribute 'gnus-group-mail-1 t
-  ;;                    :foreground (x-get-resource "color2" ""))
   ;;:custom-face
   ;;(gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
-  )
+  :hook
+  ((gnus-select-group       . gnus-group-set-timestamp))
+  ((gnus-after-exiting-gnus . kill-emacs)))
 
 (use-package gnus-sum
   :config
@@ -202,12 +188,12 @@
 
 (use-package gnus-topic
   :hook ((gnus-group-mode . gnus-topic-mode))
+  :after (gnus-group)
   :bind (:map gnus-topic-mode-map
               ("?\t" . gnus-topic-select-group))
-  :init
-  ;;(setq-default gnus-topic-display-empty-topics t)
-  (setq-default gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
-  (setq-default gnus-subscribe-newsgroup-method         'gnus-subscribe-topics))
+  :custom
+  (gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
+  (gnus-subscribe-newsgroup-method         'gnus-subscribe-topics))
 
 
 ;; Outgoing messages sent via msmtp (config in ~/.msmptrc)

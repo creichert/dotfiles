@@ -2,7 +2,7 @@
 ;;; Code:
 
 (require 'use-package)
-
+;;(require 'use-package-ensure-system-package)
 
 
 (use-package auth-source-pass
@@ -26,7 +26,7 @@
 
 (use-package gist
   :defer
-  :ensure-system-package ("git")
+  ;;:ensure-system-package (git)
   :ensure t)
 
 
@@ -34,7 +34,8 @@
   :ensure t
   :defer
   :disabled
-  :ensure-system-package ("ledger"))
+  ;;:ensure-system-package (ledger)
+  )
 
 
 (use-package flycheck-ledger
@@ -48,9 +49,9 @@
   :defer
   :ensure t
   :if window-system
-  :ensure-system-package (gifsicle
-                          mogrify
-                          imagemagick)
+  ;;:ensure-system-package (gifsicle
+  ;;                        mogrify
+  ;;                        imagemagick)
   :init
   (setq gif-screencast-screenshot-directory "~/downloads/screencasts/tmp")
   (setq gif-screencast-output-directory "~/downloads/screencasts")

@@ -771,7 +771,7 @@
 
 (use-package epa
   :defer t
-  :ensure-system-package ("gnupg")
+  ;;:ensure-system-package (gpg2 . gnupg2)
   :init
   (setq epa-pinentry-mode 'loopback))
 
