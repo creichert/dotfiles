@@ -2,7 +2,48 @@
 ;;; Code:
 
 (require 'use-package)
-;;(require 'use-package-ensure-system-package)
+
+
+(use-package ggtags
+  :disabled
+  ;; get it from package.el
+  :defer
+  :requires (evil)
+  :ensure t
+  ;; end :commands
+  :commands (
+             ggtags-mode
+             ggtags-find-reference
+             ggtags-idutils-query
+             pop-tag-mark
+             )
+  :init
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                (ggtags-mode 1))))
+  :config
+  (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
+  ;;(require 'subr-x)
+  ;; (setq ggtags-oversize-limit 104857600)
+  ;; (setq ggtags-sort-by-nearness t)
+  ;;(setq ggtags-use-idutils t)
+  ;;(setq ggtags-use-project-gtagsconf nil)
+
+  :bind (
+         ("M-," . pop-tag-mark)
+         ("M-/" . ggtags-find-reference)
+         ("M-]" . ggtags-idutils-query)
+         :map ggtags-navigation-map
+         ("M-u" . ggtags-navigation-previous-file)
+         ("M-o" . ggtags-navigation-next-file)
+         ("M-l" . ggtags-navigation-visible-mode)
+         ("M-j" . ggtags-navigation-visible-mode)
+         ("M-k" . next-error)
+         ("M-i" . previous-error)
+         ;;:map evil-motion-state-map
+         ;;("f" . ggtags-find-definitions)
+         ))
 
 
 (use-package auth-source-pass
@@ -21,7 +62,7 @@
 
 (use-package etags-select
   :disabled
-  :load-path "site-lisp/")
+  :load-path "site-lisp/etags-select.el/")
 
 
 (use-package gist
@@ -237,40 +278,10 @@
    :full-and-display-names t))
 
 
-
-;; https://github.com/chrisdone/chrisdone-emacs/blob/master/packages/lpaste/lpaste.el
-;;
-;; needs curl
-(defun lpaste-region (beg end)
-  "Paste the region to lpaste.net."
-  (interactive "r")
-  (let ((response
-         (shell-command-to-string
-          (format "curl -D/dev/stdout \"http://lpaste.net/new?%s\""
-                  (mapconcat 'identity
-                             (mapcar (lambda (cons)
-                                       (concat (url-hexify-string (car cons))
-                                               "="
-                                               (url-hexify-string (cdr cons))))
-                                     `(("title" . ,(read-from-minibuffer "Title: "))
-                                       ("author" . ,lpaste-author)
-                                       ("language" . ,(cond ((eq major-mode 'haskell-mode)
-                                                             "haskell")
-                                                            ((eq major-mode 'emacs-lisp-mode)
-                                                             "elisp")
-                                                            (t
-                                                             "")))
-                                       ("channel" . "")
-                                       ("paste" . ,(buffer-substring-no-properties beg end))
-                                       ("private" . "private")
-                                       ("email" . "")))
-                             "&")))))
-    (when (string-match "Location: /\\([0-9]+\\)" response)
-      (message "%S" (match-string 1 response))
-      (browse-url (concat "http://lpaste.net/"
-                          (match-string 1 response))))))
-
-
+;; extra emacs packages & utilities I use which aren't "core"
+(use-package lpaste
+  :load-path "lisp"
+  :if (file-exists-p "~/.emacs.d/lisp/lpaste.el"))
 
 (provide 'extra)
 

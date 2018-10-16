@@ -1,7 +1,8 @@
 
 #include ".Xresources.d/theme"
 
-#define FONT1 xft:monofur:style=Regular:size=12
+#define FONT1_FAMILY monofur
+#define FONT1 xft:FONT1_FAMILY:style=Regular:size=12
 
 *VT100.Translations: #override \
 <Key>Delete: string(0x04) \n\
@@ -10,8 +11,10 @@
 XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
 *VT100*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
 
-Emacs.menuBar: 0
-Emacs.toolBar: 0
+! TODO Emacs.FontBackend: xft
+Emacs.font: FONT1_FAMILY
+Emacs.menuBar: off
+Emacs.toolBar: -1
 Emacs.verticalScrollBars: off
 
 xterm*faceName: FONT1

@@ -58,14 +58,11 @@ $(XMOBAR_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
 # New base16 themes: https://github.com/chriskempson/base16
 theme: submodules
 
-	@fc-cache -vf
-	@# clears all xresources
-	@xrdb -remove
-
 	@# The .Xresources.d/theme script is sourced in the `.Xresources` file.
-	@mkdir -p x11/.Xresources.d
 	@cat $(THEME_DIR)/base16-$(THEME).Xresources > x11/.Xresources.d/theme
 
+	@# clears all xresources
+	@xrdb -remove
 
 	@# The default
 	@# `startx` using `.xsession` will use my Xresources file as long as it\'s allowed
@@ -77,6 +74,7 @@ theme: submodules
 	@# with my colors. So, override.
 	@xrdb -merge -override ~/.Xresources
 
+	@xrdb -query | grep -v '^$$'
 
 themes-list: submodules
 	@echo
@@ -88,6 +86,15 @@ themes-list: submodules
 		| sed 's/base16-//g'			\
 		| xargs basename --suffix=.Xresources	\
 		| column
+
+
+# New base16 themes: https://github.com/chriskempson/base16
+.PHONE: fonts
+fonts: submodules
+	@rm -rf ~/.cache/fontconfig
+	@fc-cache -vf
+	@$(MAKE) theme
+
 
 # Check for git submodules which are not initialized (prefixed with "-").
 #
@@ -105,8 +112,7 @@ dotemacs:
 		--eval='(setq use-package-verbose t)'								\
 		--eval='(load "~/.emacs")'									\
 		--eval='(use-package-report)'									\
-		--eval='(message "%s" (with-current-buffer "*use-package statistics*" (buffer-string)))'	\
-		--eval='(message "use pkg min time  %s" use-package-minimum-reported-time)'
+		--eval='(message "%s" (with-current-buffer "*use-package statistics*" (buffer-string)))'
 
 elpa:
 	rm -rf $(HOME)/.emacs.d/elpa

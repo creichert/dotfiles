@@ -19,20 +19,20 @@ configure applications to use your system fonts.
     ```
     style "user-font"
     {
-            font_name="monofur for Powerline 12"
+            font_name="monofur 12"
     }
 
     widget_class "*" style "user-font"
 
-    gtk-font-name="monofur for Powerline 12"
-    monospace-font-name="monofur for Powerline 12"
+    gtk-font-name="monofur 12"
+    monospace-font-name="monofur 12"
     ```
 
 - `~/.config/gtkrc-3.0/settings.ini`
 
     ```
     [Settings]
-    gtk-font-name = monofur for Powerline 12
+    gtk-font-name = monofur 12
 
     ```
 

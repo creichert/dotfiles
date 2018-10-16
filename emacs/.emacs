@@ -150,7 +150,7 @@
 
 
 (use-package ido-vertical-mode
-  :load-path "~/.emacs.d/site-lisp/ido-vertical-mode.el/"
+  :load-path "site-lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :init
@@ -563,7 +563,8 @@
 
 (use-package flyspell
   :requires (flycheck)
-  :hook ((prog-mode . flyspell-prog-mode)))
+  :hook ((text-mode . turn-on-flyspell)
+         (prog-mode . flyspell-prog-mode)))
 
 
 (use-package haskell-mode
@@ -592,7 +593,7 @@
   (haskell-indentation-layout-offset 4)
   (haskell-indentation-left-offset 4)
   (haskell-stylish-on-save t)
-  ;;haskell-interactive-mode-eval-mode t
+  (haskell-interactive-mode-eval-mode t)
   ;; this is set automatically when there is a `stack.yaml`
   ;; haskell-process-type 'stack-ghci
   ;; print type info to presentation-mode instead
@@ -709,8 +710,14 @@
 (use-package sql
   :defer
   ;;:ensure-system-package ("postgresql-client-common")
+  :init
   :config
   (add-to-list 'sql-postgres-options "--no-psqlrc"))
+
+
+(use-package sql-pgpass
+  :after (sql)
+  :load-path "lisp/")
 
 
 (use-package sh-script
@@ -775,10 +782,22 @@
   :init
   (setq epa-pinentry-mode 'loopback))
 
+;; minimal modeline
+;;
+;; (set-face-attribute 'mode-line-emphasis :weight 1)
+;; (set-face-attribute 'mode-line-highlight :background (x-get-resource "color2" ""))
+;; (mode-line ((t (:background ,atom-one-dark-black :foreground ,atom-one-dark-silver))))
+;; (mode-line-buffer-id ((t (:weight bold))))
+;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
+(use-package faces
+  :config
+  (set-face-attribute 'mode-line nil :box '(:width 0.5))
+  (set-face-attribute 'mode-line-inactive nil :box nil))
+
 
 (use-package org
   :defer t
-
+  ;;:ensure org-plus-contrib
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
   :bind (;; capture task to inbox
          ([f6]   . org-capture)
@@ -830,21 +849,13 @@
   (org-log-done 'time)
   ;; ALL incoming org captures go into my inbox.
   (org-default-notes-file "~/org/inbox.org")
+
   :init
   (setq
-
-   ;; org-archive-location "~/org/archive.org::*"
-   ;;org-stuck-projects '("TODO={.+}/-DONE" nil nil "SCHEDULED:\\|DEADLINE:"))
-
-   ;; after an item is scheduled, it will
-   ;; show in the agenda on that day. this
-   ;; is used to clear the inbox to categories
-
    org-refile-use-outline-path 'file
    org-refile-targets '((org-agenda-files :maxlevel . 3))
-
    org-hide-leading-stars nil
-
+   org-log-reschedule 'time
    org-src-fontify-natively t
    org-src-strip-leading-and-trailing-blank-lines t
    org-confirm-babel-evaluate nil
@@ -886,60 +897,64 @@
 (use-package bbdb
   :ensure t
   :commands (bbdb)
-
   :bind (:map bbdb-mode-map
-         ( "\t"  . bbdb-complete-mail ))
-
+              ( "\t"  . bbdb-complete-mail )
+              ( "C-c b s" . bbdb-display-current-record)
+              ( "C-c b l" . bbdb-toggle-records-layout)
+              :map message-mode-map
+              ( "\t"  . bbdb-complete-mail )
+              ( "C-c b l" . bbdb-toggle-records-layout))
+  :hook ((mail-setup . bbdb-mail-aliases)
+         (message-setup . bbdb-mail-aliases))
   :custom
   (bbdb-message-all-addresses t)
   (bbdb-complete-mail-allow-cycling t)
   (bbdb-case-fold-search t)
   (bbdb-offer-save t)
-
+  (bbdb-pop-up-window-size 5)
+  (bbdb-mua-pop-up-window-size 3)
   :init
   (setq bbdb-mua-update-interactive-p '(query . create))
+  (setq bbdb-update-records-p 'query)
+  (setq bbdb-mua-auto-update-p 'search)
   (setq bbdb-message-all-addresses t)
-  ;; 2000 is the default value which is added to a message's score if the
-  ;; message is from a person in the BBDB database.
-  ;;(setq bbdb/gnus-score-default 2000)
-  ;;(bbdb-auto-notes-rules)
-  ;;(bbdb-message-summary-mark t)
-
   :config
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"         'bbdb-delete-field-or-record
     "\C-x \C-s"    'bbdb-save)
-  (bbdb-initialize 'gnus 'message 'pgp)
-  (bbdb-mua-auto-update-init 'gnus 'message))
+  (bbdb-initialize 'gnus 'message 'pgp 'anniv)
+  (bbdb-mua-auto-update-init 'gnus 'message 'rmail))
 
-;; use 'gnus for incoming messages too
-(use-package bbdb-anniv
-  :after (bbdb)
-  :config (bbdb-initialize 'anniv))
 
 (use-package bbdb-pgp
   :disabled
   :after (bbdb))
 
-(use-package org-bbdb
-  :disabled
-  :ensure t
-  :after (org bbdb))
 
-;; todo move up, set in xresources instead?
-(add-to-list 'default-frame-alist '(font . "monofur 12"))
-(set-face-attribute 'default t :font '"monofur 12")
-
-
-;; minimal modeline
+;; use 'gnus for incoming messages too
 ;;
-;; (set-face-attribute 'mode-line-emphasis :weight 1)
-;; (set-face-attribute 'mode-line-highlight :background (x-get-resource "color2" ""))
-;; (mode-line ((t (:background ,atom-one-dark-black :foreground ,atom-one-dark-silver))))
-;; (mode-line-buffer-id ((t (:weight bold))))
-;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
-(set-face-attribute 'mode-line nil :box '(:width 0.5))
-(set-face-attribute 'mode-line-inactive nil :box nil)
+;; https://www.emacswiki.org/emacs/UpgradeBBDB
+(use-package bbdb-anniv
+  :after (bbdb)
+  :config
+  (bbdb-initialize 'anniv)
+  (add-to-list 'bbdb-anniv-alist
+               '((work . "%n's %d%s work anniversary"))))
+
+
+(use-package org-bbdb
+  ;; TODO work anniversary
+  :disabled
+  ;;:bind (("C-c o b" . org-bbdb-open))
+  :after (org)
+  :config
+  (add-to-list 'org-bbdb-anniversary-format-alist
+             '(("work" .
+               (lambda (name years suffix)
+                 (concat "Work Anniversary: [[bbdb:" name "][" name " ("
+                         ;; handles numbers as well as strings
+                         (format "%s" years)
+                         suffix ")]]"))))))
 
 
 ;; extra emacs packages & utilities I use which aren't "core"

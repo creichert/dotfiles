@@ -67,15 +67,18 @@
 
 (use-package gnus
   :after (gnus-private)
-  ;; :custom
-  ;;(gnus-check-new-newsgroups nil)
-  ;;(gnus-check-bogus-newsgroups nil)
+  :hook
+  ((gnus-select-group       . gnus-group-set-timestamp))
+  ((gnus-after-exiting-gnus . kill-emacs))
+  :bind (:map gnus-group-mode-map
+              ("j" . gnus-group-next-group)
+              ("k" . gnus-group-prev-group))
   :config
+  (setq gnus-check-new-newsgroups nil)
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
 
-        ;;gnus-treat-from-gravatar t
         ;;gnus-message-replysign t
         ;;gnus-treat-x-pgp-sig t
 
@@ -88,9 +91,6 @@
         gnus-large-newsgroup 100
         gnus-use-cache t
         gnus-button-url 'browse-url-browser-function
-
-        ;; set in w3m config, not here
-        mm-text-html-renderer 'gnus-w3m
 
         gnus-mime-view-all-parts t
         gnus-mime-display-multipart-related-as-mixed t
@@ -112,7 +112,10 @@
         ;;
         ;;   - "%U%R%z%B%(%[%4L: %-23,23f%]%) %s")
         ;;
-        gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f | %B%s%)\n"
+        gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f %ub | %B%s%)\n"
+
+        ;; gnus-user-date-format-alist
+        ;; '((t . "%Y-%m-%d %H:%M"))
 
         ;; improve gmail support
         gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
@@ -121,8 +124,17 @@
         ;;gnus-score-find-score-files-function
         ;;'(gnus-score-find-bnews.span class=compcode>bbdb/gnus-score)
 
-        ;;gnus-treat-highlight-signature 'last
+        ;;message-highlight-citation t
+        ;;gnus-suppress-duplicates t
+        gnus-treat-highlight-citation t
+        gnus-treat-highlight-signature t
+
         ;;gnus-list-groups-with-ticked-articles nil
+
+        ;; REQUIRED HERE (trouble w/ mm-decode use-package def) to render html
+        ;; properly
+        mm-inline-text-html-with-images t
+        mm-text-html-renderer 'gnus-w3m
 
         ;;gnus-cloud-synced-files
         ;;'("~/.authinfo.gpg"
@@ -168,17 +180,35 @@
 
   ;;:custom-face
   ;;(gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
+  )
+
+(use-package bbdb-gnus
+  :after (gnus)
+  ;;:bind (:map gnus-article-mode
+  ;;            ("C-c b d" . bbdb-display-records))
+  )
+
+
+(use-package gnus-gravatar
+  :disabled
+  :after (gnus)
   :hook
-  ((gnus-select-group       . gnus-group-set-timestamp))
-  ((gnus-after-exiting-gnus . kill-emacs)))
+  ((gnus-article-prepare . gnus-treat-from-gravatar)
+   (gnus-article-prepare . gnus-treat-mail-gravatar)))
+
 
 (use-package gnus-sum
+
+  :bind (:map gnus-summary-mode-map
+              ("j" . gnus-summary-next-article)
+              ("k" . gnus-summary-previous-article))
   :config
   (add-to-list
    'gnus-newsgroup-variables
-   '(gnus-buttonized-mime-types . '("multipart/encrypted"
-                                    "multipart/signed"
-                                    "multipart/alternative"))))
+   '(gnus-buttonized-mime-types
+     . '("multipart/encrypted"
+         "multipart/signed"
+         "multipart/alternative"))))
 
 
 (use-package gnus-srvr
@@ -191,24 +221,56 @@
   :after (gnus-group)
   :bind (:map gnus-topic-mode-map
               ("?\t" . gnus-topic-select-group))
-  :custom
-  (gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
-  (gnus-subscribe-newsgroup-method         'gnus-subscribe-topics))
+  :init
+  ;; NOTE when first starting gnus, these options will effectively "kill" or
+  ;; make all new groups zombies. for my purposes, this is intentional. I alway
+  ;; go and whitelist new groups, and setup topics manually first or after the
+  ;; fact.
+  ;;
+  ;; Setting up gnus topics in elisp is virtually impossible to do and maintain
+  ;; topic parameters. If you know how to do this, email me.
+  (setq gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
+  (setq gnus-subscribe-newsgroup-method         'gnus-subscribe-topics)
+  (setq gnus-topic-display-empty-topics         nil))
 
 
 ;; Outgoing messages sent via msmtp (config in ~/.msmptrc)
+;;
+;; TODO send via built-ins
+;;
+;;(setq message-send-mail-function 'smtpmail-send-it
+;;      send-mail-function 'smtpmail-send-it
+;;      smtpmail-debug-info t
+;;      smtpmail-debug-verb t
+;;      smtpmail-auth-credentials '(password-store)
+;;      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "email@example.com" nil))
+;;      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+;;
+;; Use header "X-Smtp-Message-Mode"
+;;
+;; or
+;;
+;; Message settings
+;;
+;; Available SMTP accounts.
+;; (defvar smtp-accounts
+;;   '((plain    "me@foo.com" "smtp.foo.com" 25  "user-foo" "pass-foo")
+;;     (login    "me@foo.com" "smtp.moo.com" 25  "user-moo" nil)
+;;     (cram-md5 "me@foo.com" "smtp.hoo.com" 25  "user-hoo" nil)
+;;     (ssl      "me@bar.com" "smtp.bar.com" 587 "user-bar" "pass-bar" "key" "cert")
+;;     (ssl      "me@baz.com" "smtp.baz.com" 587 "user-baz" "pass-baz" "key" "cert")))
+;;
 (use-package message
+  :hook ((message-mode . flyspell-mode))
   :bind (:map message-mode-map
               ( "\t"  . bbdb-complete-mail ))
   :init
-  (setq vc-follow-symlinks t)
   (setq sendmail-program "/usr/bin/msmtp")
+  ;;(setq message-sendmail-extra-arguments
+  ;;      '("--password" (auth-source-pass-get "")))
+
   (setq
    message-confirm-send t
-
-   ;; message-sendmail-f-is-evil nil
-   mail-envelope-from 'header
-   mail-specify-envelope-from 'header
    message-send-mail-function 'message-send-mail-with-sendmail
    message-kill-buffer-on-exit t
 
@@ -218,36 +280,10 @@
 
    ;; Use the "From" field to determine the sender.
    message-sendmail-envelope-from 'header
+   mail-envelope-from 'header
    mail-specify-envelope-from 'header)
 
-  ;; Message settings
-
-  ;;(setq message-send-mail-function 'smtpmail-send-it
-  ;;      send-mail-function 'smtpmail-send-it
-  ;;      smtpmail-debug-info t
-  ;;      smtpmail-debug-verb t
-  ;;      message-alternative-emails nil
-  ;;      smtpmail-auth-credentials '(password-store)
-  ;;      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "email@example.com" nil))
-  ;;      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-  ;;      smtpmail-default-smtp-server "smtp.gmail.com"
-  ;;      smtpmail-smtp-server "smtp.gmail.com"
-  ;;      smtpmail-smtp-service 587
-  ;;      starttls-gnutls-program "/usr/local/bin/gnutls-cli"
-  ;;      starttls-extra-arguments nil
-  ;;      starttls-use-gnutls t
-  ;;      smtpmail-use-starttls t)
-
-  :config
-  (add-hook 'message-mode-hook
-            (lambda ()
-              (flyspell-mode 1)))
-
-  (unless (boundp 'message-fill-column)
-    (add-hook 'message-mode-hook
-              (lambda ()
-                (setq fill-column 100)
-                (turn-on-auto-fill)))))
+  )
 
 (use-package mml
   :hook ((gnus-message-setup . mml-secure-message-sign-pgpmime))
@@ -267,13 +303,16 @@
   (setq epg-user-id user-mail-address))
 
 (use-package mm-decode
+  :after (gnus)
   :init
-  (setq mm-inline-text-html-with-images t
-        mm-discouraged-alternatives '("text/html" "text/richtext")
-        ;;mm-text-html-renderer 'w3m
-        ;;mm-w3m-safe-url-regexp nil
-        mm-decrypt-option 'always
-        mm-verify-option 'always))
+  (setq
+   mm-inline-text-html-with-images t
+   mm-text-html-renderer 'gnus-w3m
+   ;;mm-discouraged-alternatives '("text/html" "text/richtext")
+   ;;mm-sign-option 'guided
+   ;;mm-encrypt-option 'guided
+   mm-decrypt-option 'always
+   mm-verify-option 'always))
 
 (use-package gnus-icalendar
   :requires (gnus)
@@ -284,5 +323,24 @@
   (require 'org-agenda)
   (gnus-icalendar-setup)
   (gnus-icalendar-org-setup))
+
+
+(use-package org-mime
+  :after (org)
+  :ensure t
+  :config
+  (setq org-mime-export-options
+        '(:section-numbers nil
+                           :with-author nil
+                           :with-toc nil))
+  (setq org-mime-find-html-start
+      (lambda (start)
+        (save-excursion
+          (goto-char start)
+          (search-forward "<#secure method=pgpmime mode=sign>")
+          ;;(or (search-forward "<#secure method=pgpmime mode=sign>") (search-forward "--text below this line--"))
+          (+ (point) 1))))
+  ;;(setq org-mime-library 'mml)
+  )
 
 ;;; .gnus ends here
