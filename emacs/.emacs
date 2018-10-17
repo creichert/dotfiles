@@ -764,9 +764,10 @@
 (use-package gnus
   :commands gnus
   :custom
-  (mail-user-agent 'gnus-user-agent)
-  (gnus-directory "~/.emacs.d/gnus/")
-  (read-mail-command 'gnus-user-agent))
+  (gnus-home-directory "~/")
+  (gnus-directory "~/.emacs.d/gnus/news/")
+  (message-directory "~/.emacs.d/gnus/mail/")
+  (nnfolder-directory "~/.emacs.d/gnus/mail/"))
 
 
 (use-package mm-decode
