@@ -11,12 +11,10 @@
   :requires (evil)
   :ensure t
   ;; end :commands
-  :commands (
-             ggtags-mode
+  :commands (ggtags-mode
              ggtags-find-reference
              ggtags-idutils-query
-             pop-tag-mark
-             )
+             pop-tag-mark)
   :init
   (add-hook 'c-mode-common-hook
             (lambda ()

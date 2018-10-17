@@ -67,10 +67,17 @@
 
 (use-package gnus
   :after (gnus-private)
+  :preface
+  (defun reload-dotgnus ()
+    "Reload init file without restarting Emacs."
+    (interactive)
+    (load-file "~/.gnus"))
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
   ((gnus-after-exiting-gnus . kill-emacs))
-  :bind (:map gnus-group-mode-map
+  :bind (("C-\\" . smex)
+         ("C-c ;" . reload-dotgnus)
+         :map gnus-group-mode-map
               ("j" . gnus-group-next-group)
               ("k" . gnus-group-prev-group))
   :config
@@ -120,9 +127,6 @@
         ;; improve gmail support
         gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
         gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
-
-        ;;gnus-score-find-score-files-function
-        ;;'(gnus-score-find-bnews.span class=compcode>bbdb/gnus-score)
 
         ;;message-highlight-citation t
         ;;gnus-suppress-duplicates t
@@ -219,10 +223,15 @@
 
 (use-package gnus-art
   :config
-  ;; See gnus-block-private-groups for original value:
-  ;;(setq gnus-blocked-images nil)
-  (setq gnus-visible-headers (concat "^Sender:\\|^X-GitHub-.*:\\|^Subject:\\|^User-Agent:\\|^X-Google-Sender-Delegation" gnus-visible-headers)))
+  (setq gnus-visible-headers
+        (concat "^Sender:\\|"
+                "^X-GitHub-.*:\\|"
+                "^X-Google-Sender-Delegation\\|"
+                gnus-visible-headers)))
 
+(use-package gnus-msg
+  :custom
+  (gnus-message-highlight-citation t))
 
 (use-package gnus-srvr
   :bind (:map gnus-browse-mode-map
@@ -242,8 +251,8 @@
   ;;
   ;; Setting up gnus topics in elisp is virtually impossible to do and maintain
   ;; topic parameters. If you know how to do this, email me.
-  (setq gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
-  (setq gnus-subscribe-newsgroup-method         'gnus-subscribe-topics)
+  ;; (setq gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
+  ;; (setq gnus-subscribe-newsgroup-method         'gnus-subscribe-topics)
   (setq gnus-topic-display-empty-topics         nil))
 
 
@@ -313,7 +322,7 @@
   (add-to-list 'message-required-mail-headers '(References))
 
   :init
-  (setq mail-host-address "gnus")
+  (setq mail-host-address "gnus.com")
   (setq sendmail-program "/usr/bin/msmtp")
   ;;(setq message-sendmail-extra-arguments
   ;;      '("--password" (auth-source-pass-get "")))
@@ -335,9 +344,8 @@
    ;; Use the "From" field to determine the sender.
    message-sendmail-envelope-from 'header
    mail-envelope-from 'header
-   mail-specify-envelope-from 'header)
+   mail-specify-envelope-from 'header))
 
-  )
 
 (use-package mml
   :hook ((gnus-message-setup . mml-secure-message-sign-pgpmime))
@@ -352,9 +360,11 @@
    ;; We want to be able to read the emails we wrote.
    mml-secure-openpgp-encrypt-to-self t))
 
+
 (use-package epg
   :init
   (setq epg-user-id user-mail-address))
+
 
 (use-package mm-decode
   :after (gnus)
@@ -371,10 +381,9 @@
 
 (use-package gnus-icalendar
   :requires (gnus)
-  :init
+  :config
   (setq gnus-icalendar-org-capture-file "~/org/cal.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
-  :config
   (require 'org-agenda)
   (gnus-icalendar-setup)
   (gnus-icalendar-org-setup))
@@ -388,13 +397,13 @@
         '(:section-numbers nil
                            :with-author nil
                            :with-toc nil))
-  (setq org-mime-find-html-start
-      (lambda (start)
-        (save-excursion
-          (goto-char start)
-          (search-forward "<#secure method=pgpmime mode=sign>")
-          ;;(or (search-forward "<#secure method=pgpmime mode=sign>") (search-forward "--text below this line--"))
-          (+ (point) 1))))
+  ;;(setq org-mime-find-html-start
+  ;;    (lambda (start)
+  ;;      (save-excursion
+  ;;        (goto-char start)
+  ;;        (search-forward "<#secure method=pgpmime mode=sign>")
+  ;;        ;;(or (search-forward "<#secure method=pgpmime mode=sign>") (search-forward "--text below this line--"))
+  ;;        (+ (point) 1))))
   ;;(setq org-mime-library 'mml)
   )
 

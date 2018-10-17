@@ -842,14 +842,12 @@
      (scheme . t)
      (C . t)
      (ledger . t)
-     (shell . t)
-     ))
+     (shell . t)))
   :custom
   (org-completion-use-ido t)
   (org-log-done 'time)
   ;; ALL incoming org captures go into my inbox.
   (org-default-notes-file "~/org/inbox.org")
-
   :init
   (setq
    org-refile-use-outline-path 'file
@@ -882,12 +880,9 @@
         org-deadline-warning-days 7
         org-agenda-include-diary t
         org-log-done 'time)
-
   (advice-add 'org-refile :after
               (lambda (&rest _)
                 (org-save-all-org-buffers)))
-
-
   :config
   (add-to-list 'org-agenda-custom-commands
                '("j" todo "TODO" ((org-agenda-max-entries 5))))

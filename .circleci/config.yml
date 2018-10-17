@@ -25,7 +25,9 @@ jobs:
 
       - run: make dotfiles
       - run: xvfb-run make dotemacs
+
       - run: xvfb-run make theme
+      - run: xvfb-run make fonts
 
       - restore_cache:
           keys:

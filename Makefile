@@ -74,7 +74,7 @@ theme: submodules
 	@# with my colors. So, override.
 	@xrdb -merge -override ~/.Xresources
 
-	@xrdb -query | grep -v '^$$'
+	@-xrdb -query | grep -v '^$$'
 
 themes-list: submodules
 	@echo
