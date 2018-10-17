@@ -77,9 +77,11 @@
   ((gnus-after-exiting-gnus . kill-emacs))
   :bind (("C-\\" . smex)
          ("C-c ;" . reload-dotgnus)
+         :map gnus-summary-mode-map
+         ("D" . gnus-summary-delete-article)
          :map gnus-group-mode-map
-              ("j" . gnus-group-next-group)
-              ("k" . gnus-group-prev-group))
+         ("j" . gnus-group-next-group)
+         ("k" . gnus-group-prev-group))
   :config
   (setq gnus-check-new-newsgroups nil)
   (setq gnus-interactive-exit nil
@@ -163,10 +165,10 @@
 
   ;; (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   ;; Gnus/Evil keybindings (only use basics in some modes)
-  (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
-  (evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
-  (evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
-  (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
+  ;;(evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
+  ;;(evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
+  ;;(evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
+  ;;(evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
   (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs "D"
     'gnus-summary-delete-article)
 
@@ -192,6 +194,11 @@
   ;;:custom-face
   ;;(gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
   )
+
+(use-package gnus-agent
+  :init
+  (setq gnus-agent-queue-mail t)
+  (setq gnus-agent-prompt-send-queue t))
 
 (use-package bbdb-gnus
   :after (gnus)
