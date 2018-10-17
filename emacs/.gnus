@@ -361,6 +361,11 @@
    mml-secure-openpgp-encrypt-to-self t))
 
 
+(use-package nndraft
+  :config
+  (add-to-list 'nndraft-required-headers '(References)))
+
+
 (use-package epg
   :init
   (setq epg-user-id user-mail-address))
