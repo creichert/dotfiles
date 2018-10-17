@@ -126,8 +126,15 @@
 
         ;;message-highlight-citation t
         ;;gnus-suppress-duplicates t
+        gnus-message-highlight-citation t
+        gnus-article-highlight t
+
         gnus-treat-highlight-citation t
         gnus-treat-highlight-signature t
+        gnus-treat-buttonize t
+        gnus-treat-fill-long-lines nil
+        ;;gnus-treat-fill-article nil
+
 
         ;;gnus-list-groups-with-ticked-articles nil
 
@@ -198,7 +205,6 @@
 
 
 (use-package gnus-sum
-
   :bind (:map gnus-summary-mode-map
               ("j" . gnus-summary-next-article)
               ("k" . gnus-summary-previous-article))
@@ -209,6 +215,13 @@
      . '("multipart/encrypted"
          "multipart/signed"
          "multipart/alternative"))))
+
+
+(use-package gnus-art
+  :config
+  ;; See gnus-block-private-groups for original value:
+  ;;(setq gnus-blocked-images nil)
+  (setq gnus-visible-headers (concat "^Sender:\\|^X-GitHub-.*:\\|^Subject:\\|^User-Agent:\\|^X-Google-Sender-Delegation" gnus-visible-headers)))
 
 
 (use-package gnus-srvr
@@ -261,18 +274,59 @@
 ;;     (ssl      "me@baz.com" "smtp.baz.com" 587 "user-baz" "pass-baz" "key" "cert")))
 ;;
 (use-package message
-  :hook ((message-mode . flyspell-mode))
+  :preface
+  ;; (message-send-hook)
+  (defvar my-message-attachment-regexp
+    "attach\\|\Wfiles?\W\\|enclose\\|\Wdraft\\|\Wversion")
+  (defun check-mail ()
+    "ask for confirmation before sending a mail. Scan for possible attachment"
+    (save-excursion
+      (message-goto-body)
+      (let ((warning ""))
+        (when (and (search-forward-regexp my-message-attachment-regexp nil t nil)
+                   (not (search-forward "<#part" nil t nil)))
+          (setq warning "No attachment.\n"))
+        (goto-char (point-min))
+        (unless (message-y-or-n-p (concat warning "Send the message ? ") nil nil)
+          (error "Message not sent")))))
+
+  (defun confirm-empty-subject ()
+    "Allow user to quit when current message subject is empty."
+    (or (message-field-value "Subject")
+        (message-yes-or-no-p "Really send without Subject? ")
+        (keyboard-quit)))
+  :hook
+  ;; (auto-revert-tail-mode)
+  ((message-mode . flyspell-mode))
+  ((message-send . check-mail))
+  ;; ensure subject is not empty
+  ((message-send . confirm-empty-subject))
+  ((message-send . ispell-message))
+
   :bind (:map message-mode-map
               ( "\t"  . bbdb-complete-mail ))
+  :config
+  ;; References From Date)
+  (add-to-list 'message-draft-headers '(References))
+  (add-to-list 'message-draft-headers '(In-Reply-To))
+  ;;(add-to-list 'message-draft-headers '(User-Agent))
+  (add-to-list 'message-required-mail-headers '(References))
+
   :init
+  (setq mail-host-address "gnus")
   (setq sendmail-program "/usr/bin/msmtp")
   ;;(setq message-sendmail-extra-arguments
   ;;      '("--password" (auth-source-pass-get "")))
 
   (setq
-   message-confirm-send t
+   ;; this is handled by (check-mail). the problem with this confirmation is
+   ;; that it always jumps to the end of the buffer, making it hard to review.
+   ;;
+   ;; message-confirm-send t
+
    message-send-mail-function 'message-send-mail-with-sendmail
    message-kill-buffer-on-exit t
+   message-generate-headers-first t ;;'(References))
 
    ;; Default citation. I prefer inline, but gmail and it's users prefer
    ;; citation above for most replies.
@@ -308,6 +362,7 @@
   (setq
    mm-inline-text-html-with-images t
    mm-text-html-renderer 'gnus-w3m
+   ;;mm-html-blocked-images nil
    ;;mm-discouraged-alternatives '("text/html" "text/richtext")
    ;;mm-sign-option 'guided
    ;;mm-encrypt-option 'guided

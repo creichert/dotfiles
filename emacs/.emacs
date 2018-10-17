@@ -563,8 +563,8 @@
 
 (use-package flyspell
   :requires (flycheck)
-  :hook ((text-mode . turn-on-flyspell)
-         (prog-mode . flyspell-prog-mode)))
+  :hook ((markdown-mode . turn-on-flyspell))
+        ((prog-mode     . flyspell-prog-mode)))
 
 
 (use-package haskell-mode
@@ -856,6 +856,7 @@
    org-refile-targets '((org-agenda-files :maxlevel . 3))
    org-hide-leading-stars nil
    org-log-reschedule 'time
+   org-log-into-drawer 'time
    org-src-fontify-natively t
    org-src-strip-leading-and-trailing-blank-lines t
    org-confirm-babel-evaluate nil
@@ -911,8 +912,8 @@
   (bbdb-complete-mail-allow-cycling t)
   (bbdb-case-fold-search t)
   (bbdb-offer-save t)
-  (bbdb-pop-up-window-size 5)
-  (bbdb-mua-pop-up-window-size 3)
+  (bbdb-pop-up-window-size 6)
+  (bbdb-mua-pop-up-window-size 6)
   :init
   (setq bbdb-mua-update-interactive-p '(query . create))
   (setq bbdb-update-records-p 'query)
