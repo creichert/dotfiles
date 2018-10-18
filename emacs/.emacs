@@ -919,39 +919,9 @@
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"         'bbdb-delete-field-or-record
     "\C-x \C-s"    'bbdb-save)
-  (bbdb-initialize 'gnus 'message 'pgp 'anniv)
+  (bbdb-initialize 'gnus 'message 'anniv)
   (bbdb-mua-auto-update-init 'gnus 'message 'rmail))
 
-
-(use-package bbdb-pgp
-  :disabled
-  :after (bbdb))
-
-
-;; use 'gnus for incoming messages too
-;;
-;; https://www.emacswiki.org/emacs/UpgradeBBDB
-(use-package bbdb-anniv
-  :after (bbdb)
-  :config
-  (bbdb-initialize 'anniv)
-  (add-to-list 'bbdb-anniv-alist
-               '((work . "%n's %d%s work anniversary"))))
-
-
-(use-package org-bbdb
-  ;; TODO work anniversary
-  :disabled
-  ;;:bind (("C-c o b" . org-bbdb-open))
-  :after (org)
-  :config
-  (add-to-list 'org-bbdb-anniversary-format-alist
-             '(("work" .
-               (lambda (name years suffix)
-                 (concat "Work Anniversary: [[bbdb:" name "][" name " ("
-                         ;; handles numbers as well as strings
-                         (format "%s" years)
-                         suffix ")]]"))))))
 
 
 ;; extra emacs packages & utilities I use which aren't "core"

@@ -68,6 +68,20 @@
 (use-package gnus
   :after (gnus-private)
   :preface
+  (defun gnus-article-receive-epg-keys ()
+    "Fetch unknown keys from a signed message."
+    (interactive)
+    (with-current-buffer gnus-article-buffer
+      (save-excursion
+        (goto-char (point-min))
+        (if
+            (re-search-forward "\\[\\[PGP Signed Part:No public key for \\([A-F0-9]\\{16,16\\}\\) created at "
+                               nil 'noerror)
+            (shell-command (format "gpg --keyserver %s --recv-keys %s"
+                                   ;;"pgp.mit.edu"
+                                   "keyserver.ubuntu.com"
+                                   (match-string 1)))
+          (message "No unknown signed parts found.")))))
   (defun reload-dotgnus ()
     "Reload init file without restarting Emacs."
     (interactive)
@@ -75,21 +89,23 @@
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
   ((gnus-after-exiting-gnus . kill-emacs))
-  :bind (("C-\\" . smex)
+  :bind (("C-\\"  . smex)
          ("C-c ;" . reload-dotgnus)
-         :map gnus-summary-mode-map
-         ("D" . gnus-summary-delete-article)
          :map gnus-group-mode-map
          ("j" . gnus-group-next-group)
-         ("k" . gnus-group-prev-group))
+         ("k" . gnus-group-prev-group)
+         :map gnus-summary-mode-map
+         ("D"     . gnus-summary-delete-article)
+         ("C-c k" . gnus-article-receive-epg-keys)
+         :map gnus-article-mode-map
+         ("C-c k" . gnus-article-receive-epg-keys))
   :config
-  (setq gnus-check-new-newsgroups nil)
+  ;;(setq gnus-check-new-newsgroups nil)
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
 
         ;;gnus-message-replysign t
-        ;;gnus-treat-x-pgp-sig t
 
         ;;gnus-list-groups-with-ticked-articles nil
         gnus-group-list-inactive-groups nil ;; list-groups-with-ticked-articles nil
@@ -139,9 +155,8 @@
         gnus-treat-highlight-signature t
         gnus-treat-buttonize t
         gnus-treat-fill-long-lines nil
+        gnus-treat-x-pgp-sig t
         ;;gnus-treat-fill-article nil
-
-
         ;;gnus-list-groups-with-ticked-articles nil
 
         ;; REQUIRED HERE (trouble w/ mm-decode use-package def) to render html
@@ -149,26 +164,23 @@
         mm-inline-text-html-with-images t
         mm-text-html-renderer 'gnus-w3m
 
-        ;;gnus-cloud-synced-files
-        ;;'("~/.authinfo.gpg"
-        ;;  "~/.gnus"
-        ;;  "~/.emacs.d/bbdb"
-        ;;  ;;"~/.emacs.d/gnus/*"
-        ;;  ;;"~/.emacs.d/gnus/*"
-        ;;  ;;(:directory "~/Mail" :match ".*")
-        ;;  ;;(:directory "~/emacs.d/gnus" :match ".*")
-        ;;  (:directory "~/org" :match ".*.org\\'")
-        ;;  (:directory "~/org" :match ".*.org_archive\\'")
-        ;;  ))
+        mm-verify-option 'always
+        mm-decrypt-option 'always
+
+        ;; gnus-message-replyencrypt t
+        ;; gnus-message-replysignencrypted t
+        gnus-message-replysign t
+        gnus-treat-x-pgp-sig t
         )
+
   :init
 
   ;; (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   ;; Gnus/Evil keybindings (only use basics in some modes)
-  ;;(evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
-  ;;(evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
-  ;;(evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
-  ;;(evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
+  (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
+  (evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
+  (evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
+  (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
   (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs "D"
     'gnus-summary-delete-article)
 
@@ -205,6 +217,22 @@
   ;;:bind (:map gnus-article-mode
   ;;            ("C-c b d" . bbdb-display-records))
   )
+
+
+(use-package gnus-cloud
+  :disabled
+  :config
+  gnus-cloud-synced-files
+  '("~/.authinfo.gpg"
+    "~/.gnus"
+    "~/.emacs.d/bbdb"
+    ;;"~/.emacs.d/gnus/*"
+    ;;"~/.emacs.d/gnus/*"
+    ;;(:directory "~/Mail" :match ".*")
+    ;;(:directory "~/emacs.d/gnus" :match ".*")
+    (:directory "~/org" :match ".*.org\\'")
+    (:directory "~/org" :match ".*.org_archive\\'")
+    ))
 
 
 (use-package gnus-gravatar
@@ -391,8 +419,9 @@
    mm-decrypt-option 'always
    mm-verify-option 'always))
 
+
 (use-package gnus-icalendar
-  :requires (gnus)
+  :requires (gnus org)
   :config
   (setq gnus-icalendar-org-capture-file "~/org/cal.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
