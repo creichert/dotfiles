@@ -933,7 +933,6 @@
   (bbdb-mua-auto-update-init 'gnus 'message 'rmail))
 
 
-
 ;; extra emacs packages & utilities I use which aren't "core"
 (use-package extra
   :load-path "lisp"

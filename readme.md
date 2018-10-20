@@ -63,9 +63,8 @@ once a project is opened:
 
 ### haskell
 
-- `C-l` load/reload project in ghci repl
-- `C-l` reload current module in ghci
-- `f` jump to definition
+- `C-c l` reload current module in ghci
+- `C-c ;` load/reload project in ghci repl
 
 #### haskell etags
 

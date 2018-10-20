@@ -146,8 +146,7 @@
         gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
         gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date)
 
-        ;;message-highlight-citation t
-        ;;gnus-suppress-duplicates t
+        gnus-suppress-duplicates t
         gnus-message-highlight-citation t
         gnus-article-highlight t
 
@@ -167,8 +166,6 @@
         mm-verify-option 'always
         mm-decrypt-option 'always
 
-        ;; gnus-message-replyencrypt t
-        ;; gnus-message-replysignencrypted t
         gnus-message-replysign t
         gnus-treat-x-pgp-sig t
         )
@@ -374,7 +371,8 @@
 
    ;; Default citation. I prefer inline, but gmail and it's users prefer
    ;; citation above for most replies.
-   ;; message-citation-line-function 'message-insert-formatted-citation-line
+   ;;message-citation-line-function 'message-insert-formatted-citation-line
+   ;;message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
 
    ;; Use the "From" field to determine the sender.
    message-sendmail-envelope-from 'header
@@ -408,19 +406,19 @@
    mm-inline-text-html-with-images t
    mm-text-html-renderer 'gnus-w3m
    ;;mm-html-blocked-images nil
-   ;;mm-discouraged-alternatives '("text/html" "text/richtext")
-   ;;mm-sign-option 'guided
-   ;;mm-encrypt-option 'guided
+   mm-discouraged-alternatives '("text/html" "text/richtext")
+   mm-sign-option 'guided
+   mm-encrypt-option 'guided
    mm-decrypt-option 'always
    mm-verify-option 'always))
 
 
 (use-package gnus-icalendar
-  :requires (gnus org)
   :config
+  (require 'org)
+  (require 'org-agenda)
   (setq gnus-icalendar-org-capture-file "~/org/cal.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
-  (require 'org-agenda)
   (gnus-icalendar-setup)
   (gnus-icalendar-org-setup))
 
