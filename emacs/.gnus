@@ -68,8 +68,12 @@
 (use-package gnus
   :after (gnus-private)
   :preface
+  (defun reload-dotgnus ()
+    "Reload init file without restarting Emacs."
+    (interactive)
+    (load-file "~/.gnus"))
   (defun gnus-article-receive-epg-keys ()
-    "Fetch unknown keys from a signed message."
+    "Fetch unknown PGP public keys for a signed a signed message. [[PGP Signed Part: ... ]]"
     (interactive)
     (with-current-buffer gnus-article-buffer
       (save-excursion
@@ -78,14 +82,11 @@
             (re-search-forward "\\[\\[PGP Signed Part:No public key for \\([A-F0-9]\\{16,16\\}\\) created at "
                                nil 'noerror)
             (shell-command (format "gpg --keyserver %s --recv-keys %s"
-                                   ;;"pgp.mit.edu"
                                    "keyserver.ubuntu.com"
                                    (match-string 1)))
-          (message "No unknown signed parts found.")))))
-  (defun reload-dotgnus ()
-    "Reload init file without restarting Emacs."
-    (interactive)
-    (load-file "~/.gnus"))
+          (message "No unknown signed parts found."))
+        (gnus-summary-show-article))))
+
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
   ((gnus-after-exiting-gnus . kill-emacs))
@@ -104,12 +105,8 @@
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
-
-        ;;gnus-message-replysign t
-
-        ;;gnus-list-groups-with-ticked-articles nil
-        gnus-group-list-inactive-groups nil ;; list-groups-with-ticked-articles nil
-
+        gnus-group-sort 'gnus-groups-sort-by-rank
+        gnus-group-list-inactive-groups nil
         gnus-default-charset 'utf-8
         gnus-default-posting-charset 'utf-8
 
@@ -125,22 +122,6 @@
         ;; only needed for compatibility w/ other mail readers
         gnus-save-newsrc-file nil
         gnus-read-newsrc-file nil
-
-        ;; Group line
-        gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
-
-        ;; Summary line
-        ;;
-        ;; alternative summary lines:
-        ;;
-        ;;   - ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n"
-        ;;
-        ;;   - "%U%R%z%B%(%[%4L: %-23,23f%]%) %s")
-        ;;
-        gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f %ub | %B%s%)\n"
-
-        ;; gnus-user-date-format-alist
-        ;; '((t . "%Y-%m-%d %H:%M"))
 
         ;; improve gmail support
         gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
@@ -158,20 +139,24 @@
         ;;gnus-treat-fill-article nil
         ;;gnus-list-groups-with-ticked-articles nil
 
-        ;; REQUIRED HERE (trouble w/ mm-decode use-package def) to render html
-        ;; properly
         mm-inline-text-html-with-images t
         mm-text-html-renderer 'gnus-w3m
-
-        mm-verify-option 'always
-        mm-decrypt-option 'always
-
         gnus-message-replysign t
-        gnus-treat-x-pgp-sig t
+
+        ;; Group line
+        gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
+
+        ;; Summary line
+        ;;
+        ;; alternative summary lines:
+        ;;
+        ;;   - ":%U%R %B %s %-60=|%4L |%-20,20f |%&user-date; \n"
+        ;;
+        ;;   - "%U%R%z%B%(%[%4L: %-23,23f%]%) %s")
+        ;;
+        gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f %ub | %B%s%)\n"
         )
-
   :init
-
   ;; (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   ;; Gnus/Evil keybindings (only use basics in some modes)
   (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)

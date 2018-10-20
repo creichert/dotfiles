@@ -90,6 +90,7 @@ found in `x11/.Xresources`.
 
 ## misc. posts & hacks
 
+- [Fetch unknown PGP keys in Gnus](docs/fetch-unknown-pgp-keys-in-gnus.md)
 - [self-documenting Makefiles](docs/self-documenting-makefiles.md)
 - [`flycheck-haskell` in stack projects](docs/flycheck-haskell-in-stack-projects.md)
 - [clean chromium system fonts](docs/clean-chromium-system-fonts.md)
