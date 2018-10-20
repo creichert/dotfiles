@@ -4,7 +4,7 @@
 #
 # See the README.md for more information about how symlinks are built.
 
-PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin
+PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin global
 
 # The location you want to install packages to
 PKG_DIR         ?= $(or $(target),$(HOME))
@@ -20,6 +20,7 @@ XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
 STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore=".*.pem"		\
+		--ignore=".*.rej"		\
 		--ignore=".*.swp"		\
 		--ignore=".*~"			\
 		--ignore="dotlocal/"

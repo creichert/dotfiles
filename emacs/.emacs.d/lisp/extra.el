@@ -49,16 +49,17 @@
 
 
 (use-package ggtags
-  :disabled
-  ;; get it from package.el
   :defer
   :requires (evil)
   :ensure t
-  ;; end :commands
   :commands (ggtags-mode
              ggtags-find-reference
              ggtags-idutils-query
              pop-tag-mark)
+  ;;:ensure-system-package
+  ;;((gtags    . "global")
+  ;; (pip      . "pip install pygments"))
+  ;; (pygments . "pip install pygments"))
   :init
   (add-hook 'c-mode-common-hook
             (lambda ()
@@ -66,12 +67,6 @@
                 (ggtags-mode 1))))
   :config
   (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
-  ;;(require 'subr-x)
-  ;; (setq ggtags-oversize-limit 104857600)
-  ;; (setq ggtags-sort-by-nearness t)
-  ;;(setq ggtags-use-idutils t)
-  ;;(setq ggtags-use-project-gtagsconf nil)
-
   :bind (
          ("M-," . pop-tag-mark)
          ("M-/" . ggtags-find-reference)
@@ -82,10 +77,7 @@
          ("M-l" . ggtags-navigation-visible-mode)
          ("M-j" . ggtags-navigation-visible-mode)
          ("M-k" . next-error)
-         ("M-i" . previous-error)
-         ;;:map evil-motion-state-map
-         ;;("f" . ggtags-find-definitions)
-         ))
+         ("M-i" . previous-error)))
 
 
 (use-package auth-source-pass
