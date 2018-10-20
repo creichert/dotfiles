@@ -628,6 +628,7 @@
   ((haskell-mode . electric-pair-local-mode))
   ((haskell-mode . electric-indent-local-mode))
   ((haskell-mode . electric-layout-mode))
+  ((haskell-mode . prettify-symbols-mode))
 
   :preface
   ;; https://gist.github.com/989ad8be92f68682abff
