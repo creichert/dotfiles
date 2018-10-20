@@ -168,7 +168,8 @@
   (evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
   (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
-  (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs)
+  (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs "D"
+    'gnus-summary-delete-article)
 
   ;;(gnus-add-configuration
   ;; '(article
@@ -387,8 +388,8 @@
    mm-text-html-renderer 'gnus-w3m
    ;;mm-html-blocked-images nil
    mm-discouraged-alternatives '("text/html" "text/richtext")
-   mm-sign-option 'guided
-   mm-encrypt-option 'guided
+   ;;mm-sign-option 'guided
+   ;;mm-encrypt-option 'guided
    mm-decrypt-option 'always
    mm-verify-option 'always))
 
