@@ -557,8 +557,18 @@
 (use-package flycheck
   :ensure t
   :hook ((after-init . global-flycheck-mode))
+  ;;:ensure-system-package (("proselint" . "pip install proselint"))
+  :config
+  (flycheck-define-checker proselint
+    "A linter for prose."
+    :command ("proselint" source-inplace)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+              (id (one-or-more (not (any " "))))
+              (message) line-end))
+    :modes (message-mode) ;; text-mode markdown-mode gfm-mode org-mode))
   :custom
-  (flycheck-emacs-lisp-load-path 'inherit))
+  (flycheck-emacs-lisp-load-path 'inherit)))
 
 
 (use-package flyspell

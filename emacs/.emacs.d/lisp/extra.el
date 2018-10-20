@@ -89,7 +89,6 @@
 
 
 (use-package auth-source-pass
-  :disabled
   :ensure t
   :defer
   :config
