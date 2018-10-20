@@ -197,11 +197,9 @@
   (setq gnus-agent-queue-mail t)
   (setq gnus-agent-prompt-send-queue t))
 
+
 (use-package bbdb-gnus
-  :after (gnus)
-  ;;:bind (:map gnus-article-mode
-  ;;            ("C-c b d" . bbdb-display-records))
-  )
+  :after (gnus))
 
 
 (use-package gnus-cloud

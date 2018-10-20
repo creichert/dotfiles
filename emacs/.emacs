@@ -566,7 +566,7 @@
     ((warning line-start (file-name) ":" line ":" column ": "
               (id (one-or-more (not (any " "))))
               (message) line-end))
-    :modes (message-mode text-mode markdown-mode gfm-mode org-mode))
+    :modes (message-mode text-mode markdown-mode gfm-mode org-mode)
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)))
 
@@ -594,13 +594,14 @@
               ("C-c C-j" . haskell-run-function-under-cursor))
 
   :custom
-  ;;(haskell-indentation-electric-flag t)
+  ;; enable debugging
+  ;;(haskell-process-log t)
+  (haskell-indentation-electric-flag t)
   (haskell-process-args-stack-ghci '("--ghci-options=-O0"))
-  ;;(haskell-process-suggest-haskell-docs-imports t)
-  ;;(haskell-process-suggest-restart nil)
-  ;;(haskell-process-suggest-hoogle-imports t)
-  ;;(haskell-process-suggest-remove-import-lines t)
+  (haskell-process-suggest-haskell-docs-imports t)
+  (haskell-process-suggest-restart nil)
   (haskell-indentation-layout-offset 4)
+  (haskell-indentation-starter-offset 4)
   (haskell-indentation-left-offset 4)
   (haskell-stylish-on-save t)
   (haskell-interactive-mode-eval-mode t)
@@ -617,10 +618,6 @@
   ;; experimenting with brittany
   ;; haskell-mode-stylish-haskell-path "brittany"
   ;;
-  ;; only needed if having issues
-  ;; haskell-process-log t
-  ;; haskell-font-lock-quasi-quote-modes
-  ;; (append '(("yamlQQ" . yaml-mode) ("js" . js-mode)) haskell-font-lock-quasi-quote-modes)
   ;;haskell-indentation-starter-offset 4
 
   :hook
