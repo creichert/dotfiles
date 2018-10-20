@@ -167,7 +167,8 @@
   (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
-  ;; (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
+  (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
+  (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs)
 
   ;;(gnus-add-configuration
   ;; '(article
@@ -228,8 +229,9 @@
 
 (use-package gnus-sum
   :bind (:map gnus-summary-mode-map
-              ("j" . gnus-summary-next-article)
-              ("k" . gnus-summary-previous-article))
+              ;;("j" . gnus-summary-next-article)
+              ;;("k" . gnus-summary-previous-article)
+              )
   :config
   (add-to-list
    'gnus-newsgroup-variables
