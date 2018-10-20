@@ -480,6 +480,7 @@
  :init (setq
         browse-url-browser-function
         '(("github.com" . browse-url-chromium)
+          ("trello.com" . browse-url-chromium)
           ("accounts.google.com" . browse-url-chromium)
           ("assertible.com" . browse-url-chromium)
           ("slack.com" . browse-url-chromium)
