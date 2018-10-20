@@ -19,9 +19,9 @@
   (require 'use-package))
 (require 'bind-key)
 (setq use-package-compute-statistics t)
-
 ;; Ensure system executables are installed for certain packages.
 ;;(use-package use-package-ensure-system-package :ensure t)
+(setq source-directory "~/dev/c/emacs")
 
 
 ;; minor modes
@@ -224,7 +224,6 @@
 ;; start in a state that immediately supports typing or direct emacs keybindings
 (use-package etags
   :defer
-  ;;:hook ((xref? . xref-etags-mode))
   :custom
   (tags-revert-without-query t)
   :config
