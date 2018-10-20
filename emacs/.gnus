@@ -92,9 +92,6 @@
   ((gnus-after-exiting-gnus . kill-emacs))
   :bind (("C-\\"  . smex)
          ("C-c ;" . reload-dotgnus)
-         :map gnus-group-mode-map
-         ("j" . gnus-group-next-group)
-         ("k" . gnus-group-prev-group)
          :map gnus-summary-mode-map
          ("D"     . gnus-summary-delete-article)
          ("C-c k" . gnus-article-receive-epg-keys)
@@ -134,14 +131,24 @@
         gnus-treat-highlight-citation t
         gnus-treat-highlight-signature t
         gnus-treat-buttonize t
-        gnus-treat-fill-long-lines nil
         gnus-treat-x-pgp-sig t
-        ;;gnus-treat-fill-article nil
-        ;;gnus-list-groups-with-ticked-articles nil
+        gnus-message-replysign t
+        gnus-treat-hide-citation-maybe t
+
+        ;; This setting configures how to handle subscribing groups that match
+        ;; gnus-auto-subscribed-categories (defaults mail backends, not news).
+        ;; gnus-subscribe-interactively implies hierarchical subscription.
+        gnus-subscribe-options-newsgroup-method 'gnus-subscribe-interactively
+        gnus-subscribe-hierarchical-interactive t
+        gnus-topic-display-empty-topics nil
+
+        ;; This controls subscriptions for backends that don't match
+        ;; gnus-auto-subscribed-categories. By default, they are created as
+        ;; zombie groups (which I prefer).
+        ;;
+        ;; (setq gnus-subscribe-newsgroup-method 'gnus-subscribe-topics)
 
         mm-inline-text-html-with-images t
-        mm-text-html-renderer 'gnus-w3m
-        gnus-message-replysign t
 
         ;; Group line
         gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
@@ -154,17 +161,13 @@
         ;;
         ;;   - "%U%R%z%B%(%[%4L: %-23,23f%]%) %s")
         ;;
-        gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f %ub | %B%s%)\n"
-        )
+        gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f %ub | %B%s%)\n")
   :init
-  ;; (add-hook 'gnus-group-mode-hook 'gnus-agent-mode)
   ;; Gnus/Evil keybindings (only use basics in some modes)
   (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
-  (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
-  (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs "D"
-    'gnus-summary-delete-article)
+  ;; (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
 
   ;;(gnus-add-configuration
   ;; '(article
@@ -250,27 +253,25 @@
   :custom
   (gnus-message-highlight-citation t))
 
+
+(use-package gnus-group
+  :bind (:map gnus-group-mode-map
+              ("j" . gnus-browse-next-group)
+              ("k" . gnus-browse-prev-group)))
+
+
 (use-package gnus-srvr
   :bind (:map gnus-browse-mode-map
               ( "q" .  'gnus-browse-exit )))
 
 
 (use-package gnus-topic
+  :after (gnus gnus-group)
   :hook ((gnus-group-mode . gnus-topic-mode))
-  :after (gnus-group)
   :bind (:map gnus-topic-mode-map
-              ("?\t" . gnus-topic-select-group))
-  :init
-  ;; NOTE when first starting gnus, these options will effectively "kill" or
-  ;; make all new groups zombies. for my purposes, this is intentional. I alway
-  ;; go and whitelist new groups, and setup topics manually first or after the
-  ;; fact.
-  ;;
-  ;; Setting up gnus topics in elisp is virtually impossible to do and maintain
-  ;; topic parameters. If you know how to do this, email me.
-  ;; (setq gnus-subscribe-options-newsgroup-method 'gnus-subscribe-topics)
-  ;; (setq gnus-subscribe-newsgroup-method         'gnus-subscribe-topics)
-  (setq gnus-topic-display-empty-topics         nil))
+              ("h" . gnus-topic-goto-next-topic)
+              ("l" . gnus-topic-goto-prev-topic)
+              ("?\t" . gnus-topic-select-group)))
 
 
 ;; Outgoing messages sent via msmtp (config in ~/.msmptrc)
@@ -301,34 +302,28 @@
 ;;
 (use-package message
   :preface
-  ;; (message-send-hook)
-  (defvar my-message-attachment-regexp
+  (defvar message-attachment-regexp
     "attach\\|\Wfiles?\W\\|enclose\\|\Wdraft\\|\Wversion")
   (defun check-mail ()
-    "ask for confirmation before sending a mail. Scan for possible attachment"
+    "Ask user for confirmation before sending a mail. Scan for possible attachment or missing subject"
     (save-excursion
       (message-goto-body)
+      ;; Check missing attachments
       (let ((warning ""))
-        (when (and (search-forward-regexp my-message-attachment-regexp nil t nil)
+        (when (and (search-forward-regexp message-attachment-regexp nil t nil)
                    (not (search-forward "<#part" nil t nil)))
           (setq warning "No attachment.\n"))
         (goto-char (point-min))
         (unless (message-y-or-n-p (concat warning "Send the message ? ") nil nil)
-          (error "Message not sent")))))
-
-  (defun confirm-empty-subject ()
-    "Allow user to quit when current message subject is empty."
-    (or (message-field-value "Subject")
-        (message-yes-or-no-p "Really send without Subject? ")
-        (keyboard-quit)))
+          (error "Message not sent")))
+      ;; Check empty subject
+      (or (message-field-value "Subject")
+          (message-yes-or-no-p "Really send without Subject? ")
+          (keyboard-quit))))
   :hook
-  ;; (auto-revert-tail-mode)
   ((message-mode . flyspell-mode))
   ((message-send . check-mail))
-  ;; ensure subject is not empty
-  ((message-send . confirm-empty-subject))
   ((message-send . ispell-message))
-
   :bind (:map message-mode-map
               ( "\t"  . bbdb-complete-mail ))
   :config
