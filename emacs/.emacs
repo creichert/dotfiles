@@ -566,7 +566,7 @@
     ((warning line-start (file-name) ":" line ":" column ": "
               (id (one-or-more (not (any " "))))
               (message) line-end))
-    :modes (message-mode) ;; text-mode markdown-mode gfm-mode org-mode))
+    :modes (message-mode text-mode markdown-mode gfm-mode org-mode))
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)))
 
