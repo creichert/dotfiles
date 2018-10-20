@@ -386,13 +386,8 @@
   :hook ((gnus-message-setup . mml-secure-message-sign-pgpmime))
   :init
   (setq
-   ;; mime-edit-pgp-signers '("C84EF897")
-   ;; mime-edit-pgp-encrypt-to-self t
-   ;; mml2015-encrypt-to-self t
-   ;; mml2015-sign-with-sender t
-   ;; You need to replace this key ID with your own key ID!
+   mml-secure-openpgp-sign-with-sender t
    mml-secure-openpgp-signers '("ACBE1F5C")
-   ;; We want to be able to read the emails we wrote.
    mml-secure-openpgp-encrypt-to-self t))
 
 
