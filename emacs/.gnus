@@ -127,6 +127,8 @@
         gnus-suppress-duplicates t
         gnus-message-highlight-citation t
         gnus-article-highlight t
+        ;;gnus-article-treat-custom t
+        gnus-article-unsplit-urls t
 
         gnus-treat-highlight-citation t
         gnus-treat-highlight-signature t
@@ -275,6 +277,13 @@
               ("?\t" . gnus-topic-select-group)))
 
 
+(use-package gnus-article-treat-patch
+  :load-path "site-lisp/"
+  :config
+  (add-to-list 'gnus-article-patch-conditions "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" )
+  ;; github PR inline comment patch
+  (add-to-list 'gnus-article-patch-conditions "@@.*@@" ))
+
 ;; Outgoing messages sent via msmtp (config in ~/.msmptrc)
 ;;
 ;; TODO send via built-ins
@@ -395,9 +404,8 @@
 
 
 (use-package gnus-icalendar
+  :requires (org org-agenda)
   :config
-  (require 'org)
-  (require 'org-agenda)
   (setq gnus-icalendar-org-capture-file "~/org/cal.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
   (gnus-icalendar-setup)

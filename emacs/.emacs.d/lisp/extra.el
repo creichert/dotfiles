@@ -316,6 +316,25 @@
   :load-path "lisp"
   :if (file-exists-p "~/.emacs.d/lisp/lpaste.el"))
 
+
+(use-package yasnippet
+  :defer
+  :ensure t
+  :after (evil-leader)
+  :hook ((haskell-mode . yas-minor-mode))
+  :config
+  (use-package yasnippet-snippets
+    :disabled
+    :ensure t)
+  (use-package haskell-snippets
+    :ensure t)
+  ;;(yas-global-mode t)
+  (yas-reload-all)
+  (setq yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
+  (evil-leader/set-key-for-mode 'magit-status-mode
+    "SPC" 'yas-expand-maybe)
+  :diminish yas-minor-mode)
+
 (provide 'extra)
 
 ;;; extra.el ends here

@@ -93,7 +93,6 @@
 (use-package simple
   :bind
   ("C-c C-c M-x" . execute-extended-command)
-  ("C-c b"       . execute-extended-command)
   ("C-c E"       . first-error)
   ("C-c e"       . next-error)
   ("C-c C-e p"   . previous-error)
@@ -134,11 +133,86 @@
   (vc-follow-symlinks t))
 
 
+;;(use-package xref
+;;  :config
+;;  (add-to-list 'xref-after-jump-hook '(delete-windows-on "*xref*")
+;;  :init
+;;  (setq xref-show-xrefs-function
+;;        (lambda (xrefs alist)
+;;          (let ((buffer (xref--show-xref-buffer xrefs alist)))
+;;            (quit-window)
+;;            (let ((orig-buf (current-buffer))
+;;                  (orig-pos (point))
+;;                  (done)
+;;                  (candidate
+;;                   ;;(ido-completing-read+
+;;                   (completing-read
+;;                    "xref: "
+;;                    (let ((collection nil))
+;;                      (dolist (xref xrefs)
+;;                        (with-slots (summary location) xref
+;;                          (let* ((line (xref-location-line location))
+;;                                 (file (xref-location-group location))
+;;                                 (candidate
+;;                                  (concat
+;;                                   (propertize
+;;                                    (concat
+;;                                     file
+;;                                     ;;(if ivy-xref-use-file-path
+;;                                     ;;    file
+;;                                     ;;  (file-name-nondirectory file))
+;;                                     (if (integerp line)
+;;                                         (format ":%d: " line)
+;;                                       ": "))
+;;                                    'face 'compilation-info)
+;;                                   (progn
+;;                                     ;;(when ivy-xref-remove-text-properties
+;;                                     (set-text-properties 0 (length summary) nil summary)
+;;                                     ;;)
+;;                                     summary
+;;                                     ))))
+;;                            ;;xref-etags-location
+;;                            (push `(,candidate . ,location) collection))))
+;;                            ;;(push (cons candidate xref) collection))))
+;;                      (nreverse collection))))
+;;                   )
+;;               ;;(setq done (eq 'ivy-done this-command))
+;;               (condition-case err
+;;                   ;; (let* ((marker (xref-location-marker ((car candidate) (cdr candidate))))
+;;                   ;; (let* ((marker (xref-location-marker (cdr candidate)))
+;;                   (with-slots (summary location) candidate
+;;                   (let* ((marker (xref-location-marker location))
+;;                          (buf (marker-buffer marker)))
+;;                     (with-current-buffer buffer
+;;                       (select-window
+;;                        ;; function signature changed in
+;;                        ;; 2a973edeacefcabb9fd8024188b7e167f0f9a9b6
+;;                        (if (version< emacs-version "26.0.90")
+;;                            (xref--show-pos-in-buf marker buf t)
+;;                          (xref--show-pos-in-buf marker buf)))))
+;;                   )
+;;                 (user-error (message (error-message-string err)))))
+;;
+;;            buffer)
+;;        ))
+;;)
+
+
 (use-package ido
   :demand
   :bind
   ("C-x f" . ido-find-file)
   :config
+  ;; (add-to-list 'ido-ignore-files "\\.rej$")
+  ;; (add-to-list 'ido-ignore-files "\\.dyn_hi$")
+  ;; (add-to-list 'ido-ignore-files "\\.dyn_o$")
+  ;; (add-to-list 'ido-ignore-files "\\.hi$")
+  ;; (add-to-list 'ido-ignore-files "\\.o$")
+  (add-to-list 'ido-ignore-files "\\.tags$")
+  ;; (add-to-list 'ido-ignore-files "\\TAGS$")
+  ;; (add-to-list 'ido-ignore-buffers "*Compile-Log*")
+  ;; (add-to-list 'ido-ignore-buffers "*Help*")
+  ;; (add-to-list 'ido-ignore-buffers "TAGS")
   (ido-mode 1)
   (ido-everywhere 1)
   :init
@@ -202,7 +276,8 @@
         projectile-use-git-grep 't
         ;;projectile-project-search-path '("~/dev")
         projectile-globally-ignored-directories '("~/.stack/snapshots")
-        projectile-tags-command "make tags")
+        projectile-tags-command "make tags"
+        )
   :config
   (projectile-mode)
   (projectile-register-project-type
@@ -419,6 +494,28 @@
          (t (setq unread-command-events (append unread-command-events
                                                 (list evt))))))))
 
+  (defun next-err ()
+    (interactive)
+    (or (flycheck-next-error)
+        (haskell-goto-next-error)
+        (next-error)))
+  (defun prev-err ()
+    (interactive)
+    (or (flycheck-previous-error)
+        (haskell-goto-prev-error)
+        (previous-error)))
+  (defun find-def ()
+    (interactive)
+    (cond
+     ((fboundp 'projectile-find-tag) (projectile-find-tag))
+     ((fboundp 'ggtags-find-definitions) (ggtags-find-definitions))
+     (t (xref-find-definitions))))
+
+  ;; (or (ggtags-find-tag)
+  ;; flycheck-previous-error)
+  ;;     (haskell-goto-prev-error)
+  ;;     (previous-error)))
+
   (defun recompile-quietly ()
     "Re-compile without changing the window configuration."
     (interactive)
@@ -432,12 +529,7 @@
     "o"       'other-window
     "xc"      'save-buffers-kill-terminal
 
-    "F"       'projectile-find-tag ;;xref-find-definitions
-    ;;"F"       (lamdba ()
-    ;;                  (cond
-    ;;                   ((fboundp 'projectile-find-tag) (projectile-find-tag))
-    ;;                   (t (xref-find-definitions))))
-
+    "F"       'find-def
     "S"       'xref-pop-marker-stack
 
     "tc"      'toggle-compilation-visible
@@ -449,12 +541,8 @@
     "c"       'projectile-compile-project
     "b"       'projectile-switch-to-buffer
     "ptt"     'projectile-toggle-between-implementation-and-test
-
-    ;; "e"       'flycheck-next-error
-    ;; "w"       'flycheck-previous-error
-    "e"       'next-error
-    "w"       'previous-error
-
+    "e"       'next-err
+    "w"       'prev-err
     ")"       'evil-next-close-paren
     "("       'insert-parentheses
     "9"       'insert-parentheses
@@ -577,98 +665,6 @@
         ((prog-mode     . flyspell-prog-mode)))
 
 
-(use-package haskell-mode
-  :ensure t
-  :mode ("\\.hs\\'" "\\.lhs\\'")
-  :interpreter
-  ("stack"      . haskell-mode)
-  ("runhaskell" . haskell-mode)
-  :bind (:map haskell-mode-map
-              ("C-c C-t" . haskell-process-do-type)
-              ("C-c C-c C-t" . haskell-session-change-target)
-              ("C-c C-i" . haskell-process-do-info)
-              ("C-c C-;" . haskell-process-load-file)
-              ("C-c C-l" . haskell-process-reload)
-              ("C-c i"   . haskell-navigate-imports-go)
-              ("C-c I"   . haskell-navigate-imports-return)
-              ("C-c C-j" . haskell-run-function-under-cursor))
-
-  :custom
-  ;; enable debugging
-  ;;(haskell-process-log t)
-  (haskell-indentation-electric-flag t)
-  (haskell-process-args-stack-ghci '("--ghci-options=-O0"))
-  (haskell-process-suggest-haskell-docs-imports t)
-  (haskell-process-suggest-restart nil)
-  (haskell-indentation-layout-offset 4)
-  (haskell-indentation-starter-offset 4)
-  (haskell-indentation-left-offset 4)
-  (haskell-stylish-on-save t)
-  (haskell-interactive-mode-eval-mode t)
-  ;; this is set automatically when there is a `stack.yaml`
-  ;; haskell-process-type 'stack-ghci
-  ;; print type info to presentation-mode instead
-  ;; of message area.
-  ;; haskell-process-use-presentation-mode t
-  ;;
-  ;; bytecode takes up more memory than object code.
-  ;; enable
-  ;; haskell-process-reload-with-fbytecode nil
-  ;;
-  ;; experimenting with brittany
-  ;; haskell-mode-stylish-haskell-path "brittany"
-  ;;
-  ;;haskell-indentation-starter-offset 4
-
-  :hook
-  ((haskell-mode . haskell-doc-mode))
-  ((haskell-mode . haskell-collapse-mode))
-  ((haskell-mode . haskell-decl-scan-mode))
-  ((haskell-mode . haskell-indentation-mode))
-  ((haskell-mode . electric-pair-local-mode))
-  ((haskell-mode . electric-indent-local-mode))
-  ((haskell-mode . electric-layout-mode))
-  ((haskell-mode . prettify-symbols-mode))
-
-  :preface
-  ;; https://gist.github.com/989ad8be92f68682abff
-  (defun haskell-run-function-under-cursor ()
-    "Send the word-at-point as a function to GHCi process."
-    (interactive)
-    ;; (haskell-process-set-sent-stdin 't)
-    (haskell-process-send-string
-     (haskell-session-process (haskell-session-maybe))
-     (format "%s" (word-at-point))))
-
-  :config
-  (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
-  (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
-
-  (evil-leader/set-key-for-mode 'haskell-mode
-    "hir" 'hindent-reformat-region
-    "hid" 'hindent-reformat-decl-or-fill
-    "f" 'haskell-mode-jump-to-def-or-tag
-    "TAB" 'haskell-hide-toggle
-    "l" 'haskell-process-load-or-reload)
-
-  (add-to-list 'electric-layout-rules
-               '((?\{) (?\} . around)))
-  (add-to-list 'electric-layout-rules
-               '((?\[) (?\] . around))))
-
-
-(use-package hindent
-  :ensure t
-  ;; :init (hindent-mode)
-  :after (haskell-mode)
-  :hook ((haskell-mode . hindent-mode)))
-
-(use-package flycheck-haskell
-  :ensure t
-  :after (flycheck haskell-mode)
-  :custom (flycheck-ghc-args '("-Wall"))
-  :hook ((haskell-mode . flycheck-haskell-setup)))
-
 
 (use-package web-mode
   :ensure t
@@ -786,7 +782,7 @@
 
 
 (use-package epa
-  :defer t
+  :defer
   ;;:ensure-system-package (gpg2 . gnupg2)
   :init
   (setq epa-pinentry-mode 'loopback))
@@ -805,7 +801,7 @@
 
 
 (use-package org
-  :defer t
+  :defer
   ;;:ensure org-plus-contrib
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
   :bind (;; capture task to inbox
@@ -929,6 +925,10 @@
     "\C-x \C-s"    'bbdb-save)
   (bbdb-initialize 'gnus 'message 'anniv)
   (bbdb-mua-auto-update-init 'gnus 'message 'rmail))
+
+
+(use-package haskell-settings
+  :load-path "lisp/")
 
 
 ;; extra emacs packages & utilities I use which aren't "core"

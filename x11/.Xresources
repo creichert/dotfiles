@@ -12,7 +12,7 @@ XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT
 *VT100*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
 
 ! TODO Emacs.FontBackend: xft
-Emacs.font: FONT1_FAMILY
+Emacs.font: FONT1_FAMILY,xft:DejaVuSansMono:12
 Emacs.menuBar: off
 Emacs.toolBar: -1
 Emacs.verticalScrollBars: off
