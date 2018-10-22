@@ -102,7 +102,6 @@
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
         gnus-asynchronous t
-        gnus-group-sort 'gnus-groups-sort-by-rank
         gnus-group-list-inactive-groups nil
         gnus-default-charset 'utf-8
         gnus-default-posting-charset 'utf-8
@@ -113,8 +112,6 @@
 
         gnus-mime-view-all-parts t
         gnus-mime-display-multipart-related-as-mixed t
-
-        gnus-gcc-mark-as-read t
 
         ;; only needed for compatibility w/ other mail readers
         gnus-save-newsrc-file nil
@@ -135,7 +132,13 @@
         gnus-treat-buttonize t
         gnus-treat-x-pgp-sig t
         gnus-message-replysign t
+        gnus-message-replyencrypt t
         gnus-treat-hide-citation-maybe t
+
+        ;;gnus-message-archive-method
+        ;;gnus-message-archive-group 'identity
+        gnus-update-message-archive-method t
+        gnus-gcc-mark-as-read t
 
         ;; This setting configures how to handle subscribing groups that match
         ;; gnus-auto-subscribed-categories (defaults mail backends, not news).
@@ -150,7 +153,9 @@
         ;;
         ;; (setq gnus-subscribe-newsgroup-method 'gnus-subscribe-topics)
 
-        mm-inline-text-html-with-images t
+        ;; The number of Message-IDs to keep in the duplicate suppression list.
+        ;;gnus-duplicate-list-length 10000
+
 
         ;; Group line
         gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
@@ -258,6 +263,8 @@
 
 
 (use-package gnus-group
+  :config
+  (setq gnus-group-sort-function 'gnus-groups-sort-by-rank)
   :bind (:map gnus-group-mode-map
               ("j" . gnus-browse-next-group)
               ("k" . gnus-browse-prev-group)))
