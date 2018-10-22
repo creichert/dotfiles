@@ -258,17 +258,15 @@
 
 
 (use-package noflet
-  :disabled
+  :defer
   :ensure t)
 
 
 (use-package kill-ring-ido
-  :disabled
   :requires (ido noflet)
   :custom (kill-ring-ido-shortage-length 40) ; where 6 is your value
-  :bind (("M-y" . kill-ring-ido))
+  :bind (("C-c k" . kill-ring-ido))
   :load-path "site-lisp/")
-
 
 
 (use-package pdf-tools
