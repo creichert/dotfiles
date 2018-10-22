@@ -802,20 +802,17 @@
 
 (use-package org
   :defer
-  ;;:ensure org-plus-contrib
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
+  :config
+  (add-to-list 'org-modules '(org-checklist org-drill org-jsinfo org-git-link))
   :bind (;; capture task to inbox
          ([f6]   . org-capture)
-
          ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
          ("C-c C-/" . org-toggle-timestamp-type)
-
-         ;;:map org-agenda-mode-map
-         ;;("\\"   . smex)
+         ("C-\\"    . smex)
          ([f8]   . org-agenda)
          ([C-f8] . org-agenda-kill-all-agenda-buffers))
-
   ;; todo
   ;;:hook
   ;;;; Highlight the result of source block
