@@ -1,4 +1,5 @@
 
+
 (use-package haskell-mode
   :ensure t
   :mode ("\\.hs\\'" "\\.lhs\\'")
@@ -6,20 +7,21 @@
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
   :bind (:map haskell-mode-map
-              ("C-c C-t" . haskell-process-do-type)
-              ("C-c C-c C-t" . haskell-session-change-target)
-              ("C-c C-i" . haskell-process-do-info)
+              ("C-c h t" . haskell-process-do-type)
+              ("C-c h h" . hoogle)
+              ("C-c h t" . haskell-session-change-target)
+              ("C-c h i" . haskell-process-do-info)
               ("C-c C-;" . haskell-process-load-file)
               ("C-c C-l" . haskell-process-reload)
               ("C-c i"   . haskell-navigate-imports-go)
               ("C-c I"   . haskell-navigate-imports-return)
-              ("C-c C-j" . haskell-run-function-under-cursor))
+              ;;("C-c C-j" . haskell-run-function-under-cursor)
+              )
   ;; TODO keep tags up-to-date even if its the damn *.tags file.
   ;; they incrementally update the xref tags tables
   :custom
   ;; enable debugging
-  ;;(haskell-process-log t)
-  (haskell-process-args-stack-ghci '("--ghci-options=-O0"))
+  (haskell-process-log t)
   (haskell-process-suggest-haskell-docs-imports t)
   (haskell-process-suggest-restart nil)
   ;; indentation
@@ -28,7 +30,7 @@
   ;;(haskell-indentation-starter-offset 4)
   (haskell-indentation-left-offset 4)
   (haskell-stylish-on-save t)
-  (haskell-interactive-mode-eval-mode t)
+  ;;(haskell-interactive-mode-eval-mode t)
   ;;
   ;; this is set automatically when there is a `stack.yaml`
   ;; haskell-process-type 'stack-ghci
@@ -38,7 +40,8 @@
   ;;
   ;; bytecode takes up more memory than object code.
   ;; enable
-  ;; haskell-process-reload-with-fbytecode nil
+  ;;(haskell-process-reload-with-fbytecode nil)
+
   ;;
   ;; experimenting with brittany
   ;; haskell-mode-stylish-haskell-path "brittany"
@@ -64,13 +67,14 @@
   :config
   (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
   (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
+  (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-O0")
 
   (evil-leader/set-key-for-mode 'haskell-mode
     "hir" 'hindent-reformat-region
     "hid" 'hindent-reformat-decl-or-fill
-    "f" 'haskell-mode-jump-to-def-or-tag
+    "f"   'haskell-mode-jump-to-def-or-tag
     "TAB" 'haskell-hide-toggle
-    "l" 'haskell-process-load-or-reload)
+    "l"   'haskell-process-load-or-reload)
 
   ;;(add-to-list 'electric-layout-rules
   ;;             '((?\{ . around) (?\} . around)))
@@ -102,9 +106,20 @@
 
 
 (use-package ghcid
-  :commands (ghcid)
-  :load-path "site-lisp/")
-  ;;:hook ((haskell-mode . ghcid-mode)))
+  :defer
+  :load-path "site-lisp/"
+  ;;:custom (ghcid-target "exe")
+  :preface
+  (defun show-ghcid-buf () (interactive) (show-buffer ghcid-buf-name))
+  (defun set-ghcid-target (arg)
+    (interactive
+     (list
+      (completing-read "ghcid target: " '("assertible:exe:assertible" "assertible:test:unit" nil))))
+    (setq ghcid-target arg))
+  :bind (:map haskell-mode-map
+              ("C-c m s" . ghcid)
+              ("C-c m b" . show-ghcid-buf)
+              ("C-c m t" . set-ghcid-target)))
 
 
 (provide 'haskell-settings)
