@@ -4,15 +4,15 @@ set editing-mode vi
 # show a different cursor based on insert or command mode.
 #
 # first, check for Virtual Console
-$if term=linux
- set vi-ins-mode-string \1\e[?0c\2
- set vi-cmd-mode-string \1\e[?8c\2
-$else
+$if term=xterm-256color
  set vi-ins-mode-string \1\e[6 q\2
  set vi-cmd-mode-string \1\e[2 q\2
+ set show-mode-in-prompt on
 $endif
-
-set show-mode-in-prompt on
+#$else
+# set vi-ins-mode-string \1\e[?0c\2
+# set vi-cmd-mode-string \1\e[?8c\2
+#$else
 
 # Color files by types
 set colored-stats On
