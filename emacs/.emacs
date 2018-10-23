@@ -904,19 +904,43 @@
               ( "\t"  . bbdb-complete-mail )
               ( "C-c b l" . bbdb-toggle-records-layout))
   :hook ((mail-setup . bbdb-mail-aliases)
-         (message-setup . bbdb-mail-aliases))
+         (message-setup . bbdb-mail-aliases)
+         (bbdb-notice-mail-hook . bbdb-auto-notes))
   :custom
   (bbdb-message-all-addresses t)
   (bbdb-complete-mail-allow-cycling t)
   (bbdb-case-fold-search t)
   (bbdb-offer-save t)
-  (bbdb-pop-up-window-size 6)
-  (bbdb-mua-pop-up-window-size 6)
+  (bbdb-mua-pop-up 'horiz)
+  (bbdb-phone-style nil)
+  (bbdb-message-all-addresses t)
+  (bbdb-check-auto-save-file t)
   :init
   (setq bbdb-mua-update-interactive-p '(query . create))
   (setq bbdb-update-records-p 'query)
   (setq bbdb-mua-auto-update-p 'search)
-  (setq bbdb-message-all-addresses t)
+  (setq bbdb-notice-record-hook 'bbdb-auto-notes)
+  (setq bbdb-add-aka 'query)
+  ;; rules for annotating records based on mua activity:
+  ;;
+  ;; structure:
+  ;;   - (MUA FROM-TO HEADER ANNOTATE ...)
+  ;;   - (FROM-TO HEADER ANNOTATE ...)
+  ;;   - (HEADER ANNOTATE ...)
+  (setq bbdb-auto-notes-rules
+        '(("X-Face" (".+" x-face 0 'replace))
+          ("Face"   (".+" face 0 'replace))
+          ("Organization" (".*" organization "\\1" nil))
+          ("Newsgroups" ("[^,]+" newsgroups identity nil))
+          ("Xref" ("[^ ]+ \\([^ :]+\\):[0-9]+" newsgroups "\\1" nil))
+          ("User-Agent" (".*" mailer identity nil))
+          ("X-Mailer" (".*" mailer identity nil))
+          ("X-Newsreader" (".*" mailer identity nil))
+          ))
+  (setq bbdb-auto-notes-ignore-headers
+        '("Organization" . "^Gatewayed from\\|^Source only"))
+  (setq bbdb-ignore-message-alist
+        '(("From" . "no.*reply\\|DAEMON\\|daemon")))
   :config
   (evil-define-key 'motion bbdb-mode-map
     "\C-k"         'bbdb-delete-field-or-record
