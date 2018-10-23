@@ -127,6 +127,10 @@
         ;;gnus-article-treat-custom t
         gnus-article-unsplit-urls t
 
+        ;;gnus-article-skip-boring t
+        ;;gnus-use-full-window t
+        gnus-treat-emphasize t
+
         gnus-treat-highlight-citation t
         gnus-treat-highlight-signature t
         gnus-treat-buttonize t
@@ -134,9 +138,6 @@
         gnus-message-replysign t
         gnus-message-replyencrypt t
         gnus-treat-hide-citation-maybe t
-
-        ;;gnus-message-archive-method
-        ;;gnus-message-archive-group 'identity
         gnus-update-message-archive-method t
         gnus-gcc-mark-as-read t
 
@@ -256,6 +257,7 @@
                 "^X-GitHub-.*:\\|"
                 "^X-Google-Sender-Delegation\\|"
                 gnus-visible-headers)))
+
 
 (use-package gnus-msg
   :custom
@@ -381,7 +383,7 @@
   :hook ((gnus-message-setup . mml-secure-message-sign-pgpmime))
   :init
   (setq
-   mml-secure-openpgp-sign-with-sender t
+   ;;mml-secure-openpgp-sign-with-sender t
    mml-secure-openpgp-signers '("ACBE1F5C")
    mml-secure-openpgp-encrypt-to-self t))
 
