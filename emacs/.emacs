@@ -903,9 +903,10 @@
               :map message-mode-map
               ( "\t"  . bbdb-complete-mail )
               ( "C-c b l" . bbdb-toggle-records-layout))
-  :hook ((mail-setup . bbdb-mail-aliases)
-         (message-setup . bbdb-mail-aliases)
-         (bbdb-notice-mail-hook . bbdb-auto-notes))
+  :hook ((mail-setup       . bbdb-mail-aliases)
+         (message-setup    . bbdb-mail-aliases)
+         (bbdb-create-hook . bbdb-save)
+         (bbdb-notice-mail . bbdb-auto-notes))
   :custom
   (bbdb-message-all-addresses t)
   (bbdb-complete-mail-allow-cycling t)

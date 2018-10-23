@@ -266,7 +266,7 @@
 
 (use-package gnus-group
   :config
-  (setq gnus-group-sort-function 'gnus-groups-sort-by-rank)
+  (setq gnus-group-sort-function 'gnus-group-sort-by-rank)
   :bind (:map gnus-group-mode-map
               ("j" . gnus-browse-next-group)
               ("k" . gnus-browse-prev-group)))

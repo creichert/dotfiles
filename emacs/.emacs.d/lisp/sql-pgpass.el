@@ -1,10 +1,12 @@
 
 
 (use-package sql
-
-  :hook  (( sql-mode . (lambda ()
-                         (progn
-                           (setq sql-connection-alist (pgpass-to-sql-connection (read-file "~/.pgpass")))) )))
+  :hook  ((sql-mode . populate-sql-connection-alist))
+  :preface
+  ;; Add new servers to the `sql-connection-alist` for every server found in
+  ;; your "~/.pgpass" file.
+  (defun populate-sql-connection-alist ()
+    (setq sql-connection-alist (pgpass-to-sql-connection (read-file "~/.pgpass"))))
   :init
   ;; .pgpass parser
   (defun read-file (file)
