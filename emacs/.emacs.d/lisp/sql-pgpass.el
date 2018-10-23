@@ -29,6 +29,4 @@
               (mapcar pgpass-line config)))))
 
 
-
-
 (provide 'sql-pgpass)

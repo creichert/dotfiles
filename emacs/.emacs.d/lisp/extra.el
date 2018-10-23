@@ -87,7 +87,6 @@
   (auth-source-pass-enable))
 
 
-
 (use-package dired-rainbox
   :disabled
   :ensure t)
@@ -105,11 +104,10 @@
 
 
 (use-package ledger-mode
-  :ensure t
-  :defer
   :disabled
   ;;:ensure-system-package (ledger)
-  )
+  :ensure t
+  :defer)
 
 
 (use-package flycheck-ledger
@@ -185,71 +183,6 @@
         org-gcal-client-secret (auth-source-pass-get 'secret "developers.google.com/org-gcal")))
 
 
-(use-package erc
-  :requires (auth-source-pass)
-  :commands (erc)
-  :defer
-  :hook
-  ((erc-mode . erc-spelling-mode)
-   ;; (erc-mode . erc-track-mode)
-   (erc-mode . (lambda ()
-                 (set (make-local-variable 'scroll-conservatively) 100))))
-
-  :custom
-  (erc-user-full-name "creichert")
-  (erc-nick-uniquifier "_")
-  (erc-autojoin-timing 'ident)
-  (erc-server-auto-reconnect t)
-  (erc-prompt-for-nickserv-password nil)
-  (erc-hide-list '("JOIN" "PART" "QUIT"))
-
-  :preface
-  (defun erc-creichert ()
-    (interactive)
-    (erc-tls :server "irc.freenode.net" :port 6697 :nick "creichert"))
-
-  :config
-  (erc-track-minor-mode 1)
-  (erc-track-mode 1)
-
-  :init
-  (setq
-   erc-log-channels-directory "~/.emacs.d/erc/logs/"
-   ;; erc-log-write-after-insert t
-
-   erc-auto-discard-away t
-   erc-input-line-position -2
-
-   ;;Kill buffers for channels after /part
-   ;;erc-kill-buffer-on-part t
-
-   ;;Kill buffers for private queries after quitting the server
-   ;;erc-kill-queries-on-quit t
-
-   ;;Kill buffers for server messages after quitting the server
-   ;;erc-kill-server-buffer-on-quit t
-
-   ;; utf-8 always and forever
-   erc-server-coding-system '(utf-8 . utf-8)
-
-   ;;TEST: Interpret mIRC-style color commands in IRC chats
-   erc-interpret-mirc-color t
-
-   ;;If someone sends a /notice don't just show it in the server buffer,
-   ;;but also in the mini-buffer.
-   erc-echo-notices-in-minibuffer-flag t
-   erc-button-url-regexp
-   "\\([-a-zA-Z0-9_=!?#$@~`%&*+\\/:;,]+\\.\\)+[-a-zA-Z0-9_=!?#$@~`%&*+\\/:;,]*[-a-zA-Z0-9\\/]"
-   erc-autojoin-channels-alist
-   '((".*\\.freenode.net"
-      "#hlug"
-      "#haskell"
-      "#emacs"
-      "#debian"
-      "#gnus"
-      "#xmonad"
-      "#yesod"
-      ))))
 
 
 (use-package flowmacs
@@ -290,31 +223,6 @@
 
 
 
-(use-package slack
-  :disabled
-  :ensure t
-  :defer
-  :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "assertible"
-   :default t
-   :client-id "creichert07@gmail.com"
-   :client-secret (auth-source-pass-get 'secret "slack/assertible/creichert")
-   :token         (auth-source-pass-get "legacy-token" "slack/assertible/creichert")
-   :subscribed-channels '(dev general notifications ops gh ci)
-   :full-and-display-names t))
-
-
-;; extra emacs packages & utilities I use which aren't "core"
-(use-package lpaste
-  :load-path "lisp"
-  :if (file-exists-p "~/.emacs.d/lisp/lpaste.el"))
-
-
 (use-package yasnippet
   :defer
   :ensure t
@@ -332,6 +240,22 @@
   (evil-leader/set-key-for-mode 'magit-status-mode
     "SPC" 'yas-expand-maybe)
   :diminish yas-minor-mode)
+
+
+(use-package lpaste
+  :load-path "lisp"
+  :if (file-exists-p "~/.emacs.d/lisp/lpaste.el"))
+
+
+(use-package slack-settings
+  :load-path "lisp"
+  :if (file-exists-p "~/.emacs.d/lisp/slack-settings.el"))
+
+
+(use-package erc-settings
+  :load-path "lisp"
+  :if (file-exists-p "~/.emacs.d/lisp/erc-settings.el"))
+
 
 (provide 'extra)
 

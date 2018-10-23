@@ -804,7 +804,7 @@
   :defer
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
   :config
-  (add-to-list 'org-modules '(org-checklist org-drill org-jsinfo org-git-link))
+  (add-to-list 'org-modules '(org-checklist org-drill org-jsinfo org-git-link org-gnus))
   :bind (;; capture task to inbox
          ([f6]   . org-capture)
          ;; inbox, anything scheduled can be seen w/ f8
@@ -848,6 +848,7 @@
   :custom
   (org-completion-use-ido t)
   (org-log-done 'time)
+  ;;(org-log-done 'note)
   ;; ALL incoming org captures go into my inbox.
   (org-default-notes-file "~/org/inbox.org")
   :init
@@ -859,8 +860,8 @@
    org-log-into-drawer 'time
    org-src-fontify-natively t
    org-src-strip-leading-and-trailing-blank-lines t
-   org-confirm-babel-evaluate nil
-   ))
+   org-confirm-babel-evaluate nil))
+
 
 ;;support spotify uri?
 ;;[[spotify:track:4cI0B5thREJ9g0RYpGVrhY][timebomb, Mr. 3-2 :: Str8 Drop]]

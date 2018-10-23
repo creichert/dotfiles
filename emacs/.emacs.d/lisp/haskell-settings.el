@@ -98,7 +98,10 @@
   :hook ((haskell-mode . flycheck-haskell-setup)))
 
 
+;; automatically apply hlint suggestions when applicable
 (use-package hlint-refactor
+  ;;:ensure-system-package ((refactor . "stack install ghc-exactprint"))
+  :after (haskell-mode)
   :ensure t
   :hook ((haskell-mode . hlint-refactor-mode))
   :bind (("C-c h r" . hlint-refactor-refactor-at-point)
@@ -106,15 +109,15 @@
 
 
 (use-package ghcid
+  ;;:ensure-system-package ((ghcid . "stack install ghcid"))
   :defer
   :load-path "site-lisp/"
-  ;;:custom (ghcid-target "exe")
   :preface
   (defun show-ghcid-buf () (interactive) (show-buffer ghcid-buf-name))
   (defun set-ghcid-target (arg)
     (interactive
      (list
-      (completing-read "ghcid target: " '("assertible:exe:assertible" "assertible:test:unit" nil))))
+      (completing-read "ghcid target: " '("exe" "test" nil))))
     (setq ghcid-target arg))
   :bind (:map haskell-mode-map
               ("C-c m s" . ghcid)
@@ -124,4 +127,4 @@
 
 (provide 'haskell-settings)
 
-;;; extra.el ends here
+;;; haskell-settings.el ends here
