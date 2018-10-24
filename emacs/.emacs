@@ -571,6 +571,7 @@
           ("trello.com" . browse-url-chromium)
           ("accounts.google.com" . browse-url-chromium)
           ("assertible.com" . browse-url-chromium)
+          ("simplyrets.com/admin" . browse-url-chromium)
           ("slack.com" . browse-url-chromium)
           ("rollbar.com" . browse-url-chromium)
           ("app.drift.com" . browse-url-chromium)
@@ -834,11 +835,13 @@
   ;;           (progn (forward-line 1) (org-babel-result-end))))))))
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
+  (use-package ob-http :ensure t :defer)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (haskell . t)
      (sqlite . t)
+     (http . t)
      (sql . t)
      (makefile . t)
      (scheme . t)
@@ -905,7 +908,7 @@
               ( "C-c b l" . bbdb-toggle-records-layout))
   :hook ((mail-setup       . bbdb-mail-aliases)
          (message-setup    . bbdb-mail-aliases)
-         (bbdb-create-hook . bbdb-save)
+         (bbdb-create      . bbdb-save)
          (bbdb-notice-mail . bbdb-auto-notes))
   :custom
   (bbdb-message-all-addresses t)
