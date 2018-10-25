@@ -493,29 +493,12 @@
           (push 'escape unread-command-events))
          (t (setq unread-command-events (append unread-command-events
                                                 (list evt))))))))
-
-  (defun next-err ()
-    (interactive)
-    (or (flycheck-next-error)
-        (haskell-goto-next-error)
-        (next-error)))
-  (defun prev-err ()
-    (interactive)
-    (or (flycheck-previous-error)
-        (haskell-goto-prev-error)
-        (previous-error)))
   (defun find-def ()
     (interactive)
     (cond
      ((fboundp 'projectile-find-tag) (projectile-find-tag))
      ((fboundp 'ggtags-find-definitions) (ggtags-find-definitions))
      (t (xref-find-definitions))))
-
-  ;; (or (ggtags-find-tag)
-  ;; flycheck-previous-error)
-  ;;     (haskell-goto-prev-error)
-  ;;     (previous-error)))
-
   (defun recompile-quietly ()
     "Re-compile without changing the window configuration."
     (interactive)
@@ -541,8 +524,10 @@
     "c"       'projectile-compile-project
     "b"       'projectile-switch-to-buffer
     "ptt"     'projectile-toggle-between-implementation-and-test
-    "e"       'next-err
-    "w"       'prev-err
+    "e"       'next-error
+    "w"       'previous-error
+    "E"       'flycheck-next-error
+    "W"       'flycheck-previous-error
     ")"       'evil-next-close-paren
     "("       'insert-parentheses
     "9"       'insert-parentheses
@@ -648,6 +633,7 @@
   :hook ((after-init . global-flycheck-mode))
   ;;:ensure-system-package (("proselint" . "pip install proselint"))
   :config
+  (setq flycheck-standard-error-navigation nil)
   (flycheck-define-checker proselint
     "A linter for prose."
     :command ("proselint" source-inplace)
@@ -835,7 +821,9 @@
   ;;           (progn (forward-line 1) (org-babel-result-end))))))))
   :config
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
-  (use-package ob-http :ensure t :defer)
+  (use-package ob-http  :ensure t)
+  ;; add the :async keyword to any src block
+  (use-package ob-async :ensure t)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -898,7 +886,6 @@
 
 (use-package bbdb
   :ensure t
-  :requires (message gnus)
   :commands (bbdb)
   :bind (:map bbdb-mode-map
               ("\t"      . bbdb-complete-mail )
