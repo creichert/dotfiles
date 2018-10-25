@@ -9,17 +9,19 @@
   :bind (:map haskell-mode-map
               ("C-c h t" . haskell-process-do-type)
               ("C-c h h" . hoogle)
-              ("C-c h t" . haskell-session-change-target)
+              ("C-c h T" . haskell-session-change-target)
               ("C-c h i" . haskell-process-do-info)
               ("C-c C-;" . haskell-process-load-file)
               ("C-c C-l" . haskell-process-reload)
               ("C-c i"   . haskell-navigate-imports-go)
               ("C-c I"   . haskell-navigate-imports-return)
-              ;;("C-c C-j" . haskell-run-function-under-cursor)
+              ("C-c h j" . haskell-run-function-under-cursor)
+              ("C-c C-j" . haskell-run-last-function)
               )
   ;; TODO keep tags up-to-date even if its the damn *.tags file.
   ;; they incrementally update the xref tags tables
   :custom
+  (my-haskell-current-function "main")
   ;; enable debugging
   (haskell-process-log t)
   (haskell-process-suggest-haskell-docs-imports t)
@@ -27,21 +29,21 @@
   ;; indentation
   (haskell-indentation-electric-flag t)
   (haskell-indentation-layout-offset 4)
-  ;;(haskell-indentation-starter-offset 4)
   (haskell-indentation-left-offset 4)
   (haskell-stylish-on-save t)
+  ;;(haskell-indentation-starter-offset 4)
   ;;(haskell-interactive-mode-eval-mode t)
+  (haskell-tags-on-save t)
   ;;
   ;; this is set automatically when there is a `stack.yaml`
   ;; haskell-process-type 'stack-ghci
   ;; print type info to presentation-mode instead
   ;; of message area.
-  ;; haskell-process-use-presentation-mode t
-  ;;
+  (haskell-process-use-presentation-mode t)
+  (haskell-process-auto-import-loaded-modules t)
   ;; bytecode takes up more memory than object code.
   ;; enable
-  ;;(haskell-process-reload-with-fbytecode nil)
-
+  ;; (haskell-process-reload-with-fbytecode t)
   ;;
   ;; experimenting with brittany
   ;; haskell-mode-stylish-haskell-path "brittany"
@@ -54,21 +56,64 @@
   ((haskell-mode . electric-indent-local-mode))
   ((haskell-mode . electric-layout-mode))
   ((haskell-mode . prettify-symbols-mode))
+  ((haskell-interactive-mode . next-error-follow-minor-mode))
   :preface
-  ;; https://gist.github.com/989ad8be92f68682abff
+  ;; see `haskell-process-insert-type` for expanding on this solution
   (defun haskell-run-function-under-cursor ()
-    "Send the word-at-point as a function to GHCi process."
     (interactive)
-    ;; (haskell-process-set-sent-stdin 't)
-    (haskell-process-send-string
-     (haskell-session-process (haskell-session-maybe))
-     (format "%s" (word-at-point))))
-
+    (let ((ident (haskell-ident-at-point)))
+      (when ident
+        (setq my-haskell-current-function ident)
+        (let ((process (haskell-interactive-process))
+              (query ident)
+              )
+          (haskell-process-queue-command
+           process
+           (make-haskell-command
+            :state (list process query (current-buffer))
+            :go (lambda (state)
+                  (haskell-process-send-string (nth 0 state)
+                                               (nth 1 state)))
+            :complete (lambda (state response)
+                        (cond
+                         ;; TODO: Generalize this into a function.
+                         ((or (string-match "^Top level" response)
+                              (string-match "^<interactive>" response))
+                          (message "%s" response))
+                         (t (haskell-command-echo-or-present response))))))))))
+  (defun haskell-run-last-function ()
+    ;; TODO completing-read the comint haskell-process repl history
+    ;; and use that instead
+    (interactive)
+    (let ((ident my-haskell-current-function))
+      (when ident
+        (setq my-haskell-current-function ident)
+        (let ((process (haskell-interactive-process))
+              (query ident)
+              )
+          (haskell-process-queue-command
+           process
+           (make-haskell-command
+            :state (list process query (current-buffer))
+            :go (lambda (state)
+                  (haskell-process-send-string (nth 0 state)
+                                               (nth 1 state)))
+            :complete (lambda (state response)
+                        (cond
+                         ;; TODO: Generalize this into a function.
+                         ((or (string-match "^Top level" response)
+                              (string-match "^<interactive>" response))
+                          (message "%s" response))
+                         (t (haskell-command-echo-or-present response))))))))))
   :config
   (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
   (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
   (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-O0")
+  (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-fshow-loaded-modules")
 
+  (use-package evil :ensure t :demand)
+  (evil-set-initial-state 'haskell-presentation-mode 'emacs)
+  (evil-set-initial-state 'haskell-error-mode 'emacs)
   (evil-leader/set-key-for-mode 'haskell-mode
     "hir" 'hindent-reformat-region
     "hid" 'hindent-reformat-decl-or-fill
