@@ -399,6 +399,7 @@
 
 
 (use-package mm-decode
+  :demand
   :after (gnus)
   :init
   (setq
@@ -413,6 +414,7 @@
 
 
 (use-package gnus-icalendar
+  :demand
   :config
   (use-package org :demand)
   (use-package org-agenda :demand)
@@ -424,6 +426,7 @@
 
 (use-package org-mime
   :after (org)
+  :demand
   :ensure t
   :config
   (setq org-mime-export-options
