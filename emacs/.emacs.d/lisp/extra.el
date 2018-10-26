@@ -4,50 +4,6 @@
 (require 'use-package)
 
 
-(use-package bbdb-pgp
-  :disabled
-  ;;:bind (("C-c b p" . bbdb-pgp))
-  ;; not initialized, use bbdb-pgp
-  ;;:custom (bbdb-initialize 'pgp)
-  :after (bbdb message))
-
-
-;; use 'gnus for incoming messages too
-;;
-;; https://www.emacswiki.org/emacs/UpgradeBBDB
-(use-package bbdb-anniv
-  :after (bbdb)
-  :config
-  (bbdb-initialize 'anniv)
-  (add-to-list 'bbdb-anniv-alist
-               '((work . "%n's %d%s work anniversary"))))
-
-
-(use-package org-bbdb
-  ;; TODO work anniversary
-  :disabled
-  ;;:bind (("C-c o b" . org-bbdb-open))
-  :after (org)
-  :config
-  (add-to-list 'org-bbdb-anniversary-format-alist
-             '(("work" .
-               (lambda (name years suffix)
-                 (concat "Work Anniversary: [[bbdb:" name "][" name " ("
-                         ;; handles numbers as well as strings
-                         (format "%s" years)
-                         suffix ")]]"))))))
-
-
-(use-package bbdb-vcard
-  :ensure t
-  :defer
-  ;;:requires (bbdb message)
-  ;;:command bbdb-vcard-import-file
-  ;;:custom
-  ;;(bbdb-vcard-directory "~/.emacs.d/contacts"))
-  )
-
-
 (use-package ggtags
   :defer
   :requires (evil)

@@ -68,8 +68,53 @@
           ;; (("To" "CC") . "mailing-list-1\\|mailing-list-2"))
           ))
   :config
+  (use-package bbdb-anniv
+    :config
+    (add-to-list 'bbdb-anniv-alist '(work . "%n's %d%s work anniversary")))
   (bbdb-initialize 'gnus 'message 'anniv)
   (bbdb-mua-auto-update-init 'gnus 'message 'rmail))
+
+
+
+
+(use-package bbdb-pgp
+  :disabled
+  ;;:bind (("C-c b p" . bbdb-pgp))
+  ;; not initialized, use bbdb-pgp
+  ;;:custom (bbdb-initialize 'pgp)
+  :after (bbdb message))
+
+
+
+(use-package org-bbdb
+  ;;:bind (("C-c o b" . org-bbdb-open))
+  :after (org)
+  :config
+  (add-to-list 'org-bbdb-anniversary-format-alist
+             '("work" .
+               (lambda (name years suffix)
+                 (concat "Work Anniversary: [[bbdb:" name "][" name " ("
+                         ;; handles numbers as well as strings
+                         (format "%s" years)
+                         suffix ")]]")))))
+
+
+(use-package bbdb-anniv
+  :after (bbdb)
+  :config
+  (bbdb-initialize 'anniv)
+  (add-to-list 'bbdb-anniv-alist
+               '(work . "%n's %d%s work anniversary")))
+
+
+(use-package bbdb-vcard
+  ;;:requires (bbdb message)
+  ;;:command bbdb-vcard-import-file
+  ;;:custom
+  ;;(bbdb-vcard-directory "~/.emacs.d/contacts"))
+  :ensure t
+  :defer)
+
 
 (provide 'bbdb-settings)
 
