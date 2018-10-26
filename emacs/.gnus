@@ -157,7 +157,6 @@
         ;; The number of Message-IDs to keep in the duplicate suppression list.
         ;;gnus-duplicate-list-length 10000
 
-
         ;; Group line
         gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
 
