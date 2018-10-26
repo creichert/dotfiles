@@ -653,50 +653,6 @@
 
 
 
-(use-package web-mode
-  :ensure t
-  :mode "\\.js\\'"
-  :init (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))
-              ;; might have to set in web-mode-hook
-              web-mode-markup-indent-offset 4
-              web-mode-css-indent-offset 4
-              web-mode-code-indent-offset 4)
-
-  ;;:hook ((web-mode . emmet-mode))
-  :config
-
-  (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
-  (add-to-list 'flycheck-disabled-checkers 'json-jsonlist)
-
-  ;; https://github.com/lunaryorn/old-emacs-configuration/blob/master/lisp/lunaryorn-flycheck.el#L62
-  (defun use-eslint-from-node-modules ()
-    "Find the eslint binary local to the current file to use the correct configuration, plugins, etc."
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint (and root
-                        (expand-file-name "node_modules/.bin/eslint"
-                                          root))))
-      (when (and eslint (file-executable-p eslint))
-        (setq-local flycheck-javascript-eslint-executable eslint))))
-  (add-hook 'flycheck-mode-hook 'use-eslint-from-node-modules)
-  )
-
-(use-package prettier-js
- :ensure t
- :hook ((web-mode . prettier-js-mode))
- ;; this is always managed on a project-by-project basis, when required
- ;;:ensure-system-package ("prettier" . "npm install prettier")
- :init
-  (setq prettier-js-args '("--tab-width" "4"
-                           "--trailing-comma" "es5"
-                           "--print-width" "90"
-                           "--jsx-bracket-same-line" "true"
-                           "--no-semi"
-                           )))
-
 
 (use-package sql
   :defer
@@ -957,6 +913,9 @@
 
 
 (use-package haskell-settings
+  :load-path "lisp/")
+
+(use-package web-settings
   :load-path "lisp/")
 
 
