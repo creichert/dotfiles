@@ -13,7 +13,7 @@
 ;;     password of "less secure apps" are enabled
 ;;
 ;;   - Outgoing mail is sent w/ `msmtp`.  Multiple outgoing smtp accounts with
-;;     the same server are configured in `~/.msmtp'.
+;;     the same server are configured in `~/.msmtprc'.
 ;;
 ;;          defaults
 ;;          tls on
@@ -38,14 +38,6 @@
 ;;   - News and mail are handled a little differently due to reply conventions.
 ;;     Posting a reply on a newsgroup is called follow up, whereas sending a
 ;;     reply to an email message is called reply-to.
-;;
-;; Keybindings:
-;;
-;;   - g   :
-;;   - ^   : view servers
-;;   - r   : reply
-;;   - R   : reply & cite
-;;   - SW  : "site-wide" reply & quote (all cc's)
 
 ;;; Code:
 
@@ -86,10 +78,11 @@
                                    (match-string 1)))
           (message "No unknown signed parts found."))
         (gnus-summary-show-article))))
-
   :hook
   ((gnus-select-group       . gnus-group-set-timestamp))
   ((gnus-after-exiting-gnus . kill-emacs))
+  ((gnus-summary-exit       . gnus-summary-bubble-group))
+  ((message-sent-hook       . gnus-score-followup-thread))
   :bind (("C-\\"  . smex)
          ("C-c ;" . reload-dotgnus)
          :map gnus-summary-mode-map
@@ -157,6 +150,8 @@
         ;; The number of Message-IDs to keep in the duplicate suppression list.
         ;;gnus-duplicate-list-length 10000
 
+        gnus-refer-article-method '(current (nnregistry))
+
         ;; Group line
         gnus-group-line-format "%M\ %S\ %p\ %P\ %5y:%B%(%g%) %P(%L)\n"
 
@@ -170,36 +165,20 @@
         ;;
         gnus-summary-line-format " %R%U%z %4k | %(%~(pad-right 16)&user-date; | %-25,25f %ub | %B%s%)\n")
   :init
+  (gnus-add-configuration '(article
+                            (vertical 1.0
+                                      (summary .25 point)
+                                      (article 1.0))))
+  (use-package gnus-registry :demand)
+  (gnus-registry-initialize)
+
   ;; Gnus/Evil keybindings (only use basics in some modes)
   (evil-add-hjkl-bindings gnus-browse-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-server-mode-map  'emacs)
   (evil-add-hjkl-bindings gnus-article-mode-map 'emacs)
   (evil-add-hjkl-bindings gnus-group-mode-map   'emacs)
   (evil-add-hjkl-bindings gnus-summary-mode-map 'emacs "D"
-    'gnus-summary-delete-article)
-
-  ;;(gnus-add-configuration
-  ;; '(article
-  ;;   (horizontal 1.0
-  ;;               (vertical 33 (group 1.0))
-  ;;               (vertical 1.0
-  ;;                         (summary 0.16 point)
-  ;;                         (article 1.0)))))
-  ;;
-  ;; (gnus-add-configuration
-  ;;  '(summary
-  ;;    (horizontal 1.0
-  ;;                (vertical 33 (group 1.0))
-  ;;                (vertical 1.0 (summary 1.0 point)))))
-  ;;
-  (gnus-add-configuration '(article
-                            (vertical 1.0
-                                      (summary .25 point)
-                                      (article 1.0))))
-
-  ;;:custom-face
-  ;;(gnus-group-mail-1 ((t (:foreground (x-get-resource "color2" "")))))
-  )
+    'gnus-summary-delete-article))
 
 (use-package gnus-agent
   :init
@@ -208,7 +187,12 @@
 
 
 (use-package bbdb-gnus
-  :after (gnus))
+  :after (gnus)
+  :init
+  (use-package bbdb-gnus-aux :demand)
+  (setq bbdb/gnus-score-default 200)
+  (setq gnus-score-find-score-files-function
+        '(gnus-score-find-bnews bbdb/gnus-score)))
 
 
 (use-package gnus-cloud
