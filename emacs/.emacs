@@ -19,11 +19,11 @@
   (require 'use-package))
 (use-package bind-key                          :ensure t :demand)
 (use-package use-package-ensure-system-package :ensure t :demand)
-(setq use-package-expand-minimally t)
+;; (setq use-package-expand-minimally t)
+(setq use-package-compute-statistics t)
 
 ;;; configure emacs
 
-;;(setq use-package-compute-statistics t)
 
 ;; Ensure system executables are installed for certain packages.
 (setq source-directory "~/dev/c/emacs")
@@ -725,8 +725,8 @@
 (use-package epa
   :defer
   ;;:ensure-system-package (gpg2 . gnupg2)
-  :init
-  (setq epa-pinentry-mode 'loopback))
+  :custom
+  (epa-pinentry-mode 'loopback))
 
 ;; minimal modeline
 ;;
