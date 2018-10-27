@@ -292,7 +292,8 @@ The state machine works like this:
               (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
         (setq do-not-move nil)
 
-        (message (format "%s" state))
+        (message (format "[debug] %s" state))
+
         ;; Switched state machine. The "real" states are `commit-message',
         ;; `commit-comment' and `unified-diff'. The other "states" are only
         ;; single-line colourisations that return to their respective parent-
