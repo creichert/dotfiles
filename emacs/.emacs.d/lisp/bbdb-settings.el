@@ -15,7 +15,8 @@
   :hook ((mail-setup       . bbdb-mail-aliases)
          (message-setup    . bbdb-mail-aliases)
          (bbdb-create      . bbdb-save)
-         (bbdb-notice-mail . bbdb-auto-notes))
+         (bbdb-notice-mail . bbdb-auto-notes)
+         (bbdb-after-change . bbdb-save))
   :custom
   (bbdb-message-all-addresses t)
   (bbdb-complete-mail-allow-cycling t)
