@@ -17,43 +17,21 @@
 
 (eval-when-compile
   (require 'use-package))
-(require 'bind-key)
-(setq use-package-compute-statistics t)
+(use-package bind-key                          :ensure t :demand)
+(use-package use-package-ensure-system-package :ensure t :demand)
+(setq use-package-expand-minimally t)
+
+;;; configure emacs
+
+;;(setq use-package-compute-statistics t)
+
 ;; Ensure system executables are installed for certain packages.
-;;(use-package use-package-ensure-system-package :ensure t)
 (setq source-directory "~/dev/c/emacs")
-
-
-;; minor modes
-;;(use-package font-core
-;;  :config (global-font-lock-mode 1))
-;;
-;;(use-package delsel
-;;  :config (delete-selection-mode 1))
-;;
-;;(use-package jka-cmpr-hook
-;;  :config (auto-compression-mode t))
-;;
-;;(use-package frame
-;;  :config (blink-cursor-mode 0))
-;;
-;;(use-package linum
-;;  :config (global-linum-mode -1))
-(use-package paren
-  :hook ((prog-mode . show-paren-mode)))
-
-(use-package help
-  :custom
-  (help-window-select t))
-
 (setq custom-file "~/.emacs.d/custom.el")
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message (format ";; startup took %s\n\n" (emacs-init-time)))
-
 ;; dont use any "gui" dialog boxes
 (setq use-dialog-box nil)
-(setq blink-cursor-delay 0)
-
 ;; make gui look like terminal
 (when (fboundp 'menu-bar-mode)   (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
@@ -82,6 +60,20 @@
 (global-set-key (kbd "C-c :")       'reload-dotemacs)
 (global-unset-key (kbd "C-z"))      ;; don't allow freeze
 (global-unset-key (kbd "C-x C-z"))  ;; don't allow freeze
+
+
+(use-package delsel
+  :config (delete-selection-mode 1))
+
+
+(use-package paren
+  :hook ((prog-mode . show-paren-mode)))
+
+
+(use-package help
+  :custom
+  (help-window-select t))
+
 
 (use-package align
  :bind ("C-x /" . align-regexp))
@@ -605,9 +597,9 @@
     "u" 'magit-unstage-item
     "K" 'magit-discard
     "z" 'magit-key-mode-popup-stashing)
+
   (evil-leader/set-key-for-mode 'magit-status-mode
-    "SPC" 'magit-stash-show)
-  )
+    "SPC" 'magit-stash-show))
 
 
 (use-package evil-magit
@@ -631,7 +623,7 @@
 (use-package flycheck
   :ensure t
   :hook ((after-init . global-flycheck-mode))
-  ;;:ensure-system-package (("proselint" . "pip install proselint"))
+  ;;:ensure-system-package ((proselint . "pip install proselint"))
   :config
   (setq flycheck-standard-error-navigation nil)
   (flycheck-define-checker proselint
@@ -650,7 +642,6 @@
   :requires (flycheck)
   :hook ((markdown-mode . turn-on-flyspell))
         ((prog-mode     . flyspell-prog-mode)))
-
 
 
 

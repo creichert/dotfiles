@@ -1,9 +1,16 @@
 
+(require 'use-package)
+
 (use-package org
   :defer
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
   :config
-  (add-to-list 'org-modules '(org-checklist org-drill org-jsinfo org-git-link org-gnus))
+  (add-to-list 'org-modules '(org-checklist
+                              org-drill
+                              org-jsinfo
+                              org-git-link
+                              ;; included by default, but critical
+                              org-gnus))
   :bind (;; capture task to inbox
          ([f6]   . org-capture)
          ;; inbox, anything scheduled can be seen w/ f8
@@ -13,10 +20,15 @@
          ([f8]   . org-agenda)
          ([C-f8] . org-agenda-kill-all-agenda-buffers))
   :config
+
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
+
   (use-package ob-http  :ensure t)
   ;; add the :async keyword to any src block
+
+  ;; add :async to virtually any babel language
   (use-package ob-async :ensure t)
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -32,8 +44,7 @@
   :custom
   (org-completion-use-ido t)
   (org-log-done 'time)
-  ;;(org-log-done 'note)
-  ;; ALL incoming org captures go into my inbox.
+  ;; inbox.org captures all incoming tasks
   (org-default-notes-file "~/org/inbox.org")
   :init
   (setq
@@ -47,8 +58,6 @@
    org-confirm-babel-evaluate nil))
 
 
-;;support spotify uri?
-;;[[spotify:track:4cI0B5thREJ9g0RYpGVrhY][timebomb, Mr. 3-2 :: Str8 Drop]]
 (use-package org-agenda
   :after (org)
   :hook

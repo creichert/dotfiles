@@ -150,6 +150,8 @@
         ;; The number of Message-IDs to keep in the duplicate suppression list.
         ;;gnus-duplicate-list-length 10000
 
+        ;; gnus-article-date-local
+        gnus-article-date-headers '(combined-lapsed local)
         gnus-refer-article-method '(current (nnregistry))
 
         ;; Group line
