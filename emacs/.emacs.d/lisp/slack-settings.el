@@ -7,6 +7,7 @@
   :bind (("C-c C-b" . slack-select-unread-rooms)
          ("C-c C-t" . slack-change-current-team)
          ("C-c s i" . slack-im-select)
+         ("C-c s u" . slack-select-unread-rooms)
          ("C-c C-j" . slack-channel-select))
   :init
   (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
