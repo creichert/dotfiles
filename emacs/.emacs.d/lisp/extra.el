@@ -60,14 +60,12 @@
 
 
 (use-package ledger-mode
-  :disabled
   ;;:ensure-system-package (ledger)
   :ensure t
   :defer)
 
 
 (use-package flycheck-ledger
-  :disabled
   :ensure t
   :after (flycheck ledger-mode)
   :hook  ((ledger-mode . flycheck-ledger-mode)))
