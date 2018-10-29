@@ -193,7 +193,8 @@
 (use-package ido
   :demand
   :bind
-  ("C-x f" . ido-find-file)
+  (("C-x f" . ido-find-file)
+   ("C-c C-x C-o" . ido-switch-buffer-other-window))
   :config
   ;; (add-to-list 'ido-ignore-files "\\.rej$")
   ;; (add-to-list 'ido-ignore-files "\\.dyn_hi$")
@@ -284,8 +285,8 @@
   :commands (smex smex-major-mode-commands)
   :ensure t
   :bind
-  ("M-x" . smex)
-  ("M-X" . smex-major-mode-commands))
+  (("M-x" . smex)
+   ("M-X" . smex-major-mode-commands)))
 
 
 ;; start in a state that immediately supports typing or direct emacs keybindings
