@@ -141,11 +141,6 @@
 
 
 
-(use-package flowmacs
-  :disabled
-  :load-path "site-lisp/flowmacs")
-
-
 (use-package noflet
   :defer
   :ensure t)
