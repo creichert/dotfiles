@@ -6,7 +6,8 @@
   :commands (slack-start)
   :bind (:map slack-mode-map
               ;;primary commands (similar to erc)
-              ("C-c C-b" . creichert/slack-select-unreads)
+              ;;("C-c C-b" . creichert/slack-select-unreads)
+              ("C-c C-b" . slack-select-unread-rooms)
               ("C-c C-t" . slack-change-current-team)
               ("C-c C-j" . slack-channel-select)
               ;; prefix commands
@@ -42,6 +43,7 @@
   ;; Using this globally currently doesn't work w/ gnus
   (use-package auth-source-pass
     :ensure t
+    :demand
     :init
     (auth-source-pass-enable))
   (require 'auth-source-pass)
