@@ -403,6 +403,7 @@
   :config
   (use-package org :demand)
   (use-package org-agenda :demand)
+  (use-package org-element :demand)
   (setq gnus-icalendar-org-capture-file "~/org/cal.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
   (gnus-icalendar-setup)
