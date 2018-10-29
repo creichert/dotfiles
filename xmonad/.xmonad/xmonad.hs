@@ -102,7 +102,7 @@ screenshotRegion = L.intercalate ";" [
     , "scrot '/tmp/%Y-%m-%d_$wx$h_screenshot.png' --quality 100 --select -e '" ++ clipAndCp ++ "'"
     ]
   where
-    clipAndCp = "xclip -selection primary -selection clipboard -t image/png -i $f; mv $f ~/downloads/screenshots; ln -fs ~/downloads/screenshots/`basename $f` ~/downloads/screenshots/latest"
+    clipAndCp = "xclip -selection primary -selection clipboard -t image/png -i $f; cp $f ~/downloads/screenshots/latest.png; mv $f ~/downloads/screenshots"
 
 scratchpads :: [NamedScratchpad]
 scratchpads = [
