@@ -63,6 +63,7 @@
   :hook
   (( org-capture-after-finalize . org-save-all-org-buffers ))
   (( org-capture-prepare-finalize . org-save-all-org-buffers ))
+  (( org-agenda-after-show . xref-pulse-momentarily ))
   :bind (:map org-agenda-mode-map
               ("C-c ="   . org-agenda-priority-up)
               ("C-c -"   . org-agenda-priority-down)
