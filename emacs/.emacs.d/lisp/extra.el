@@ -126,7 +126,6 @@
 
 
 (use-package org-gcal
-  :after (auth-source-pass)
   :ensure t
   :defer
   :commands (org-gcal-fetch org-gcal-sync)
@@ -162,11 +161,11 @@
 
 
 (use-package org-gcal
-  :requires (alert auth-source-pass)
   :ensure t
   :commands (org-gcal-fetch org-gcal-sync)
   :defer
   :config
+  (use-package auth-source-pass :ensure t :demand)
   (setq org-gcal-client-id (auth-source-pass-get "user" "developers.google.com/org-gcal")
         org-gcal-file-alist '(("creichert07@gmail.com" . "~/org/cal.org"))
         org-gcal-client-secret (auth-source-pass-get 'secret "developers.google.com/org-gcal")))
