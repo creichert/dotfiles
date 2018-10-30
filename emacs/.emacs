@@ -307,8 +307,9 @@
 (use-package xresources-theme
   :ensure t
   :if window-system ;; display-graphic-p
-  :config (load-theme 'xresources t)
   :load-path "themes"
+  :config
+  (load-theme 'xresources t)
   (setq ansi-color-names-vector (vector
                                  (xresources-theme-color "background")
                                  (xresources-theme-color "color1")

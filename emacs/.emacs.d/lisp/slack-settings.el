@@ -82,8 +82,7 @@
     (condition-case nil
         (apply orig-fun args)
       (error "<error parsing message>\n")))
-  (advice-add 'slack-message-to-string :around #'creichert/slack-mode--catch-message-to-string-error)
-  )
+  (advice-add 'slack-message-to-string :around #'creichert/slack-mode--catch-message-to-string-error))
 
 
 
