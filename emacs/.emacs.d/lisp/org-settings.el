@@ -70,6 +70,7 @@
               ("j"   . org-agenda-next-item)
               ("k"   . org-agenda-previous-item))
   :init
+  (use-package xref :demand)
   (setq org-agenda-todo-ignore-scheduled 'future
         org-agenda-window-setup 'current-window
         org-agenda-files '("~/org/")
