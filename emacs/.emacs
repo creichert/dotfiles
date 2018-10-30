@@ -319,8 +319,7 @@
                                  (xresources-theme-color "color5")
                                  (xresources-theme-color "color6")
                                  (xresources-theme-color "foreground")
-                                 ))
-  )
+                                 )))
 
 
 (use-package ansi-color
