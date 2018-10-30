@@ -4,12 +4,17 @@
 ;; Really basic ghcid+stack support in emacs with compilation-mode
 ;; Use M-x ghcid to launch
 
+(require 'cl)
+(require 'projectile)
+
 ;; Set ghcid-target to change the stack target
 (setq ghcid-target "")
+(setq ghcid-target-test "")
 
 (setq ghcid-height 15)
 (defun ghcid-stack-cmd (target)
-      (format "stack ghci %s --test --bench --ghci-options=-fno-code" target))
+      ;; (format "stack ghci %s --test --bench --ghci-options=-fno-code --no-load" target))
+      (format "stack ghci %s" target))
 
 (setq ghcid-buf-name "*ghcid*")
 
@@ -23,6 +28,7 @@
 (defun new-ghcid-term ()
   (interactive)
   (kill-ghcid)
+  (setq-local default-directory (projectile-project-root))
   (let ((ghcid-buf (get-buffer-create ghcid-buf-name)))
     (display-buffer
      ghcid-buf
@@ -51,7 +57,7 @@
 
 ;; TODO Pass in compilation command like compilation-mode
 (defun ghcid-command (h)
-    (format "ghcid -c \"%s\" -h %s\n" (ghcid-stack-cmd ghcid-target) h))
+    (format "stack exec -- ghcid -c \"%s\" -h %s %s\n" (ghcid-stack-cmd ghcid-target) h ghcid-target-test))
 
 ;; TODO Close stuff if it fails
 (defun ghcid ()
