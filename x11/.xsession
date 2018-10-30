@@ -13,4 +13,6 @@ xset b off
 xsetroot -cursor_name left_ptr
 setxkbmap -option ctrl:nocaps
 
+/usr/lib/notification-daemon/notification-daemon &
+
 xmonad

@@ -4,6 +4,7 @@
   :ensure t
   :defer
   :commands (slack-start)
+  :hook ((lui-mode . creichert/lui-setup))
   :bind (:map slack-mode-map
               ;;primary commands (similar to erc)
               ;;("C-c C-b" . creichert/slack-select-unreads)
@@ -34,6 +35,14 @@
                 append (with-slots (groups ims channels) team
                          (cl-remove-if #'(lambda (room) (not (< 0 (oref room unread-count-display))))
                                        (append ims groups channels)))))))
+
+  (defun creichert/lui-setup ()
+    (interactive)
+    (setq
+     fringes-outside-margins t
+     right-margin-width 5
+     word-wrap t
+     wrap-prefix "    "))
   :init
   (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
   (setq slack-prefer-current-team t)
@@ -65,11 +74,18 @@
    ;;:subscribed-channels '(dev)
    :full-and-display-names t)
 
+  (setq
+   lui-time-stamp-position 'right-margin
+   lui-fill-type nil)
+
   (defun creichert/slack-mode--catch-message-to-string-error (orig-fun &rest args)
     (condition-case nil
         (apply orig-fun args)
       (error "<error parsing message>\n")))
-    (advice-add 'slack-message-to-string :around #'creichert/slack-mode--catch-message-to-string-error))
+  (advice-add 'slack-message-to-string :around #'creichert/slack-mode--catch-message-to-string-error)
+  )
+
+
 
 (provide 'slack-settings)
 
