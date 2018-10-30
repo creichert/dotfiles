@@ -157,17 +157,27 @@
   ;;:ensure-system-package ((ghcid . "stack install ghcid"))
   :defer
   :load-path "site-lisp/"
-  :preface
-  (defun show-ghcid-buf () (interactive) (show-buffer ghcid-buf-name))
-  (defun set-ghcid-target (arg)
-    (interactive
-     (list
-      (completing-read "ghcid target: " '("exe" "test" nil))))
-    (setq ghcid-target arg))
-  :bind (:map haskell-mode-map
+  :bind (:map projectile-mode-map
               ("C-c m s" . ghcid)
               ("C-c m b" . show-ghcid-buf)
-              ("C-c m t" . set-ghcid-target)))
+              ("C-c m t" . set-ghcid-target))
+  :custom
+  (ghcid-target "")
+  ;;:config (setq-local default-directory projectile-project-root)
+  :preface
+  (defun show-ghcid-buf ()
+    (interactive)
+    (show-buffer ghcid-buf-name))
+  (defun set-ghcid-target (ghcid-targ &optional ghcid-test-targ)
+    (interactive
+     (list
+      (completing-read "ghcid target: " (map 'list (lambda (targ) (format "%s:%s" (projectile-project-name) targ)) (haskell-cabal-enum-targets)))
+      (completing-read "ghcid --test target: " '("--test=main" "test/unit/Data/OpenApiSpec.hs" nil))))
+    (setq ghcid-target ghcid-targ)
+    (when ghcid-test-targ
+      (setq ghcid-target-test (format "%s" ghcid-test-targ)))
+    (kill-ghcid)
+    (ghcid)))
 
 
 (provide 'haskell-settings)
