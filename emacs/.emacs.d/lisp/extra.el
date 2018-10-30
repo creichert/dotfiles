@@ -66,6 +66,7 @@
 
 
 (use-package flycheck-ledger
+  :disabled
   :ensure t
   :after (flycheck ledger-mode)
   :hook  ((ledger-mode . flycheck-ledger-mode)))
