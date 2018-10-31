@@ -13,14 +13,20 @@
                ("C-c C-b" . slack-select-unread-rooms)
                ("C-c C-t" . slack-change-current-team)
                ("C-c C-j" . slack-select-rooms)
+               ("C-c C-p" . slack-buffer-goto-prev-message)
+               ("C-c C-n" . slack-buffer-goto-next-message)
                ;; prefix commands
                ("C-c s i" . slack-im-select)
+               ("C-c s e" . slack-message-edit)
                ("C-c s t" . slack-change-current-team)
                ("C-c s u" . slack-select-unread-rooms)
+               ("C-c s r" . slack-message-add-reaction)
+               ("C-c s N" . slack-message-test-notification)
                ;; special commands
-               ("@" . creichert/slack-message-embed-mention)
-               ;;(":" . creichert/slack-message-embed-emoji)
-               ("#" . creichert/slack-message-embed-channel)))
+               ("C-c s @" . creichert/slack-message-embed-mention)
+               ("C-c s #" . creichert/slack-message-embed-channel)
+               ("C-c s :" . creichert/slack-message-embed-emoji)
+               ))
   :preface
   (defun creichert/slack-message-embed-mention ()
     (interactive)
@@ -30,18 +36,18 @@
     (interactive)
     (call-interactively #'slack-message-embed-channel)
     (insert " "))
-  ;;(defun creichert/slack-message-embed-emoji ()
-  ;;  (interactive)
-  ;;  (call-interactively #'emojify-insert-emoji)
-  ;;  (insert " "))
-  ;;(defun creichert/slack-select-unreads ()
-  ;;  (interactive)
-  ;;  (let ((team (slack-team-select)))
-  ;;    (slack-room-select
-  ;;     (cl-loop for team in (list team)
-  ;;              append (with-slots (groups ims channels) team
-  ;;                       (cl-remove-if #'(lambda (room) (not (< 0 (oref room unread-count-display))))
-  ;;                                     (append ims groups channels)))))))
+  (defun creichert/slack-message-embed-emoji ()
+    (interactive)
+    (call-interactively #'emojify-insert-emoji)
+    (insert " "))
+  (defun creichert/slack-select-unreads-all-teams ()
+    (interactive)
+    (let ((team (slack-team-select)))
+      (slack-room-select
+       (cl-loop for team in (list team)
+                append (with-slots (groups ims channels) team
+                         (cl-remove-if #'(lambda (room) (not (< 0 (oref room unread-count-display))))
+                                       (append ims groups channels)))))))
   (defun creichert/lui-setup ()
     (interactive)
     (setq
@@ -65,7 +71,7 @@
 
   (defun creichert/slack-start (orig-fun &rest args)
     (apply orig-fun args)
-    (sit-for 10)
+    (sit-for 15)
     (slack-room-display
      (slack-room-find-by-name "dev" slack-current-team)
      slack-current-team))
@@ -83,6 +89,7 @@
    :client-secret (auth-source-pass-get 'secret "slack/simplyrets/creichert")
    :token         (auth-source-pass-get "legacy-token" "slack/simplyrets/creichert")
    :full-and-display-names t)
+
   (slack-register-team
    :name "Assertible"
    :default t
@@ -91,54 +98,11 @@
    :token         (auth-source-pass-get "legacy-token" "slack/assertible/creichert")
    ;; send notifications to minibuffer / higher alert importance
    :subscribed-channels '(dev)
-   :full-and-display-names t))
+   :full-and-display-names t)
 
+    )
 
-(use-package alert
-  ;;:ensure-system-package (notify-send . "sudo apt install libnotify-bin libnotify4")
-  :ensure t
-  ;;:init (setq alert-default-style 'message)
-  :defer
-  :config
-  ;; by default, ignore
-  ;; (add-to-list 'alert-user-configuration
-  ;;            '(((:category . "slack")) ignore nil))
-
-  ;; by default, add fringe alerts for all unreads
-  (add-to-list 'alert-user-configuration
-             '(((:category . "slack")) fringe nil))
-
-  ;; notify all messages in these channels.
-  (add-to-list
-   'alert-user-configuration
-   '(((:title . "\\(support\\|dev\\|[A-Z][a-z].*\\|[A-Z][a-z].*?[A-Z][a-z].*\\|z-.*\\)")
-      ;;(:status '(buried idle))
-      (:category . "slack"))
-     libnotify nil))
-
-  ;; notify all messages in these channels.
-  (add-to-list
-   'alert-user-configuration
-   '(((:title . "Christopher")
-      ;;(:status '(buried idle))
-      (:category . "slack"))
-     libnotify nil))
-
-  (add-to-list 'alert-user-configuration
-             '(((:title . "GitHub")
-                ;;(:status '(buried idle))
-                (:category . "slack"))
-               libnotify nil))
-
-  ;;;; don't notify me when
-  ;;(add-to-list 'alert-user-configuration
-  ;;             '(((:message . "\\(Successfully\\s-deployed\\|merged\\s-by\\s-creichert\\)")
-  ;;                ;;(:title . "rollbar")
-  ;;                ;;(:status '(buried idle))
-  ;;                (:category . "slack"))
-  ;;               ignore nil))
   )
-
 
 (provide 'slack-settings)
 
