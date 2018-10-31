@@ -13,6 +13,10 @@ xset b off
 xsetroot -cursor_name left_ptr
 setxkbmap -option ctrl:nocaps
 
+# Hold down right click to use trackball to scroll
+xinput set-prop 8 "libinput Scroll Method Enabled" 0, 0, 1
+xinput set-prop 8 "libinput Button Scrolling Button" 3
+
 /usr/lib/notification-daemon/notification-daemon &
 
 xmonad
