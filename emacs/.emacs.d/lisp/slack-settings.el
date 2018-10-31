@@ -53,8 +53,6 @@
   (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
   (setq slack-prefer-current-team t)
   (setq slack-completing-read-function #'ido-completing-read)
-  (setq slack-buffer-function #'switch-to-buffer)
-
   (setq
    lui-time-stamp-position 'right-margin
    lui-fill-type nil)
@@ -67,7 +65,7 @@
 
   (defun creichert/slack-start (orig-fun &rest args)
     (apply orig-fun args)
-    (sit-for 8)
+    (sit-for 10)
     (slack-room-display
      (slack-room-find-by-name "dev" slack-current-team)
      slack-current-team))
