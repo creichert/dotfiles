@@ -13,6 +13,9 @@ flags:
   xmobar:
     with_xft: true
     with_mpris: true
+    with_threaded: true
+    with_rtsopts: true
+    with_weather: true
 
 ghc-options:
   "$locals":
