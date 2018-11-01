@@ -71,7 +71,7 @@
 
   (defun creichert/slack-start (orig-fun &rest args)
     (apply orig-fun args)
-    (sit-for 15)
+    (sit-for 10)
     (slack-room-display
      (slack-room-find-by-name "dev" slack-current-team)
      slack-current-team))
@@ -97,12 +97,20 @@
    :client-secret (auth-source-pass-get 'secret "slack/assertible/creichert")
    :token         (auth-source-pass-get "legacy-token" "slack/assertible/creichert")
    ;; send notifications to minibuffer / higher alert importance
-   :subscribed-channels '(dev)
+   :subscribed-channels '(dev gh notifications support ci)
    :full-and-display-names t)
 
-    )
-
-  )
+  (use-package alert
+    :ensure t
+    :config
+    ;; notify all messages in these channels.
+    (add-to-list
+     'alert-user-configuration
+     '((;;(:title . "Christopher")
+        ;;(:status '(buried idle))
+        (:category . "slack"))
+       libnotify nil))
+    ))
 
 (provide 'slack-settings)
 

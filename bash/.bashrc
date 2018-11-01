@@ -20,12 +20,7 @@ set -o vi
 shopt -s histappend
 shopt -s checkwinsize
 
-#export EDITOR="emacsclient -t -nw"
-export EDITOR=emacs
-
-export ALTERNATE_EDITOR=$EDITOR
-export GIT_EDITOR=$EDITOR
-export SYSTEMD_EDITOR=$EDITOR
+export ALTERNATE_EDITOR="emacsclient -t"
 export VISUAL=$EDITOR
 
 export BROWSER=chromium

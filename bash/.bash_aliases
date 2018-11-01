@@ -4,8 +4,8 @@ alias ..="cd ../.."
 alias ...="cd ../../.."
 alias ....="cd ../../../.."
 alias distupgrade='sudo apt-get update && sudo apt-get dist-upgrade'
-alias e="emacsclient -t"
-alias em="emacs -nw"
+alias e="emacsclient -nw "
+alias em="emacs -nw --color=never"
 alias gnus='emacs -f gnus'
 alias grep='grep --color=auto'
 alias l='ls -CF'
