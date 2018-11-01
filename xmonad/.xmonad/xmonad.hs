@@ -23,27 +23,45 @@ import XMonad.Prompt.Ssh
 import XMonad.Util.Loggers
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.Run             (spawnPipe)
-import XMonad.Util.SpawnOnce
 
+
+-- standard colors and fonts that match the current theme.
+backgroundColor, foregroundColor, color1, themeFont :: String
+backgroundColor = "#3b3228"
+foregroundColor = "#d0c8c6"
+color1 = "#cbc6077"
+themeFont = "monofur"
 
 main :: IO ()
 main = do
-    h <- spawnPipe "xmobar"
+
+    h <- spawnPipe $ "xmobar "
+                   ++ " -f 'xft:" ++ themeFont ++ ":size=9:antialias=true'"
+                   ++ " -B '" ++ backgroundColor ++ "'"
+                   ++ " -F '" ++ foregroundColor ++ "'"
+                   ++ " -p Top"
+
     xmonad $ docks $ def {
                terminal    = "xterm"
+               -- "Windows" key is used for key combinations to avoid
+               -- collisions w/ emacs
+             , modMask = mod4Mask
              , borderWidth = 1
+             , normalBorderColor = foregroundColor
+             , focusedBorderColor = color1
              , keys        = keybindings def
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
                                manageDocks
                              , namedScratchpadManageHook scratchpads
-                             , className =? "Chromium" --> doF (W.shift "8")
-                             , className =? "Spotify"  --> doF (W.shift "9")
+                             -- these windows always get pushed to the same
+                             -- workspace on startup
+                             , className =? "chromium" --> doF (W.shift "8")
+                             , className =? "spotify"  --> doF (W.shift "9")
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h
              , handleEventHook = mconcat [ docksEventHook, handleEventHook def ]
-             , modMask = mod4Mask
              }
   where
     xpp h = xmobarPP {
@@ -58,7 +76,7 @@ main = do
 keybindings :: XPConfig -> XConfig Layout -> Map (KeyMask, KeySym) (X ())
 keybindings xPCfg x = keys' x `Map.union` keys def x
   where
-    xpCfg = xPCfg { font = "xft:monofur:size=10:style=italic" }
+    xpCfg = xPCfg { font = "xft:" ++ themeFont ++ ":size=10" }
     keys' XConfig { XMonad.modMask = modm } = Map.fromList [
 
           ((modm, xK_F1), spawn "xterm")
@@ -67,7 +85,10 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
         -- dmenu w/ history (see bin/dmenu_run_history)
         -- - C-n : next in history
         -- - C-p : prev in history
-        , ((modm, xK_p), spawn "dmenu_run_history -nb '#3b3228' -nf '#d0c8c6' -fn 'monofur-11'")
+        , ((modm, xK_p), spawn $ "dmenu_run_history"
+                               ++ " -nb \"" ++ backgroundColor ++ "\""
+                               ++ " -nf \"" ++ foregroundColor ++ "\""
+                               ++ " -fn \"" ++ themeFont ++ "-11\"")
 
         -- audio (amixer & mpris)
         , ((0, 0x1008ff12), spawn "amixer set Master toggle")
@@ -81,19 +102,21 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
         , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
         , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
 
-        , ((modm, xK_apostrophe),      passPrompt xpCfg)
-        , ((modm, xK_s),               sshPrompt xpCfg)
-        , ((modm .|. shiftMask, xK_m), manPrompt xpCfg)
+        , ((modm, xK_apostrophe), passPrompt xpCfg)
+        , ((modm, xK_s),          sshPrompt xpCfg)
+        , ((modm, xK_i),          manPrompt xpCfg)
 
-        , ((modm, xK_r),  namedScratchpadAction scratchpads "psql")
-        , ((modm, xK_k),  namedScratchpadAction scratchpads "terminal")
-        , ((modm, xK_j),  namedScratchpadAction scratchpads "emacs")
-        , ((modm, xK_o),  namedScratchpadAction scratchpads "spotify")
-        , ((modm, xK_m),  namedScratchpadAction scratchpads "gnus")
-        , ((modm, xK_g),  namedScratchpadAction scratchpads "ghci")
+        , ((modm, xK_m), spawn "emacs -f gnus")
+        , ((modm .|. shiftMask, xK_m), spawn "emacs -f gnus-unplugged")
 
           -- Take a selective screenshot using the command specified by mySelectScreenshot.
         , ((modm .|. shiftMask, xK_p), spawn screenshotRegion)
+
+        , ((modm, xK_r),  namedScratchpadAction scratchpads "psql")
+        , ((modm, xK_k),  namedScratchpadAction scratchpads "terminal")
+        , ((modm, xK_j),  namedScratchpadAction scratchpads "agenda")
+        , ((modm, xK_g),  namedScratchpadAction scratchpads "ghci")
+
         ]
 
 screenshotRegion :: String
@@ -107,20 +130,14 @@ screenshotRegion = L.intercalate ";" [
 scratchpads :: [NamedScratchpad]
 scratchpads = [
       NS "terminal" "xterm -T terminal" (title =? "terminal")
-          (customFloating $ W.RationalRect (1/10) (1/6) (12/15) (2/3))
+          (customFloating $ W.RationalRect (1/20) (1/10) (17/20) (7/10))
 
-    , NS "emacs" "emacs --title org" (title =? "org")
-          (customFloating $ W.RationalRect (1/8) (1/8) (7/9) (4/5))
+    , NS "agenda" "emacs --title agenda" (title =? "agenda")
+          (customFloating $ W.RationalRect (1/20) (1/20) (18/20) (18/20))
 
     , NS "ghci" "xterm -title ghci -e stack exec ghci" (title =? "ghci")
-          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
+          (customFloating $ W.RationalRect (1/20) (1/10) (17/20) (7/10))
 
     , NS "psql" "emacs -f sql-postgres --title psql" (title =? "psql")
-          (customFloating $ W.RationalRect (1/6) (1/6) (2/3) (2/3))
-
-    , NS "gnus" "emacs -f gnus --title mail" (title =? "mail")
-          (customFloating $ W.RationalRect (1/20) (1/20) (17/20) (17/20))
-
-    , NS "spotify" "spotify" (className =? "Spotify")
           (customFloating $ W.RationalRect (1/20) (1/20) (17/20) (17/20))
     ]

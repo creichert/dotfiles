@@ -49,11 +49,9 @@ $(XMONAD): xmonad/.xmonad/xmonad.hs $(XMONAD_BIN) $(XMOBAR_BIN)
 
 $(XMONAD_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
 	cd $(PWD) && stack install xmonad xmonad-contrib
+# flags for xmobar are configured in ~/.stack/global-project/stack.yaml
 $(XMOBAR_BIN): stack/.stack/global-project/stack.yaml stack/.stack/config.yaml
-	cd $(PWD) && stack install xmobar \
-			--flag "xmobar:with_threaded" \
-			--flag "xmobar:with_mpris" \
-			--flag "xmobar:with_xft"
+	cd $(PWD) && stack install xmobar
 
 
 # New base16 themes: https://github.com/chriskempson/base16

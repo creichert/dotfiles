@@ -1,13 +1,9 @@
 
 Config {
-    position = Top
-  , font = "xft:monofur:size=10"
-  , bgColor = "#3b3228"
-  , fgColor = "#d0c8c6"
-  , lowerOnStart = True
+    lowerOnStart = True
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { %mpris2% :: <fc=#d0c8c6>%date%</fc> "
+  , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { %mpris2% | %weather% | %date% "
   , commands = [
 
         Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
@@ -43,7 +39,16 @@ Config {
       , Run Mpris2 "spotify" [
                 "-t", "<artist> - <title>"
               ] 10
+
       , Run PipeReader "default text:~/.xmonad/xmonad.errors" "xmonad"
+
+      , Run Weather "weather" [
+            "-t","<station>: <tempF>F"
+          , "-L","60","-H","90"
+          , "--normal","green"
+          , "--high","red"
+          , "--low","lightblue"
+          ] 10 -- 36000
 
         -- laptop
         -- , Run Battery [] 600
