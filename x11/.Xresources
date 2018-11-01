@@ -3,6 +3,7 @@
 
 #define FONT1_FAMILY monofur
 #define FONT1 xft:FONT1_FAMILY:style=Regular:size=12
+*font: FONT1
 
 *VT100.Translations: #override \
 <Key>Delete: string(0x04) \n\
