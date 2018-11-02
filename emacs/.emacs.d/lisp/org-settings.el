@@ -46,6 +46,7 @@
   (org-log-done 'time)
   ;; inbox.org captures all incoming tasks
   (org-default-notes-file "~/org/inbox.org")
+  (org-agenda-text-search-extra-files '(agenda-archives))
   :init
   (setq
    org-refile-use-outline-path 'file
