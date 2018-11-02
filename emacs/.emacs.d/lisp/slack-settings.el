@@ -25,8 +25,7 @@
                ;; special commands
                ("C-c s @" . creichert/slack-message-embed-mention)
                ("C-c s #" . creichert/slack-message-embed-channel)
-               ("C-c s :" . creichert/slack-message-embed-emoji)
-               ))
+               ("C-c s :" . creichert/slack-message-embed-emoji)))
   :preface
   (defun creichert/slack-message-embed-mention ()
     (interactive)
@@ -88,6 +87,7 @@
    :client-id     (auth-source-pass-get "user" "slack/simplyrets/creichert")
    :client-secret (auth-source-pass-get 'secret "slack/simplyrets/creichert")
    :token         (auth-source-pass-get "legacy-token" "slack/simplyrets/creichert")
+   :subscribed-channels '(dev simplyrets ci ops general random)
    :full-and-display-names t)
 
   (slack-register-team
@@ -97,12 +97,13 @@
    :client-secret (auth-source-pass-get 'secret "slack/assertible/creichert")
    :token         (auth-source-pass-get "legacy-token" "slack/assertible/creichert")
    ;; send notifications to minibuffer / higher alert importance
-   :subscribed-channels '(dev gh notifications support ci)
+   :subscribed-channels '(dev gh notifications support ci general random)
    :full-and-display-names t)
 
   (use-package alert
     :ensure t
     :config
+
     ;; notify all messages in these channels.
     (add-to-list
      'alert-user-configuration
