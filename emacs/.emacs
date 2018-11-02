@@ -309,7 +309,7 @@
   :if window-system ;; display-graphic-p
   :load-path "themes"
   :config
-  (load-theme 'xresources t)
+  ;; NOT WORKING
   (setq ansi-color-names-vector (vector
                                  (xresources-theme-color "background")
                                  (xresources-theme-color "color1")
@@ -319,7 +319,8 @@
                                  (xresources-theme-color "color5")
                                  (xresources-theme-color "color6")
                                  (xresources-theme-color "foreground")
-                                 )))
+                                 ))
+  (load-theme 'xresources t))
 
 
 (use-package ansi-color
@@ -558,6 +559,7 @@
         browse-url-browser-function
         '(("github.com" . browse-url-chromium)
           ("trello.com" . browse-url-chromium)
+          ("circleci.com" . browse-url-chromium)
           ("pagerduty.com" . browse-url-chromium)
           ("accounts.google.com" . browse-url-chromium)
           ("assertible.com" . browse-url-chromium)
@@ -646,7 +648,8 @@
     ((warning line-start (file-name) ":" line ":" column ": "
               (id (one-or-more (not (any " "))))
               (message) line-end))
-    :modes (message-mode text-mode markdown-mode gfm-mode org-mode)
+    ;; doesn't work well with org-mode
+    :modes (message-mode text-mode markdown-mode gfm-mode)
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)))
 
