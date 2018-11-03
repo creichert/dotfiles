@@ -562,6 +562,7 @@
           ("circleci.com" . browse-url-chromium)
           ("pagerduty.com" . browse-url-chromium)
           ("accounts.google.com" . browse-url-chromium)
+          ("accounts.spotify.com" . browse-url-chromium)
           ("assertible.com" . browse-url-chromium)
           ("simplyrets.com/admin" . browse-url-chromium)
           ("slack.com" . browse-url-chromium)
