@@ -4,7 +4,9 @@
 (use-package slack
   :ensure t
   :commands (slack-start)
-  :hook ((lui-mode . creichert/lui-setup))
+  :hook
+  ((lui-mode . creichert/lui-setup))
+  ((lui-mode . turn-on-auto-revert-mode))
   :bind (("C-c s s" . slack-start)
          ("C-c s j" . slack-select-rooms)
          (:map slack-mode-map
