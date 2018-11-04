@@ -108,7 +108,6 @@ function bootstrap_lang() {
             ;;
 
         golang)
-            status anacron
             export GOVM_ROOT="$HOME/.govm"
             if [[ -d "$GOVM_ROOT" ]]; then
                 export PATH="$GOVM_ROOT/bin:$PATH"
