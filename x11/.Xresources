@@ -10,7 +10,8 @@
 <Key>BackSpace: string(0x7F)
 
 XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
-*VT100*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+VT100*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+XTerm*selectToClipboard: true
 
 Emacs.font: FONT1_FAMILY
 Emacs.menuBar: off
