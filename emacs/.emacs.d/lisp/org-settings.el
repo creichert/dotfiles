@@ -24,7 +24,6 @@
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
 
   (use-package ob-http  :ensure t)
-  ;; add the :async keyword to any src block
 
   ;; add :async to virtually any babel language
   (use-package ob-async :ensure t)
@@ -39,8 +38,10 @@
      (makefile . t)
      (scheme . t)
      (C . t)
+     (gnuplot . t)
      (ledger . t)
      (shell . t)))
+
   :custom
   (org-completion-use-ido t)
   (org-log-done 'time)
