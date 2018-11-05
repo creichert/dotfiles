@@ -3,10 +3,10 @@ Config {
     lowerOnStart = True
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { %mpris2% | %weather% | %date% "
+  , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { %mpris2% | %date% "
   , commands = [
 
-        Run Date "%a %b %_d %Y %H:%M:%S" "date" 10
+        Run Date "%a, %b %d %H:%M:%S" "date" 10
 
       , Run DynNetwork [ "-L","10000" -- 10 kb in bytes
                        , "-H","500000"  -- 500kb in bytes
@@ -41,14 +41,6 @@ Config {
               ] 10
 
       , Run PipeReader "default text:~/.xmonad/xmonad.errors" "xmonad"
-
-      , Run Weather "weather" [
-            "-t","<station>: <tempF>F"
-          , "-L","60","-H","90"
-          , "--normal","green"
-          , "--high","red"
-          , "--low","lightblue"
-          ] 10 -- 36000
 
         -- laptop
         -- , Run Battery [] 600
