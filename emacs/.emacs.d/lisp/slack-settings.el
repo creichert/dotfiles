@@ -3,6 +3,7 @@
 
 (use-package slack
   :ensure t
+  :ensure-system-package (dunst)
   :commands (slack-start)
   :hook
   ((lui-mode . creichert/lui-setup))
@@ -70,12 +71,11 @@
       (error "<error parsing message>\n")))
   (advice-add 'slack-message-to-string :around #'creichert/slack-mode--catch-message-to-string-error)
 
+  (defvar subscribed-channel-regexp "\\(z-.*\\|dev\\)")
+
   (defun creichert/slack-start (orig-fun &rest args)
     (apply orig-fun args)
-    (sit-for 10)
-    (slack-room-display
-     (slack-room-find-by-name "dev" slack-current-team)
-     slack-current-team))
+    )
 
   (advice-add 'slack-start :around #'creichert/slack-start)
 
@@ -102,10 +102,32 @@
    :subscribed-channels '(dev gh notifications support ci general random)
    :full-and-display-names t)
 
+  (setq slack-message-custom-notifier
+        #'(lambda (message room team)
+            (cond ((and (not (slack-message-minep message team))
+                        (string-match subscribed-channel-regexp (slack-room-name room team)))
+                   (let ((room-name (slack-room-name room team))
+                         (text (slack-message-to-alert message team))
+                         (user-name (slack-message-sender-name message team)))
+                     (if (and (eq alert-default-style 'notifier)
+                              (or (eq (aref text 0) ?\[)
+                                  (eq (aref text 0) ?\{)
+                                  (eq (aref text 0) ?\<)
+                                  (eq (aref text 0) ?\()))
+                         (setq text (concat "\\" text)))
+                     (alert text
+                            :title (format "[%s] from %s" room-name user-name)
+                            ;; :icon (cond ((string-match "Assertible" team-name) "")
+                            ;;             ((string-match "SimplyRETS" team-name) "")
+                            ;;             (t slack-alert-icon))
+                            :category 'slack)))
+                  (t (slack-message-notify-alert message room team))
+                  )
+            ))
+
   (use-package alert
     :ensure t
     :config
-
     ;; notify all messages in these channels.
     (add-to-list
      'alert-user-configuration
@@ -113,7 +135,8 @@
         ;;(:status '(buried idle))
         (:category . "slack"))
        libnotify nil))
-    ))
+    )
+  )
 
 (provide 'slack-settings)
 
