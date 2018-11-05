@@ -88,7 +88,7 @@ function man() {
 function bootstrap_lang() {
 
     case "$1" in
-        # Rust
+        # Node
         node)
             export NVM_DIR="$HOME/.nvm"
             # Loads nvm
@@ -97,6 +97,7 @@ function bootstrap_lang() {
             [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
             ;;
 
+        # Node
         rust)
             # Rust
             export RSVM_DIR="$HOME/.rsvm"
@@ -107,6 +108,7 @@ function bootstrap_lang() {
             fi
             ;;
 
+        # Golang
         golang)
             export GOVM_ROOT="$HOME/.govm"
             if [[ -d "$GOVM_ROOT" ]]; then
@@ -116,7 +118,9 @@ function bootstrap_lang() {
                 echo "govm not installed."
             fi
             ;;
+
         *)
             echo $"Usage: $0 {node|rust|golang|haskell}"
+
     esac
 }
