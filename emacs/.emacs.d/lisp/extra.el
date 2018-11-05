@@ -4,6 +4,19 @@
 (require 'use-package)
 
 
+(use-package dockerfile-mode
+  :ensure t
+  ;;:ensure-system-package ("docker.io")
+  :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
+
+
+;;(use-package docker
+;;  :ensure t
+;;  :commands (docker)
+;;  :ensure-system-package (docker . "docker.io")
+;;  :bind (("C-c d" . docker)))
+
+
 (use-package ggtags
   :defer
   :requires (evil)

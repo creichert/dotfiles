@@ -701,12 +701,6 @@
   :mode ("\\.env.sample" . dotenv-mode))
 
 
-(use-package dockerfile-mode
-  :ensure t
-  ;;:ensure-system-package ("docker.io")
-  :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
-
-
 (use-package yaml-mode
   ;;:ensure-system-package yamllint
   :ensure t :defer)
