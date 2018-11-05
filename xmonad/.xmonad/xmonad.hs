@@ -91,11 +91,12 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
                                ++ " -fn \"" ++ themeFont ++ "-11\"")
 
         -- audio (amixer & mpris)
-        , ((0, 0x1008ff12), spawn "amixer set Master toggle")
-        , ((modm, 0x1008ff12), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
+        , ((0, 0x1008ff12), spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle")
+        , ((0, 0x1008ff11), spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
+        , ((0, 0x1008ff13), spawn "pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ +5%")
 
-        , ((0, 0x1008ff11), spawn "amixer -c 0 set 'Master,0' 5%- > /dev/null")
-        , ((0, 0x1008ff13), spawn "amixer -c 0 set Master 5%+ unmute > /dev/null")
+        -- dbus / mpris control over playback
+        , ((modm, 0x1008ff12), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
         , ((modm, 0x1008ff11), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
         , ((modm, 0x1008ff13), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
 
