@@ -4,13 +4,6 @@
 (use-package org
   :defer
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
-  :config
-  (add-to-list 'org-modules '(org-checklist
-                              org-drill
-                              org-jsinfo
-                              org-git-link
-                              ;; included by default, but critical
-                              org-gnus))
   :bind (;; capture task to inbox
          ([f6]   . org-capture)
          ;; inbox, anything scheduled can be seen w/ f8
@@ -89,6 +82,11 @@
   (add-to-list 'org-agenda-custom-commands
                '("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2")))
 
+
+
+(use-package org-checklist
+  :ensure org-plus-contrib
+  :after (org))
 
 
 (provide 'org-settings)
