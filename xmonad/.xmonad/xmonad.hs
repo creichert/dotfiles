@@ -30,6 +30,8 @@ backgroundColor, foregroundColor, color1, themeFont :: String
 backgroundColor = "#3b3228"
 foregroundColor = "#d0c8c6"
 color1 = "#cbc6077"
+color12 = "#8ab3b5"
+color15 = "#f5eeeb"
 themeFont = "monofur"
 
 main :: IO ()
@@ -88,6 +90,8 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
         , ((modm, xK_p), spawn $ "dmenu_run_history"
                                ++ " -nb \"" ++ backgroundColor ++ "\""
                                ++ " -nf \"" ++ foregroundColor ++ "\""
+                               ++ " -sf \"" ++ color15 ++ "\""
+                               ++ " -sb \"" ++ color12 ++ "\""
                                ++ " -fn \"" ++ themeFont ++ "-11\"")
 
         -- audio (amixer & mpris)
