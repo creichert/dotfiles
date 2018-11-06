@@ -98,11 +98,10 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
         , ((0, 0x1008ff12), spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle")
         , ((0, 0x1008ff11), spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%")
         , ((0, 0x1008ff13), spawn "pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ +5%")
-
-        -- dbus / mpris control over playback
-        , ((modm, 0x1008ff12), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
-        , ((modm, 0x1008ff11), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
-        , ((modm, 0x1008ff13), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
+        -- XF86AudioPlay
+        , ((0, 0x1008ff14), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
+        , ((0, 0x1008ff16), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous")
+        , ((0, 0x1008ff17), spawn "dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
 
         , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
         , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
