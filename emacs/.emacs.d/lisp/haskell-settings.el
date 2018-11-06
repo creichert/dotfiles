@@ -2,10 +2,14 @@
 
 (use-package haskell-mode
   :ensure t
-  :mode ("\\.hs\\'" "\\.lhs\\'")
+  :mode (("\\.hs\\'"    . haskell-mode)
+         ("\\.cabal\\'" . haskell-cabal-mode)
+         ("\\.hcr\\'"   . haskell-core-mode)
+         ("\\.lhs\\'"   . literate-haskell-mode))
   :interpreter
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
+  ("haskell"    . haskell-mode)
   :bind (:map haskell-mode-map
               ("C-c h t" . haskell-process-do-type)
               ("C-c h h" . hoogle)
@@ -65,8 +69,7 @@
       (when ident
         (setq my-haskell-current-function ident)
         (let ((process (haskell-interactive-process))
-              (query ident)
-              )
+              (query ident))
           (haskell-process-queue-command
            process
            (make-haskell-command
