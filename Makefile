@@ -88,7 +88,7 @@ themes-list: submodules
 
 
 # New base16 themes: https://github.com/chriskempson/base16
-.PHONE: fonts
+.PHONY: fonts
 fonts: submodules
 	@rm -rf ~/.cache/fontconfig
 	@fc-cache -vf
