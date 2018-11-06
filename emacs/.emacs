@@ -29,6 +29,8 @@
 ;; Ensure system executables are installed for certain packages.
 (setq source-directory "~/dev/c/emacs")
 (setq custom-file "~/.emacs.d/custom.el")
+(setq frame-title-format "emacs - %b")
+(setq select-enable-primary t)
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message (format ";; startup took %s\n\n" (emacs-init-time)))
 ;; dont use any "gui" dialog boxes
