@@ -199,16 +199,7 @@
   (("C-x f" . ido-find-file)
    ("C-c C-x C-o" . ido-switch-buffer-other-window))
   :config
-  ;; (add-to-list 'ido-ignore-files "\\.rej$")
-  ;; (add-to-list 'ido-ignore-files "\\.dyn_hi$")
-  ;; (add-to-list 'ido-ignore-files "\\.dyn_o$")
-  ;; (add-to-list 'ido-ignore-files "\\.hi$")
-  ;; (add-to-list 'ido-ignore-files "\\.o$")
   (add-to-list 'ido-ignore-files "\\.tags$")
-  ;; (add-to-list 'ido-ignore-files "\\TAGS$")
-  ;; (add-to-list 'ido-ignore-buffers "*Compile-Log*")
-  ;; (add-to-list 'ido-ignore-buffers "*Help*")
-  ;; (add-to-list 'ido-ignore-buffers "TAGS")
   (ido-mode 1)
   (ido-everywhere 1)
   :init
@@ -223,18 +214,17 @@
   :load-path "site-lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
-  :init
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+  :custom
+  (ido-vertical-define-keys 'C-n-and-C-p-only))
 
 
 (use-package flx-ido
   :ensure t
   :requires (ido)
-  :config
-  (flx-ido-mode)
-  :init
-  (setq flx-ido-use-faces t)
-  (setq flx-ido-threshold 1000))
+  :config (flx-ido-mode)
+  :custom
+  (flx-ido-use-faces t)
+  (flx-ido-threshold 1000))
 
 
 (use-package ido-at-point
@@ -395,17 +385,18 @@
 
 
 (use-package register
-  :defer
-  :bind
-  (([f10] . (lambda ()
-              (interactive)
-              (jump-to-register 9)
-              ;; make sure to put compilation-buffer at end here.
-              (message "Windows disposition loaded"))))
-  (([C-f10] . (lambda ()
-                (interactive)
-                (window-configuration-to-register 9)
-                (message "Windows disposition saved")))))
+  :preface
+  (defun creichert/load-window-disposition (&optional regnum)
+    (interactive "PRegister number (default is 9): ")
+    (jump-to-register (or regnum 9)) ;; TODO prefix the register
+    (message "Windows disposition loaded"))
+  (defun creichert/save-window-disposition (&optional regnum)
+    (interactive "PRegister number (default is 9): ")
+    (window-configuration-to-register (or regnum 9))
+    (message "Windows disposition saved"))
+  :commands (creichert/load-window-disposition creichert/save-window-disposition)
+  :bind (([C-f10] . creichert/save-window-disposition)
+         ([f10]   . creichert/load-window-disposition)))
 
 
 (use-package evil
