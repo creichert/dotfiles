@@ -91,16 +91,16 @@
     ;; notify via libnotify
     (add-to-list 'alert-user-configuration '(((:category . "slack")) libnotify nil))
 
-    (defvar subscribed-channel-regexp "\\(z-.*\\|dev\\|ops\\|simplyrets\\|ci\\|ops\\|general\\|random\\|support\\|gh\\|identibyte\\)")
-    (defvar subscribed-keyword-regexp "\\(chris\\|failure\\|deployed.*production\\|Failed.*creichert\\)")
-    (defvar subscribed-user-regexp "\\(codyreichert\\|github\\)")
+    (defvar subscribed-channel-regexp "\\(z-.*\\|dev\\|ops\\|simplyrets\\|ops\\|general\\|random\\|support\\|identibyte\\)")
+    (defvar subscribed-keyword-regexp "\\(chris\\|failure\\|deployed.*production\\|Failed.*creichert.*master\\)")
+    (defvar subscribed-user-regexp "\\(simon\\|codyreichert\\)")
     (defvar subscribed-urgent-keyword-regexp "\\(High.*IOPS\\|production.*tests.*failed.*via\\)")
-    (defvar subscribed-urgent-user-regexp "\\(cody\\|drift\\)")
+    (defvar subscribed-urgent-user-regexp "\\(simon\\|drift\\)")
     (defvar subscribed-urgent-channel-regexp "\\(z-.*\\|identibyte\\)")
 
     ;; iterate attachment fields to identify urgency
     ;; (defvar subscribed-urgent-attachment-field-regexp "\\(High.*IOPS\\|production.*tests.*failed.*via\\)")
-    (defvar ignored-user-regexp "MailClark")
+    (defvar ignored-user-regexp "mailclark")
     (setq slack-message-custom-notifier
           #'(lambda (message room team)
               (cond ((and (not (slack-message-minep message team))
@@ -119,12 +119,12 @@
                             (is-urgent (or (string-match subscribed-urgent-user-regexp user-name)
                                            (string-match subscribed-urgent-keyword-regexp text)
                                            (string-match subscribed-urgent-channel-regexp room-name))))
-                       ;;(if (and (eq alert-default-style 'notifier)
-                       ;;         (or (eq (aref text 0) ?\[)
-                       ;;             (eq (aref text 0) ?\{)
-                       ;;             (eq (aref text 0) ?\<)
-                       ;;             (eq (aref text 0) ?\()))
-                       ;;    (setq text (concat "\\" text)))
+                       (if (and (eq alert-default-style 'notifier)
+                                (or (eq (aref text 0) ?\[)
+                                    (eq (aref text 0) ?\{)
+                                    (eq (aref text 0) ?\<)
+                                    (eq (aref text 0) ?\()))
+                           (setq text (concat "\\" text)))
                        (alert text
                               :title (format "[%s] from %s" room-name user-name)
                               :severity (cond (is-urgent 'urgent)

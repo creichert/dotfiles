@@ -34,9 +34,11 @@
   (haskell-indentation-electric-flag t)
   (haskell-indentation-layout-offset 4)
   (haskell-indentation-left-offset 4)
-  (haskell-stylish-on-save t)
-  ;;(haskell-indentation-starter-offset 4)
+  (haskell-indentation-starter-offset 4)
+  ;; breaks often & doesn't work w/ even the most basic customizations
+  ;;
   ;;(haskell-interactive-mode-eval-mode t)
+  (haskell-stylish-on-save t)
   (haskell-tags-on-save t)
   ;;
   ;; this is set automatically when there is a `stack.yaml`
