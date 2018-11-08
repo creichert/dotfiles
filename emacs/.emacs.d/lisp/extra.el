@@ -132,7 +132,6 @@
   :ensure t)
 
 
-
 (use-package alert
   :defer
   :ensure t)
@@ -202,11 +201,6 @@
   (evil-leader/set-key-for-mode 'magit-status-mode
     "SPC" 'yas-expand-maybe)
   :diminish yas-minor-mode)
-
-
-(use-package lpaste
-  :load-path "lisp"
-  :if (file-exists-p "~/.emacs.d/lisp/lpaste.el"))
 
 
 (use-package slack-settings
