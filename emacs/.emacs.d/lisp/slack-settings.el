@@ -92,7 +92,7 @@
     (add-to-list 'alert-user-configuration '(((:category . "slack")) libnotify nil))
 
     (defvar subscribed-channel-regexp "\\(z-.*\\|dev\\|ops\\|simplyrets\\|ops\\|general\\|random\\|support\\|identibyte\\)")
-    (defvar subscribed-keyword-regexp "\\(chris\\|failure\\|deployed.*production\\|Failed.*creichert.*master\\)")
+    (defvar subscribed-keyword-regexp "\\(chris\\|failure\\|deployed.*production\\|Failed.*creichert.*build\\)")
     (defvar subscribed-user-regexp "\\(simon\\|codyreichert\\)")
     (defvar subscribed-urgent-keyword-regexp "\\(High.*IOPS\\|production.*tests.*failed.*via\\)")
     (defvar subscribed-urgent-user-regexp "\\(simon\\|drift\\)")

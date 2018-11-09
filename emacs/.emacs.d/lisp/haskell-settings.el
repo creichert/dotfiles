@@ -166,6 +166,7 @@
               ("C-c m s" . ghcid)
               ("C-c m b" . show-ghcid-buf)
               ("C-c m t" . set-ghcid-target))
+  :hook ((kill-buffer . kill-ghcid))
   :custom
   (ghcid-target "")
   ;;:config (setq-local default-directory projectile-project-root)

@@ -58,8 +58,8 @@ main = do
                              , namedScratchpadManageHook scratchpads
                              -- these windows always get pushed to the same
                              -- workspace on startup
-                             , className =? "chromium" --> doF (W.shift "8")
-                             , className =? "spotify"  --> doF (W.shift "9")
+                             , className =? "Chromium" --> doF (W.shift "8")
+                             , className =? "Spotify"  --> doF (W.shift "9")
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h

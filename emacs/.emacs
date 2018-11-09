@@ -30,7 +30,6 @@
 (setq source-directory "~/dev/c/emacs")
 (setq custom-file "~/.emacs.d/custom.el")
 (setq frame-title-format "emacs - %b")
-(setq select-enable-primary t)
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message (format ";; startup took %s\n\n" (emacs-init-time)))
 ;; dont use any "gui" dialog boxes
@@ -128,69 +127,71 @@
   (vc-follow-symlinks t))
 
 
-;;(use-package xref
-;;  :config
-;;  (add-to-list 'xref-after-jump-hook '(delete-windows-on "*xref*")
-;;  :init
-;;  (setq xref-show-xrefs-function
-;;        (lambda (xrefs alist)
-;;          (let ((buffer (xref--show-xref-buffer xrefs alist)))
-;;            (quit-window)
-;;            (let ((orig-buf (current-buffer))
-;;                  (orig-pos (point))
-;;                  (done)
-;;                  (candidate
-;;                   ;;(ido-completing-read+
-;;                   (completing-read
-;;                    "xref: "
-;;                    (let ((collection nil))
-;;                      (dolist (xref xrefs)
-;;                        (with-slots (summary location) xref
-;;                          (let* ((line (xref-location-line location))
-;;                                 (file (xref-location-group location))
-;;                                 (candidate
-;;                                  (concat
-;;                                   (propertize
-;;                                    (concat
-;;                                     file
-;;                                     ;;(if ivy-xref-use-file-path
-;;                                     ;;    file
-;;                                     ;;  (file-name-nondirectory file))
-;;                                     (if (integerp line)
-;;                                         (format ":%d: " line)
-;;                                       ": "))
-;;                                    'face 'compilation-info)
-;;                                   (progn
-;;                                     ;;(when ivy-xref-remove-text-properties
-;;                                     (set-text-properties 0 (length summary) nil summary)
-;;                                     ;;)
-;;                                     summary
-;;                                     ))))
-;;                            ;;xref-etags-location
-;;                            (push `(,candidate . ,location) collection))))
-;;                            ;;(push (cons candidate xref) collection))))
-;;                      (nreverse collection))))
-;;                   )
-;;               ;;(setq done (eq 'ivy-done this-command))
-;;               (condition-case err
-;;                   ;; (let* ((marker (xref-location-marker ((car candidate) (cdr candidate))))
-;;                   ;; (let* ((marker (xref-location-marker (cdr candidate)))
-;;                   (with-slots (summary location) candidate
-;;                   (let* ((marker (xref-location-marker location))
-;;                          (buf (marker-buffer marker)))
-;;                     (with-current-buffer buffer
-;;                       (select-window
-;;                        ;; function signature changed in
-;;                        ;; 2a973edeacefcabb9fd8024188b7e167f0f9a9b6
-;;                        (if (version< emacs-version "26.0.90")
-;;                            (xref--show-pos-in-buf marker buf t)
-;;                          (xref--show-pos-in-buf marker buf)))))
-;;                   )
-;;                 (user-error (message (error-message-string err)))))
-;;
-;;            buffer)
-;;        ))
-;;)
+(use-package xref
+  :preface
+  (defun bury-xref-buffer ()
+    (delete-windows-on "*xref*"))
+  :config
+  (add-to-list 'xref-after-return-hook 'bury-xref-buffer)
+  ;;:init
+  ;;(setq xref-show-xrefs-function
+  ;;      (lambda (xrefs alist)
+  ;;        (let ((buffer (xref--show-xref-buffer xrefs alist)))
+  ;;          (quit-window)
+  ;;          (let ((orig-buf (current-buffer))
+  ;;                (orig-pos (point))
+  ;;                (done)
+  ;;                (candidate
+  ;;                 ;;(ido-completing-read+
+  ;;                 (completing-read
+  ;;                  "xref: "
+  ;;                  (let ((collection nil))
+  ;;                    (dolist (xref xrefs)
+  ;;                      (with-slots (summary location) xref
+  ;;                        (let* ((line (xref-location-line location))
+  ;;                               (file (xref-location-group location))
+  ;;                               (candidate
+  ;;                                (concat
+  ;;                                 (propertize
+  ;;                                  (concat
+  ;;                                   file
+  ;;                                   ;;(if ivy-xref-use-file-path
+  ;;                                   ;;    file
+  ;;                                   ;;  (file-name-nondirectory file))
+  ;;                                   (if (integerp line)
+  ;;                                       (format ":%d: " line)
+  ;;                                     ": "))
+  ;;                                  'face 'compilation-info)
+  ;;                                 (progn
+  ;;                                   ;;(when ivy-xref-remove-text-properties
+  ;;                                   (set-text-properties 0 (length summary) nil summary)
+  ;;                                   ;;)
+  ;;                                   summary
+  ;;                                   ))))
+  ;;                          ;;xref-etags-location
+  ;;                          (push `(,candidate . ,location) collection))))
+  ;;                          ;;(push (cons candidate xref) collection))))
+  ;;                    (nreverse collection))))
+  ;;                 )
+  ;;             ;;(setq done (eq 'ivy-done this-command))
+  ;;             (condition-case err
+  ;;                 ;; (let* ((marker (xref-location-marker ((car candidate) (cdr candidate))))
+  ;;                 ;; (let* ((marker (xref-location-marker (cdr candidate)))
+  ;;                 (with-slots (summary location) candidate
+  ;;                 (let* ((marker (xref-location-marker location))
+  ;;                        (buf (marker-buffer marker)))
+  ;;                   (with-current-buffer buffer
+  ;;                     (select-window
+  ;;                      ;; function signature changed in
+  ;;                      ;; 2a973edeacefcabb9fd8024188b7e167f0f9a9b6
+  ;;                      (if (version< emacs-version "26.0.90")
+  ;;                          (xref--show-pos-in-buf marker buf t)
+  ;;                        (xref--show-pos-in-buf marker buf)))))
+  ;;                 )
+  ;;               (user-error (message (error-message-string err)))))
+  ;;          buffer)
+  ;;      ))
+)
 
 
 (use-package ido
@@ -511,6 +512,7 @@
     "o"       'other-window
     "xc"      'save-buffers-kill-terminal
 
+    "a"       'fill-paragraph
     "F"       'find-def
     "S"       'xref-pop-marker-stack
 

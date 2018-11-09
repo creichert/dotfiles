@@ -101,7 +101,7 @@
 
 
 (use-package term
-  ;;:commands (make-term term ssh-term)
+  :commands (ssh-term)
   ;;:ensure-system-package (ssh)
   :init
   (defun remote-term (new-buffer-name cmd &rest switches)
