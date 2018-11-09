@@ -723,10 +723,11 @@
 
 
 (use-package mm-decode
+  :defer
   :custom
-   (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
-   (mm-verify-option 'always)
-   (mm-decrypt-option 'always))
+  (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
+  (mm-verify-option 'always)
+  (mm-decrypt-option 'always))
 
 
 (use-package epa
