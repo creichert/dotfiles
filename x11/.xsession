@@ -5,7 +5,6 @@
 
 set -e
 
-xflux -z 77006
 feh --bg-scale ~/.xmonad/wallpaper
 
 xset r rate 250 60             # speed up keys insert rate when held down

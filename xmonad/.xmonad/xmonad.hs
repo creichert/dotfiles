@@ -84,9 +84,8 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
           ((modm, xK_F1), spawn "xterm")
         , ((0, xF86XK_Launch1), spawn "xterm")
 
-        -- dmenu w/ history (see bin/dmenu_run_history)
-        -- - C-n : next in history
-        -- - C-p : prev in history
+        , ((modm .|. shiftMask, xK_z), spawn $ "xscreensaver-command -lock")
+
         , ((modm, xK_p), spawn $ "dmenu_run_history"
                                ++ " -nb \"" ++ backgroundColor ++ "\""
                                ++ " -nf \"" ++ foregroundColor ++ "\""

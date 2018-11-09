@@ -4,7 +4,7 @@
 #
 # See the README.md for more information about how symlinks are built.
 
-PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin global
+PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin global systemd
 
 # The location you want to install packages to
 PKG_DIR         ?= $(or $(target),$(HOME))
@@ -20,6 +20,8 @@ XMONAD_BIN      := $(HOME)/.local/bin/xmonad
 STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
 STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore=".*.pem"		\
+		--ignore=".*TAGS"		\
+		--ignore="flycheck_.*"		\
 		--ignore=".*.rej"		\
 		--ignore=".*.swp"		\
 		--ignore=".*~"			\
@@ -75,6 +77,8 @@ theme: submodules
 
 	@-xrdb -query | grep -v '^$$'
 
+	xscreensaver-command -restart
+
 themes-list: submodules
 	@echo
 	@echo "Usage: $ make theme q=mocha[-256]"
@@ -120,3 +124,10 @@ elpa:
 emacsdaemon:
 	-emacsclient -e '(kill-emacs)'
 	emacs --daemon
+
+xflux: bin/bin/xflux
+bin/bin/xflux:
+	curl -L https://justgetflux.com/linux/xflux64.tgz -o xflux64.tgz
+	tar xvzf xflux64.tgz
+	mv xflux bin/bin/xflux
+	rm xflux64.tgz
