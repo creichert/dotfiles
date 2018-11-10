@@ -15,6 +15,7 @@ import XMonad.StackSet as W
 -- XMonad contrib
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
 import XMonad.Prompt
 import XMonad.Prompt.Man
@@ -26,7 +27,7 @@ import XMonad.Util.Run             (spawnPipe)
 
 
 -- standard colors and fonts that match the current theme.
-backgroundColor, foregroundColor, color1, themeFont :: String
+backgroundColor, foregroundColor, color1, color12, color15, themeFont :: String
 backgroundColor = "#3b3228"
 foregroundColor = "#d0c8c6"
 color1 = "#cbc6077"
@@ -54,12 +55,13 @@ main = do
              , keys        = keybindings def
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
-                               manageDocks
-                             , namedScratchpadManageHook scratchpads
+                               namedScratchpadManageHook scratchpads
                              -- these windows always get pushed to the same
                              -- workspace on startup
                              , className =? "Chromium" --> doF (W.shift "8")
                              , className =? "Spotify"  --> doF (W.shift "9")
+                             , title =? "Save File" --> doCenterFloat
+                             , manageDocks
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h
