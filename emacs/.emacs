@@ -332,8 +332,8 @@
         compilation-scroll-output t
         ;; make compilation-mode a lot faster but excluding cpu intensive regexp's which
         ;; clog up the buffer on long lines.
-       compilation-error-regexp-alist
-         '(absoft bash borland msft epc ibm java gcc-include gnu lcc
+        compilation-error-regexp-alist
+        '(absoft bash borland msft epc ibm java gcc-include gnu lcc
            mips-1 mips-2 omake oracle perl php sun sun-ada watcom
            4bsd gcov-file gcov-header gcov-nomark gcov-called-line
            gcov-never-called weblint guile-file guile-line

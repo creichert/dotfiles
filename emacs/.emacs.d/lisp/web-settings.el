@@ -59,4 +59,12 @@
         (setq-local flowmacs/+flow+ flow)))))
 
 
+
+(use-package webpack-dev-server
+  :defer
+  :load-path "site-lisp/"
+  :bind (:map projectile-mode-map
+              ("C-c w p" . webpack-dev-server)))
+
+
 (provide 'web-settings)
