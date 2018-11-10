@@ -14,6 +14,7 @@ import XMonad.StackSet as W
 
 -- XMonad contrib
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Layout.NoBorders
@@ -44,7 +45,7 @@ main = do
                    ++ " -F '" ++ foregroundColor ++ "'"
                    ++ " -p Top"
 
-    xmonad $ docks $ def {
+    xmonad $ docks $ ewmh $ def {
                terminal    = "xterm"
                -- "Windows" key is used for key combinations to avoid
                -- collisions w/ emacs
