@@ -25,6 +25,7 @@
 (defun new-webpack-dev-server-term ()
   (interactive)
   (kill-webpack-dev-server)
+  (setq-local default-directory (projectile-project-root))
   (let ((webpack-dev-server-buf (get-buffer-create webpack-dev-server-buf-name)))
     (display-buffer
      webpack-dev-server-buf
