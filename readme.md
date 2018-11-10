@@ -90,6 +90,7 @@ found in `x11/.Xresources`.
 
 ## misc. posts & hacks
 
+- [webpack-dev-server.el - An Emacs mode to help you manage webpack-dev-server](https://creichert.io/webpack-dev-server.el)
 - [Fetch unknown PGP keys in Gnus](docs/fetch-unknown-pgp-keys-in-gnus.md)
 - [Useful BBDB v3 auto notes](docs/useful-bbdb-auto-notes.md)
 - [self-documenting Makefiles](docs/self-documenting-makefiles.md)

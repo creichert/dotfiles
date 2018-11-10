@@ -61,10 +61,17 @@
 
 
 (use-package webpack-dev-server
-  :defer
-  :load-path "site-lisp/"
+  :commands (webpack-dev-server)
+  :load-path "site-lisp/webpack-dev-server.el"
+  :custom
+  (webpack-dev-server-command  "make frontend-dev")
+  :config
+  (use-package projectile :demand :ensure t)
+  (setq webpack-dev-server-project-root (projectile-project-root))
   :bind (:map projectile-mode-map
-              ("C-c w p" . webpack-dev-server)))
+              ("C-c w p" . webpack-dev-server)
+              ("C-c w k" . webpack-dev-server-stop)
+              ("C-c w b" . webpack-dev-server-browse)))
 
 
 (provide 'web-settings)
