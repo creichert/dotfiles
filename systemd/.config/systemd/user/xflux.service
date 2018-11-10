@@ -1,0 +1,8 @@
+[Unit]
+Description=XFlux
+[Service]
+Type=forking
+ExecStart=/home/christopher/bin/xflux -z 77006
+Restart=always
+[Install]
+WantedBy=default.target
