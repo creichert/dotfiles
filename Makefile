@@ -77,7 +77,11 @@ theme: submodules
 
 	@-xrdb -query | grep -v '^$$'
 
-	xscreensaver-command -restart
+	@# TODO
+	@#dunst_xr_theme_changer.sh
+	@#mv ~/.config/dunst/dunstrc_xr_colors x11/.config/dunst/dunstrc
+
+	-xscreensaver-command -restart
 
 themes-list: submodules
 	@echo

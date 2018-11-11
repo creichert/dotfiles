@@ -5,6 +5,7 @@
 
 # this is a folder designed for you to keep
 dotlocal/
+bin/bin/xflux
 
 # hide ".$somerc.local" configs. They are used to store private files and
 # configurations not synced to github.

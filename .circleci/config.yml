@@ -3,17 +3,15 @@ jobs:
   build:
     working_directory: ~/dotfiles/dotfiles
     docker:
-      - image: assertible/ci
+      - image: creichert/debian
     steps:
       - checkout
 
       - run: apt update
-      - run: |
-          apt install -y --no-install-recommends   \
-                      xvfb xinit x11-xserver-utils \
-                      xserver-xorg libx11-dev      \
-                      git libxrandr-dev libxft-dev \
-                      libxml2-dev
+
+      # While this is not recommended in general, but for my system integration
+      # I always want packages to work w/ the latest debian/sid packages.
+      - run: apt upgrade -y
 
       - run: apt install stow emacs -y --no-install-recommends
 
@@ -23,16 +21,16 @@ jobs:
       # remove pre-existing dotfiles (stow will not)
       - run: rm ~/.profile ~/.bashrc ~/.gitconfig
 
+      - restore_cache:
+          keys:
+            - v1-dotcache-{{ .Branch }}
+            - v1-dotcache
+
       - run: make dotfiles
       - run: xvfb-run make dotemacs
 
       - run: xvfb-run make theme
       - run: xvfb-run make fonts
-
-      - restore_cache:
-          keys:
-            - v1-dotcache-{{ .Branch }}
-            - v1-dotcache
 
       - run: xvfb-run make xmonad
 
@@ -40,5 +38,15 @@ jobs:
           key: v1-dotcache-{{ .Branch }}
           paths:
             - ~/.stack/
+            - ~/.emacs.d/elpa
 
-      # - run: cd $HOME && xvfb-run startx
+      - run: make xflux
+
+      # NOTE can't run systemd inside circle ci containers (yet) as cgroup
+      # passthrough is needed.
+      #
+      #- run: xvfb-run systemd-analyze --user verify xflux.service
+      #- run: xvfb-run systemd-analyze --user verify unclutter.service
+      #- run: xvfb-run systemd-analyze --user verify xscreensaver.service
+      #
+      #- run: cd $HOME && xvfb-run startx
