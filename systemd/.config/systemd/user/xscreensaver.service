@@ -1,6 +1,8 @@
 [Unit]
 Description=XScreenSaver
+PartOf=graphical-session.target
 [Service]
 ExecStart=/usr/bin/xscreensaver -no-capture-stderr
+Restart=always
 [Install]
 WantedBy=default.target

@@ -62,6 +62,7 @@ main = do
                              , className =? "Chromium" --> doF (W.shift "8")
                              , className =? "Spotify"  --> doF (W.shift "9")
                              , title =? "Save File" --> doCenterFloat
+                             , title =? "Open File" --> doCenterFloat
                              , manageDocks
                              , manageHook def
                              ]
