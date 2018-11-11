@@ -1,14 +1,11 @@
 
 (use-package erc
-  :requires (auth-source-pass)
-  :commands (erc)
+  :commands (erc erc-creichert)
   :defer
   :hook
   ((erc-mode . erc-spelling-mode)
-   ;; (erc-mode . erc-track-mode)
    (erc-mode . (lambda ()
                  (set (make-local-variable 'scroll-conservatively) 100))))
-
   :custom
   (erc-user-full-name "creichert")
   (erc-nick-uniquifier "_")
@@ -20,6 +17,9 @@
   :preface
   (defun erc-creichert ()
     (interactive)
+    (use-package auth-source-pass
+      :ensure t :demand
+      :init (auth-source-pass-enable))
     (erc-tls :server "irc.freenode.net" :port 6697 :nick "creichert"))
 
   :config

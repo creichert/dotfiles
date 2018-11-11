@@ -124,3 +124,22 @@ function bootstrap_lang() {
 
     esac
 }
+
+function dunst-toggle-notifications() {
+
+    case "$1" in
+        # Node
+        on)
+            notify-send DUNST_COMMAND_RESUME
+            notify-send "enabling dunst"
+            export DUNST_ENABLED=1
+            ;;
+        off)
+            notify-send "pausing dunst"
+            notify-send DUNST_COMMAND_PAUSE
+            export DUNST_ENABLED=0
+            ;;
+        *)
+            echo $"Usage: $0 {on|pff}"
+    esac
+}
