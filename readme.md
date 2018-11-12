@@ -11,9 +11,12 @@
   - [`gnus`](#gnus)
 - [`themes`](#themes)
 
-All dotfiles in this repo are installed using in a minimally invasive way and
-will not overwrite any existing data on your system. I work between a desktop
-and laptop and prefer to have as few differences between the two systems.
+This repo contains my entire system configuration. The
+[Dockerfile](.circleci/config/Dockerfile) is a simulation of my personal Debian
+installation which I use to continually verify that my configuration works.
+
+All dotfiles in this repo are installed using minimally invasive commands and
+most will not overwrite any existing data on your system.
 
 Use `make` to:
 
