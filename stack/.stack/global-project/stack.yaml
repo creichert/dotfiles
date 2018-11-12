@@ -9,6 +9,7 @@
 resolver: lts-12.16
 packages: []
 
+system-ghc: true
 flags:
   xmobar:
     with_xft: true
