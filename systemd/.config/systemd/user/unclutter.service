@@ -1,6 +1,6 @@
 [Unit]
 Description=Unclutter
-PartOf=graphical-session.target
+PartOf=graphical.target
 [Service]
 ExecStart=/usr/bin/unclutter -idle 2 -noevents
 Restart=always
