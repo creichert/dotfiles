@@ -92,6 +92,7 @@ RUN apt-get install -y --no-install-recommends \
         xscreensaver                       \
         unclutter                          \
         libx11-dev                         \
+        libxss-dev                         \
         libxrandr-dev                      \
         libxft-dev
 
