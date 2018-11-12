@@ -100,6 +100,8 @@
   (kill-do-not-save-duplicates t)
   :config
   ;;(transient-mark-mode 1)
+  (size-indication-mode)
+  (column-number-mode)
   :init
   (setq
    mail-user-agent  'gnus-user-agent
@@ -617,7 +619,6 @@
 (use-package evil-magit
   :ensure t
   :requires (magit evil)
-
   :bind (:map evil-normal-state-map
               ("\\" . smex)
               :map evil-insert-state-map
@@ -698,17 +699,16 @@
 
 
 (use-package yaml-mode
-  ;;:ensure-system-package yamllint
   :ensure t :defer)
 
 
 (use-package flycheck-yamllint
-  ;;:ensure-system-package yamllint
+  :ensure-system-package (yamllint)
   :ensure t :defer)
 
 
 (use-package google-this
-  ;;:ensure-system-package ("chromium")
+  :ensure-system-package (chromium)
   :ensure t :defer)
 
 
@@ -732,7 +732,7 @@
 
 (use-package epa
   :defer
-  ;;:ensure-system-package (gpg2 . gnupg2)
+  :ensure-system-package (gpg2 . gnupg2)
   :custom
   (epa-pinentry-mode 'loopback))
 

@@ -6,15 +6,18 @@
 
 (use-package dockerfile-mode
   :ensure t
-  ;;:ensure-system-package ("docker.io")
+  :ensure-system-package (docker . "docker.io")
+  :config
+  (put 'dockerfile-image-name 'safe-local-variable #'stringp)
+  (put 'dockerfile-build-args 'safe-local-variable #'sequencep)
   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
 
 
-;;(use-package docker
-;;  :ensure t
-;;  :commands (docker)
-;;  :ensure-system-package (docker . "docker.io")
-;;  :bind (("C-c d" . docker)))
+(use-package docker
+  :ensure t
+  :commands (docker)
+  :ensure-system-package (docker . "docker.io")
+  :bind (("C-c d" . docker)))
 
 
 (use-package ggtags
@@ -25,10 +28,10 @@
              ggtags-find-reference
              ggtags-idutils-query
              pop-tag-mark)
-  ;;:ensure-system-package
-  ;;((gtags    . "global")
-  ;; (pip      . "pip install pygments"))
-  ;; (pygments . "pip install pygments"))
+  :ensure-system-package
+  ((gtags    . "global")
+   ;;(pip      . "pip install pygments")
+   (pygments . "pip install pygments"))
   :init
   (add-hook 'c-mode-common-hook
             (lambda ()
@@ -52,12 +55,14 @@
 (use-package auth-source-pass
   :ensure t
   :defer
+  :ensure-system-package (pass . "password-store")
   :config
   (auth-source-pass-enable))
 
 
-(use-package dired-rainbox
-  :disabled
+
+(use-package rainbow-mode
+  :defer
   :ensure t)
 
 
@@ -68,12 +73,12 @@
 
 (use-package gist
   :defer
-  ;;:ensure-system-package (git)
+  :ensure-system-package (git)
   :ensure t)
 
 
 (use-package ledger-mode
-  ;;:ensure-system-package (ledger)
+  :ensure-system-package (ledger)
   :ensure t
   :defer)
 
