@@ -1,6 +1,6 @@
 [Unit]
 Description=XFlux
-PartOf=graphical-session.target
+PartOf=graphical.target
 [Service]
 Type=forking
 ExecStart=/home/christopher/bin/xflux -z 77006

@@ -6,9 +6,10 @@
 # For more information about stack's configuration, see
 # http://docs.haskellstack.org/en/stable/yaml_configuration/
 #
-resolver: lts-11.22
+resolver: lts-12.16
 packages: []
 
+system-ghc: true
 flags:
   xmobar:
     with_xft: true
@@ -24,5 +25,6 @@ ghc-options:
 extra-deps:
   - xmobar-0.26
   - xmonad-contrib-0.14
+  - dbus-0.10.15
   - git: "https://github.com/xmonad/xmonad"
     commit: v0.14
