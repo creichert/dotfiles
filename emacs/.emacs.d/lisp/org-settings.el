@@ -89,4 +89,9 @@
   :after (org))
 
 
+(use-package org-depend
+  :ensure org-plus-contrib
+  :after (org))
+
+
 (provide 'org-settings)
