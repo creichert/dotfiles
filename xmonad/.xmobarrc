@@ -6,38 +6,39 @@ Config {
   , template = "%multicpu% | %memory% | %dynnetwork% | %coretemp% } %StdinReader% { %mpris2% | %date% "
   , commands = [
 
-        Run Date "%a, %b %_d, <fc=#>%H:%M:%S</fc>" "date" 10
+        Run Date "%a, %b %_d, <fc=#f4bc87>%H:%M:%S</fc>" "date" 10
 
       , Run DynNetwork [ "-L","10000" -- 10 kb in bytes
                        , "-H","500000"  -- 500kb in bytes
-                       , "--low", "gray90"
-                       , "--normal","green"
-                       , "--high","red"
+                       , "--low", "#b8afad"
+                       , "--normal","#beb55b"
+                       , "--high","#cb6077"
                        ] 30
 
       , Run Memory [ "-t"
-                   , "Mem: <usedratio>%"
+                   , "mem: <usedratio>%"
                    ] 20
 
       , Run MultiCpu ["-L","2" -- 10 kb in bytes
                      ,"-H","50"  -- 500kb in bytes
-                     ,"--normal","green"
-                     ,"--high","red"
+                     ,"--normal","#beb55b"
+                     ,"--high", "#cb6077" -- "red"
+                     ,"-t", "cpu: <total>%"
                      ] 10
 
         -- temps
-      , Run CoreTemp [ "-t", "Temp:<core0>|<core1>C"
+      , Run CoreTemp [ "-t", "temp:<core0>|<core1>C"
                      , "-L", "45"
                      , "-H", "75"
                      , "-l", "lightblue"
-                     , "-n", "gray90"
-                     , "-h", "red"
+                     , "-n", "#b8afad"
+                     , "-h", "#cb6077"
                      ] 50
 
       , Run StdinReader
 
       , Run Mpris2 "spotify" [
-                "-t", "<artist> - <title>"
+                "-t", "<fc=#beb556><artist></fc> - <fc=#a89bb9><title></fc>"
               ] 10
 
       , Run PipeReader "default text:~/.xmonad/xmonad.errors" "xmonad"
