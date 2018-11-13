@@ -63,6 +63,7 @@ main = do
                              , className =? "Spotify"  --> doF (W.shift "9")
                              , title =? "Save File" --> doCenterFloat
                              , title =? "Open File" --> doCenterFloat
+                             , title =? "Open Files" --> doCenterFloat
                              , manageDocks
                              , manageHook def
                              ]
@@ -139,7 +140,7 @@ scratchpads = [
       NS "terminal" "xterm -T terminal" (title =? "terminal")
           (customFloating $ W.RationalRect (1/20) (1/10) (17/20) (7/10))
 
-    , NS "agenda" "emacs --title agenda" (title =? "agenda")
+    , NS "agenda" "emacs -f org-agenda --title agenda" (title =? "agenda")
           (customFloating $ W.RationalRect (1/20) (1/20) (18/20) (18/20))
 
     , NS "ghci" "xterm -title ghci -e stack exec ghci" (title =? "ghci")
