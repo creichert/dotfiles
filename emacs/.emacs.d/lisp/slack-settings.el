@@ -21,7 +21,9 @@
                ("C-c C-n" . slack-buffer-goto-next-message)
                ;; prefix commands
                ("C-c s i" . slack-im-select)
+               ("C-c s f" . slack-file-upload)
                ("C-c s e" . slack-message-edit)
+               ("C-c s d" . slack-message-delete)
                ("C-c s t" . slack-change-current-team)
                ("C-c s u" . slack-select-unread-rooms)
                ("C-c s r" . slack-message-add-reaction)
