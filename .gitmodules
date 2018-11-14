@@ -12,4 +12,4 @@
 	url = https://github.com/CodyReichert/flowmacs
 [submodule "emacs/.emacs.d/site-lisp/webpack-dev-server.el"]
 	path = emacs/.emacs.d/site-lisp/webpack-dev-server.el
-	url = git@github.com:creichert/webpack-dev-server.el
+	url = https://github.com/creichert/webpack-dev-server.el
