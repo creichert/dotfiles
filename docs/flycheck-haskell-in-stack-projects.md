@@ -1,6 +1,8 @@
 ---
 title: Flycheck haskell in Stack projects
 author: creichert
+date: 2018-09-20
+layout: post
 ---
 
 When stack first started coming out there were a few diffierent flycheck

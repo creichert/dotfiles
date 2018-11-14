@@ -2,6 +2,8 @@
 title: Self-documenting Makefiles
 author: creichert
 layout: post
+date: 2018-09-19
+layout: post
 ---
 
 I've been through quite a lot of iterations trying to get makefiles

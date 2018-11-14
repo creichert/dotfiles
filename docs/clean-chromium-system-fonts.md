@@ -1,6 +1,8 @@
 ---
 title: Clean chromium system fonts
 author: creichert
+date: 2018-09-23
+layout: post
 ---
 
 For a lot of websites, I prefer to override the default css to use my system

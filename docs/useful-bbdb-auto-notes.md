@@ -1,6 +1,8 @@
 ---
 title: Useful BBDB v3 auto notes rules
 author: creichert
+date: 2018-10-24
+layout: post
 ---
 
 BBDB is a plain-text database format for storing contact information that is

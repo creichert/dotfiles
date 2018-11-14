@@ -1,6 +1,8 @@
 ---
 title: Fetch unknown PGP keys in Gnus
 author: creichert
+date: 2018-10-20
+layout: post
 ---
 
 If you use Gnus for Emacs to manage your mail, and have enabled "buttonized" PGP
