@@ -4,12 +4,28 @@
 #
 # See the README.md for more information about how symlinks are built.
 
-PACKAGES	:= emacs xmonad bash gnupg postgresql ssh x11 ghc git fonts stack bin global systemd
+ALL_PACKAGES	:= \
+	emacs \
+	xmonad \
+	bash \
+	gnupg \
+	postgresql \
+	ssh \
+	x11 \
+	ghc \
+	git \
+	fonts \
+	stack \
+	bin \
+	global \
+	systemd
+
+PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 
 # The location you want to install packages to
 PKG_DIR         ?= $(or $(target),$(HOME))
 
-THEME           ?= $(or $(q),mocha-256)
+THEME           ?= $(or $(theme),mocha-256)
 THEME_DIR       := docs/assets/base16-xresources/xresources
 
 XMONAD          := $(HOME)/.xmonad/xmonad-x86_64-linux
