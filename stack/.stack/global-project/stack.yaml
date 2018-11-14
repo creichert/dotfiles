@@ -9,7 +9,12 @@
 resolver: lts-12.16
 packages: []
 
+# Use compatible system-ghc over stack installed GHC when version is compatible.
 system-ghc: true
+ghc-options:
+  $locals:
+    "-j"
+
 flags:
   xmobar:
     with_xft: true
@@ -17,10 +22,6 @@ flags:
     with_threaded: true
     with_rtsopts: true
     with_weather: true
-
-ghc-options:
-  "$locals":
-      "-j"
 
 extra-deps:
   - xmobar-0.26

@@ -1,9 +1,15 @@
+
+# Use compatible system-ghc over stack installed GHC when version is compatible.
+system-ghc: true
+
+ghc-options:
+  $locals:
+    "-j"
+
 templates:
   params:
     author-email: <author@email.com>
     copyright: 2018 Christopher Reichert
     github-username: creichert
     author-name: Christopher Reichert
-ghc-options:
-  $locals: -j
-system-ghc: true
+
