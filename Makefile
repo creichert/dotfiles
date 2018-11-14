@@ -18,6 +18,7 @@ ALL_PACKAGES	:= \
 	stack \
 	bin \
 	global \
+	proselint \
 	systemd
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
