@@ -1,6 +1,8 @@
 ---
 title: Validate JSON Schema with Org mode
 author: creichert
+date: 2018-11-14
+layout: post
 ---
 
 Recently, I helped implement a [JSON Schema Validation
