@@ -102,7 +102,11 @@
                '("j"
                  "Assertible"
                  ((agenda "" ((org-agenda-span 'day)))
-                  (tags-todo "CATEGORY=\"assertible\"" ((org-agenda-max-entries 10))))
+                  (tags-todo "CATEGORY=\"assertible\""
+                             ((org-agenda-max-entries 10)
+                              ;;(org-agenda-view-columns-initially t)
+                              ;;(eval (setq org-columns-default-format "%25ITEM %TODO %3PRIORITY %TIMESTAMP"))
+                              )))
                  ((org-agenda-category-filter-preset '("+assertible")))))
 
   ;; Inbox only
