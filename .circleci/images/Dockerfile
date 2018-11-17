@@ -1,6 +1,3 @@
-## -*- dockerfile-image-name: "creichert/debian" -*-
-## -*- dockerfile-build-args: '("debian_mirror_url=http://127.0.0.1:3142/debian.csail.mit.edu/debian" "node_version=9.7.1") -*-
-
 # This is almost an exact copy of my workstation setup.
 #
 # The idea behind recreating my local setup in this Docker image is to
@@ -40,6 +37,7 @@ ENV LC_ALL en_US.UTF-8
 RUN apt-get install -y --no-install-recommends \
         systemd \
         systemd-container \
+        systemd-networkd \
         systemd-sysv
 
 # I use curl & libcurl-dev extensively
@@ -97,14 +95,14 @@ RUN apt-get install -y --no-install-recommends \
         libxft-dev
 
 
-# mpris / spotify / dunst
+# mpris / dunst / dbus utilities
 RUN apt-get install -y --no-install-recommends \
         dbus-x11 \
         dbus-user-session
-# spotify
 
 
 RUN apt-get install -y --no-install-recommends \
+        stow \
         emacs
 
 
@@ -172,3 +170,8 @@ RUN npm -v
 
 # Use container cmd suitable for CI environment
 CMD bash
+
+# Local Variables:
+# dockerfile-image-name: "creichert/debian"
+# dockerfile-build-args: ("debian_mirror_url=http://192.168.1.189:3142/debian.cse.msu.edu/debian" "node_version=9.7.1")
+# End:
