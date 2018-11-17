@@ -56,7 +56,8 @@ main = do
              , keys        = keybindings def
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
-                               namedScratchpadManageHook scratchpads
+                               className =? "Dunst" --> doIgnore
+                             , namedScratchpadManageHook scratchpads
                              -- these windows always get pushed to the same
                              -- workspace on startup
                              , className =? "Chromium" --> doF (W.shift "8")
@@ -89,7 +90,8 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
           ((modm, xK_F1), spawn "xterm")
         , ((0, xF86XK_Launch1), spawn "xterm")
 
-        , ((modm .|. shiftMask, xK_z), spawn $ "xscreensaver-command -lock")
+        , ((modm .|. shiftMask, xK_z), spawn
+              "systemctl --user start xscreensaver.service && xscreensaver-command -activate")
 
         , ((modm, xK_p), spawn $ "dmenu_run_history"
                                ++ " -nb \"" ++ backgroundColor ++ "\""
