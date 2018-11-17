@@ -281,8 +281,9 @@
   :commands (smex smex-major-mode-commands)
   :ensure t
   :bind
-  (("M-x" . smex)
-   ("M-X" . smex-major-mode-commands)))
+  (("M-x"  . smex)
+   ("C-\\" . smex)
+   ("M-X"  . smex-major-mode-commands)))
 
 
 ;; start in a state that immediately supports typing or direct emacs keybindings
@@ -594,23 +595,24 @@
     "L" 'magit-key-mode-popup-logging)
   (evil-add-hjkl-bindings magit-status-mode-map 'emacs
     "K" 'magit-discard
-    "l" 'magit-key-mode-popup-logging
-    "h" 'magit-toggle-diff-refine-hunk)
-  (evil-define-key 'motion magit-status-mode-map
-    "\C-f" 'evil-scroll-page-down
-    "\C-b" 'evil-scroll-page-up
-    "." 'magit-mark-item
-    "=" 'magit-diff-with-mark
-    "C" 'magit-add-log
-    "I" 'magit-ignore-item-locally
-    "S" 'magit-stage-all
-    "U" 'magit-unstage-all
-    "X" 'magit-reset-working-tree
-    "i" 'magit-ignore-item
-    "s" 'magit-stage-item
-    "u" 'magit-unstage-item
-    "K" 'magit-discard
-    "z" 'magit-key-mode-popup-stashing)
+    "l" 'magit-log
+    "h" 'magit-toggle-diff-refine-hunk
+    )
+  ;; (evil-define-key 'motion magit-status-mode-map
+  ;;   "\C-f" 'evil-scroll-page-down
+  ;;   "\C-b" 'evil-scroll-page-up
+  ;;   "." 'magit-mark-item
+  ;;   "=" 'magit-diff-with-mark
+  ;;   "C" 'magit-add-log
+  ;;   "I" 'magit-ignore-item-locally
+  ;;   "S" 'magit-stage-all
+  ;;   "U" 'magit-unstage-all
+  ;;   "X" 'magit-reset-working-tree
+  ;;   "i" 'magit-ignore-item
+  ;;   "s" 'magit-stage-item
+  ;;   "u" 'magit-unstage-item
+  ;;   "K" 'magit-discard
+  ;;   "z" 'magit-key-mode-popup-stashing)
 
   (evil-leader/set-key-for-mode 'magit-status-mode
     "SPC" 'magit-stash-show))
