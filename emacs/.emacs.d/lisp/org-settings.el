@@ -6,12 +6,10 @@
   ;;:ensure-system-package ("sqlite3" "ledger" "gcc" "make" "mit-scheme")
   :bind (;; capture task to inbox
          ([f6]   . org-capture)
-         ;; inbox, anything scheduled can be seen w/ f8
          ([f7]   . org-todo-list)
-         ("C-c C-/" . org-toggle-timestamp-type)
-         ("C-\\"    . smex)
          ([f8]   . org-agenda)
-         ([C-f8] . org-agenda-kill-all-agenda-buffers))
+         ([C-f8] . org-agenda-kill-all-agenda-buffers)
+         )
   :config
 
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
@@ -36,6 +34,7 @@
      (shell . t)))
 
   :custom
+  (org-startup-with-inline-images t)
   (org-completion-use-ido t)
   (org-log-done 'time)
   ;; inbox.org captures all incoming tasks
@@ -62,8 +61,9 @@
   :bind (:map org-agenda-mode-map
               ("C-c ="   . org-agenda-priority-up)
               ("C-c -"   . org-agenda-priority-down)
-              ("j"   . org-agenda-next-item)
-              ("k"   . org-agenda-previous-item))
+              ("j"       . org-agenda-next-item)
+              ("k"       . org-agenda-previous-item)
+              ("C-\\"    . smex))
   :init
   (use-package xref :demand)
   (setq org-agenda-todo-ignore-scheduled 'future
@@ -77,10 +77,52 @@
               (lambda (&rest _)
                 (org-save-all-org-buffers)))
   :config
+  ;; (setq org-stuck-projects
+  ;;       '("+LEVEL=2/-DONE" ("TODO" "NEXT" "NEXTACTION") nil "CATEGORY=\"cal\""))
+
+
+  ;; Project-based commands
+
   (add-to-list 'org-agenda-custom-commands
-               '("j" todo "TODO" ((org-agenda-max-entries 5))))
+               '("k"
+                 "SimplyRETS"
+                 ((agenda "" ((org-agenda-span 'day)))
+                  (tags-todo "CATEGORY=\"simplyrets\"" ((org-agenda-max-entries 10))))
+                 ((org-agenda-category-filter-preset '("+simplyrets")))))
+
   (add-to-list 'org-agenda-custom-commands
-               '("r" "inbox" tags "CATEGORY=\"inbox\"&LEVEL=2")))
+               '("l"
+                 "Identibyte"
+                 ((agenda "" ((org-agenda-span 'day)))
+                  (tags-todo "CATEGORY=\"identibyte\"" ((org-agenda-max-entries 10))))
+                 ((org-agenda-category-filter-preset '("+identibyte")))))
+
+
+  (add-to-list 'org-agenda-custom-commands
+               '("j"
+                 "Assertible"
+                 ((agenda "" ((org-agenda-span 'day)))
+                  (tags-todo "CATEGORY=\"assertible\"" ((org-agenda-max-entries 10))))
+                 ((org-agenda-category-filter-preset '("+assertible")))))
+
+  ;; Inbox only
+  (add-to-list 'org-agenda-custom-commands
+               '("h" "Inbox" tags "CATEGORY=\"inbox\"&LEVEL=2"))
+
+  ;; This should be the next 5 most important tasks
+  (add-to-list 'org-agenda-custom-commands
+               '("g" todo "Priority tasks (next)" ((org-agenda-max-entries 5))))
+
+  ;; This should be a combined agent w/ Today's Agenda + Inbox
+  (add-to-list 'org-agenda-custom-commands
+               '("d"
+                 "Today + Inbox"
+                 ((agenda "" ((org-agenda-span 'day)))
+                  (tags-todo "CATEGORY=\"inbox\"&LEVEL=2"
+
+                             ))
+                 ))
+  )
 
 
 
