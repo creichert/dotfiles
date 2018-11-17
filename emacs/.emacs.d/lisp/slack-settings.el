@@ -1,5 +1,4 @@
 
-
 (require 'cl)
 
 
@@ -21,7 +20,8 @@
                ("C-c C-n" . slack-buffer-goto-next-message)
                ;; prefix commands
                ("C-c s i" . slack-im-select)
-               ("C-c s f" . slack-file-upload)
+               ("C-c s f" . creichert/slack-file-upload-latest-screenshot)
+               ;; ("C-c s F" . slack-file-upload)
                ("C-c s e" . slack-message-edit)
                ("C-c s d" . slack-message-delete)
                ("C-c s t" . slack-change-current-team)
@@ -45,6 +45,47 @@
     (interactive)
     (call-interactively #'emojify-insert-emoji)
     (insert " "))
+  (defun creichert/slack-file-upload-latest-screenshot ()
+    (interactive)
+    (use-package slack-file :demand)
+    (turn-on-auto-revert-mode)
+    (slack-if-let*
+     ((slack-buffer slack-current-buffer)
+      (team (oref slack-buffer team))
+      (buf (find-file-noselect "~/downloads/screenshots/latest.png"))
+      (channels '(slack-current-room-or-select)) ;; (mapconcat #'identity
+                     ;;       (slack-file-select-sharing-channels "" team)
+                     ;;       ","))
+      ;; TODO format
+      (filename "screenshot.png")
+      ;; (filename (read-from-minibuffer "Filename: "
+      ;;                                 (file-name-nondirectory
+      ;;                                  (buffer-file-name buf))))
+      (filetype "png") ;; (slack-file-select-filetype (file-name-extension
+                       ;;                       (buffer-file-name buf))))
+      (initial-comment "Check this out"))
+     (cl-labels
+         ((on-file-upload (&key data &allow-other-keys)
+                          (slack-request-handle-error
+                           (data "slack-file-upload"))))
+
+       (slack-request
+        (slack-request-create
+         slack-file-upload-url
+         team
+         :type "POST"
+         :params (append (slack-file-upload-params slack-buffer)
+         ;;:params (append (list (cons "thread_ts" (oref slack-buffer thread-ts))
+         ;;                      (cons "channels" (oref (oref slack-buffer room) id)))
+                         (list
+                          (cons "filename" filename)
+                          (cons "filetype" filetype)
+                          (if initial-comment
+                              (cons "initial_comment" initial-comment))))
+         :files (list (cons "file" buf))
+         :headers (list (cons "Content-Type" "multipart/form-data"))
+         :success #'on-file-upload)))))
+
   ;;(defun creichert/slack-select-unreads-all-teams ()
   ;;  (interactive)
   ;;  (let ((team (slack-team-select)))
@@ -141,7 +182,9 @@
                                   (and (not (memq (plist-get info :status) '(visible selected)))
                                        is-urgent))
                               :category 'slack)))
-                    (t (slack-message-notify-alert message room team)))))
+                    ((not (string-match ignored-user-regexp (slack-message-sender-name message team)))
+                     (message (format "[slack] deferring notifications for %s" user-name))
+                     (slack-message-notify-alert message room team)))))
 
     ;; Using this globally currently doesn't work w/ gnus
     (use-package auth-source-pass :ensure t :demand)
