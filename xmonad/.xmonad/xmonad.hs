@@ -14,6 +14,7 @@ import XMonad.StackSet as W
 
 -- XMonad contrib
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.DynamicProperty
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
@@ -24,7 +25,7 @@ import XMonad.Prompt.Pass
 import XMonad.Prompt.Ssh
 import XMonad.Util.Loggers
 import XMonad.Util.NamedScratchpad
-import XMonad.Util.Run             (spawnPipe)
+import XMonad.Util.Run              (spawnPipe)
 
 
 -- standard colors and fonts that match the current theme.
@@ -45,7 +46,7 @@ main = do
                    ++ " -F '" ++ foregroundColor ++ "'"
                    ++ " -p Top"
 
-    xmonad $ docks $ ewmh $ def {
+    xmonad $ ewmh $ docks $ def {
                terminal    = "xterm"
                -- "Windows" key is used for key combinations to avoid
                -- collisions w/ emacs
@@ -61,15 +62,21 @@ main = do
                              -- these windows always get pushed to the same
                              -- workspace on startup
                              , className =? "Chromium" --> doF (W.shift "8")
-                             , className =? "Spotify"  --> doF (W.shift "9")
                              , title =? "Save File" --> doCenterFloat
                              , title =? "Open File" --> doCenterFloat
                              , title =? "Open Files" --> doCenterFloat
-                             , manageDocks
                              , manageHook def
                              ]
              , logHook = dynamicLogWithPP $ xpp h
-             , handleEventHook = mconcat [ docksEventHook, handleEventHook def ]
+             , handleEventHook = mconcat [
+                       -- Spotify does not set the WM_CLASS until after it's
+                       -- already loaded. By that point X11/XMonad have already
+                       -- processed the window. This dynamic property shifts the
+                       -- window when WM_CLASS is set.
+                       dynamicPropertyChange "WM_CLASS" (className =? "Spotify" --> doF (W.shift "9"))
+                     , handleEventHook def
+                     , fullscreenEventHook
+                     ]
              }
   where
     xpp h = xmobarPP {
