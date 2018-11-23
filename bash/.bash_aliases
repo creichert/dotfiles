@@ -19,4 +19,4 @@ alias upgrade='sudo apt update && sudo apt upgrade'
 alias xml="xmlstarlet format"
 alias nil-uuid="echo 00000000-0000-0000-0000-000000000000"
 alias gpg-agent-restart="gpg-connect-agent reloadagent /bye"
-alias restart-network="sudo systemctl restart systemd-networkd && sudo systemctl status networkd && networkctl list"
+alias restart-network="sudo systemctl restart systemd-networkd && sudo systemctl status systemd-networkd && networkctl list"
