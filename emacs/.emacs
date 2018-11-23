@@ -551,88 +551,44 @@
 
 
 (use-package w3m
- :ensure t
- :commands (w3m-browse-url w3m-find-file)
- ;;:ensure-system-package ("w3m")
- :init (setq
-        browse-url-browser-function
-        '(("github.com" . browse-url-chromium)
-          ("trello.com" . browse-url-chromium)
-          ("circleci.com" . browse-url-chromium)
-          ("pagerduty.com" . browse-url-chromium)
-          ("accounts.google.com" . browse-url-chromium)
-          ("accounts.spotify.com" . browse-url-chromium)
-          ("assertible.com" . browse-url-chromium)
-          ("simplyrets.com/admin" . browse-url-chromium)
-          ("slack.com" . browse-url-chromium)
-          ("rollbar.com" . browse-url-chromium)
-          ("app.drift.com" . browse-url-chromium)
-          ("gmail.com" . browse-url-chromium)
-          ("aws.amazon.com" . browse-url-chromium)
-          ("youtube.com" . browse-url-chromium)
-          ("facebook.com" . browse-url-chromium)
-          ("upwork.com" . browse-url-chromium)
-          (".*\\.gov" . browse-url-chromium)
-          ("docusign.com\\|docusign.net" . browse-url-chromium)
-          ("." . w3m-browse-url))))
-
-
-(use-package magit
-  :bind (([f9]   . magit-status)
-         ([C-f9] . magit-log))
-  :config (setq magit-completing-read-function 'magit-ido-completing-read)
-  :requires (evil)
   :ensure t
-  :config
-  (evil-set-initial-state 'magit-log-edit-mode 'emacs)
-  (evil-set-initial-state 'magit-status-mode 'emacs)
-  (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
-  (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
-  (evil-add-hjkl-bindings magit-diff-mode-map 'emacs)
-  ;; (evil-set-initial-state 'special-mode 'emacs)
-  (evil-add-hjkl-bindings magit-branch-manager-mode-map 'emacs
-    "K" 'magit-discard
-    "L" 'magit-key-mode-popup-logging)
-  (evil-add-hjkl-bindings magit-status-mode-map 'emacs
-    "K" 'magit-discard
-    "l" 'magit-log
-    "h" 'magit-toggle-diff-refine-hunk
-    )
-  ;; (evil-define-key 'motion magit-status-mode-map
-  ;;   "\C-f" 'evil-scroll-page-down
-  ;;   "\C-b" 'evil-scroll-page-up
-  ;;   "." 'magit-mark-item
-  ;;   "=" 'magit-diff-with-mark
-  ;;   "C" 'magit-add-log
-  ;;   "I" 'magit-ignore-item-locally
-  ;;   "S" 'magit-stage-all
-  ;;   "U" 'magit-unstage-all
-  ;;   "X" 'magit-reset-working-tree
-  ;;   "i" 'magit-ignore-item
-  ;;   "s" 'magit-stage-item
-  ;;   "u" 'magit-unstage-item
-  ;;   "K" 'magit-discard
-  ;;   "z" 'magit-key-mode-popup-stashing)
+  :commands (w3m-browse-url w3m-find-file)
+  ;;:ensure-system-package ("w3m")
+  :preface
+  ;; (defun browse-url-chromium (url &optional _new-window)
+  (defun browse-url-prompt (browser-name)
+    (interactive (list (completing-read "Select browser: " '("chromium" "w3m" "firefox" "chrome"))))
+    (message (format "browser: %s" browser-name))
+    (pcase browser-name
+     ("chromium" 'browse-url-chromium)
+     ("w3m" 'w3m-browse-url)
+     ("chrome" 'browse-url-chrome)
+     ("firefox" 'browse-url-firefox)
+     (_ 'browse-url-chromium)))
+  :init (setq
+         browse-url-browser-function
+         '(("github.com" . browse-url-chromium)
+           ("trello.com" . browse-url-chromium)
+           ("circleci.com" . browse-url-chromium)
+           ("pagerduty.com" . browse-url-chromium)
+           ("accounts.google.com" . browse-url-chromium)
+           ("accounts.spotify.com" . browse-url-chromium)
+           ("assertible.com" . browse-url-chromium)
+           ("simplyrets.com/admin" . browse-url-chromium)
+           ("slack.com" . browse-url-chromium)
+           ("rollbar.com" . browse-url-chromium)
+           ("app.drift.com" . browse-url-chromium)
+           ("gmail.com" . browse-url-chromium)
+           ("aws.amazon.com" . browse-url-chromium)
+           ("youtube.com" . browse-url-chromium)
+           ("facebook.com" . browse-url-chromium)
+           ("upwork.com" . browse-url-chromium)
+           (".*\\.gov" . browse-url-chromium)
+           ("docusign.com\\|docusign.net" . browse-url-chromium)
+           ("." . (lambda (url &optional args)
+                    (lexical-let ((browserf (call-interactively #'browse-url-prompt)))
+                      (funcall browserf url args)))))))
 
-  (evil-leader/set-key-for-mode 'magit-status-mode
-    "SPC" 'magit-stash-show))
-
-
-(use-package evil-magit
-  :ensure t
-  :requires (magit evil)
-  :bind (:map evil-normal-state-map
-              ("\\" . smex)
-              :map evil-insert-state-map
-              ("C-\\" . smex)
-              :map magit-status-mode-map
-              ("\\" . smex)
-              ("C-\\" . smex))
-
-  :config
-  (evil-define-key evil-magit-state magit-mode-map
-    "p" 'magit-section-backward
-    "n" 'magit-section-forward))
 
 
 (use-package flycheck
@@ -764,6 +720,9 @@
 
 
 (use-package web-settings
+  :load-path "lisp/")
+
+(use-package git-settings
   :load-path "lisp/")
 
 

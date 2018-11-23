@@ -71,11 +71,6 @@
   :load-path "site-lisp/etags-select.el/")
 
 
-(use-package gist
-  :defer
-  :ensure-system-package (git)
-  :ensure t)
-
 
 (use-package ledger-mode
   :ensure-system-package (ledger)
@@ -124,17 +119,6 @@
     (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
 
 
-(use-package magit-gh-pulls
-  :ensure t
-  :hook (magit-status-mode . magit-gh-pulls-mode)
-  :init
-  (setq magit-gh-pulls-pull-detail-limit 30)
-  (setq magit-gh-pulls-status-documentation t))
-
-
-(use-package github-clone
-  :defer
-  :ensure t)
 
 
 (use-package alert
