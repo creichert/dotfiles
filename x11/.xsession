@@ -13,7 +13,7 @@ xsetroot -cursor_name left_ptr # default cursor
 setxkbmap -option ctrl:nocaps  # remap caps lock to ctrl
 
 # Hold down right click to use trackball to scroll
-xinput set-prop 8 "libinput Scroll Method Enabled" 0, 0, 1
-xinput set-prop 8 "libinput Button Scrolling Button" 3
+xinput set-prop 12 "libinput Scroll Method Enabled" 0, 0, 1
+xinput set-prop 12 "libinput Button Scrolling Button" 3
 
 xmonad
