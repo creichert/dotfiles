@@ -46,3 +46,7 @@ bootstrap_lang node
 # Export path w/ stack bins
 export PATH=${HOME}/.local/bin:$PATH
 eval "$(stack --bash-completion-script stack)"
+
+if hash aws_completer 2>/dev/null; then
+    complete -C aws_completer aws
+fi
