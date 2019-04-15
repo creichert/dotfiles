@@ -114,6 +114,7 @@ function bootstrap_lang() {
             export RVM_ROOT="$HOME/.rvm"
             if [[ -d "$RVM_ROOT" ]]; then
                 export PATH="$HOME/.rvm/bin:$PATH"
+                [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
             else
                 echo "rvm not installed."
             fi
