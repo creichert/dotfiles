@@ -40,6 +40,8 @@
   ;;(haskell-interactive-mode-eval-mode t)
   (haskell-stylish-on-save t)
   (haskell-tags-on-save t)
+  ;;(haskell-hasktags-arguments '("-e" "-a"))
+  ;;(haskell-session-tags-filename "TAGS.haskell-session")
   ;;
   ;; this is set automatically when there is a `stack.yaml`
   ;; haskell-process-type 'stack-ghci
@@ -170,6 +172,7 @@
   (ghcid-target "")
   ;;:config (setq-local default-directory projectile-project-root)
   :preface
+  (use-package haskell-mode :ensure t)
   (defun show-ghcid-buf ()
     (interactive)
     (show-buffer ghcid-buf-name))
@@ -177,7 +180,7 @@
     (interactive
      (list
       (completing-read "ghcid target: " (map 'list (lambda (targ) (format "%s:%s" (projectile-project-name) targ)) (haskell-cabal-enum-targets)))
-      (completing-read "ghcid --test target: " '("--test=main" "test/unit/Data/OpenApiSpec.hs" nil))))
+      (completing-read "ghcid --test target: " '("--test=main" "--test=Main.main" nil))))
     (setq ghcid-target ghcid-targ)
     (when ghcid-test-targ
       (setq ghcid-target-test (format "%s" ghcid-test-targ)))
