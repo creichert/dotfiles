@@ -291,8 +291,7 @@
   :defer
   :custom
   (tags-revert-without-query t)
-  :config
-  (setq tags-add-tables nil))
+  (tags-add-tables t))
 
 
 ;; Xresource based styles

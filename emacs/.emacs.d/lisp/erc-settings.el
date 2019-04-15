@@ -34,6 +34,10 @@
    erc-auto-discard-away t
    erc-input-line-position -2
 
+   ;; todo
+   ;; scroll-preserve-screen-position t
+   ;; scroll-conservatively 0
+
    ;;Kill buffers for channels after /part
    ;;erc-kill-buffer-on-part t
 

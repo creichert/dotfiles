@@ -53,6 +53,8 @@
   :ensure t
   :hook (magit-mode . magit-gh-pulls-mode)
   :init
+  (use-package magit-popup
+    :ensure t)
   (setq magit-gh-pulls-pull-detail-limit 30)
   (setq magit-gh-pulls-status-documentation t))
 

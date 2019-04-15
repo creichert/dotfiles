@@ -119,25 +119,9 @@
     (remote-term (format "ssh-%s" host) "ssh" (format "%s" host))))
 
 
-
-
 (use-package alert
   :defer
   :ensure t)
-
-
-(use-package org-gcal
-  :ensure t
-  :defer
-  :commands (org-gcal-fetch org-gcal-sync)
-  ;; :custom
-  ;; (org-gcal-auto-archive t)
-  :config
-  (setq org-gcal-client-id (auth-source-pass-get "user" "developers.google.com/org-gcal")
-        org-gcal-file-alist '(("creichert07@gmail.com" . "~/org/cal.org"))
-        org-gcal-client-secret (auth-source-pass-get 'secret "developers.google.com/org-gcal")))
-
-
 
 
 (use-package noflet
@@ -158,19 +142,6 @@
   :magic ("%PDF" . pdf-view-mode)
   :config
   (pdf-tools-install))
-
-
-
-(use-package org-gcal
-  :ensure t
-  :commands (org-gcal-fetch org-gcal-sync)
-  :defer
-  :config
-  (use-package auth-source-pass :ensure t :demand)
-  (setq org-gcal-client-id (auth-source-pass-get "user" "developers.google.com/org-gcal")
-        org-gcal-file-alist '(("creichert07@gmail.com" . "~/org/cal.org"))
-        org-gcal-client-secret (auth-source-pass-get 'secret "developers.google.com/org-gcal")))
-
 
 
 (use-package yasnippet

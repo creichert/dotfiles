@@ -88,9 +88,14 @@
          :map gnus-summary-mode-map
          ("D"     . gnus-summary-delete-article)
          ("C-c k" . gnus-article-receive-epg-keys)
+         :map gnus-group-mode-map
+         ("j" . gnus-browse-next-group)
          :map gnus-article-mode-map
          ("C-c k" . gnus-article-receive-epg-keys))
   :config
+
+  (setq gnus-group-sort-function 'gnus-group-sort-by-rank)
+
   ;;(setq gnus-check-new-newsgroups nil)
   (setq gnus-interactive-exit nil
         gnus-completing-read 'gnus-ido-completing-read
@@ -137,8 +142,8 @@
         ;; This setting configures how to handle subscribing groups that match
         ;; gnus-auto-subscribed-categories (defaults mail backends, not news).
         ;; gnus-subscribe-interactively implies hierarchical subscription.
-        gnus-subscribe-options-newsgroup-method 'gnus-subscribe-interactively
-        gnus-subscribe-hierarchical-interactive t
+        ;;gnus-subscribe-options-newsgroup-method 'gnus-subscribe-interactively
+        ;;gnus-subscribe-hierarchical-interactive t
         gnus-topic-display-empty-topics nil
 
         ;; This controls subscriptions for backends that don't match
@@ -401,9 +406,9 @@
 (use-package gnus-icalendar
   :demand
   :config
-  (use-package org :demand)
-  (use-package org-agenda :demand)
-  (use-package org-element :demand)
+  (use-package org         :demand :ensure org)
+  (use-package org-agenda  :demand :ensure org)
+  (use-package org-element :demand :ensure org)
   (setq gnus-icalendar-org-capture-file "~/org/cal.org")
   (setq gnus-icalendar-org-capture-headline '("Calendar"))
   (gnus-icalendar-setup)
@@ -411,9 +416,8 @@
 
 
 (use-package org-mime
-  :after (org)
   :demand
-  :ensure t
+  :ensure org-plus-contrib
   :config
   (setq org-mime-export-options
         '(:section-numbers nil

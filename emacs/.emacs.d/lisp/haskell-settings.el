@@ -114,7 +114,7 @@
   (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
   (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
   (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-O0")
-  (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-fshow-loaded-modules")
+  ;;(add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-fshow-loaded-modules")
 
   (use-package evil :ensure t :demand)
   (evil-set-initial-state 'haskell-presentation-mode 'emacs)

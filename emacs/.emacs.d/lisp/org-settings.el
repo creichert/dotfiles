@@ -8,8 +8,7 @@
          ([f6]   . org-capture)
          ([f7]   . org-todo-list)
          ([f8]   . org-agenda)
-         ([C-f8] . org-agenda-kill-all-agenda-buffers)
-         )
+         ([C-f8] . org-agenda-kill-all-agenda-buffers))
   :config
 
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
@@ -53,8 +52,8 @@
 
 
 (use-package org-agenda
-  :after (org)
   :hook
+  (( org-agenda-mode            . turn-on-auto-revert-mode ))
   (( org-capture-after-finalize . org-save-all-org-buffers ))
   (( org-capture-prepare-finalize . org-save-all-org-buffers ))
   (( org-agenda-after-show . xref-pulse-momentarily ))
@@ -67,6 +66,7 @@
   :init
   (use-package xref :demand)
   (setq org-agenda-todo-ignore-scheduled 'future
+        org-agenda-show-future-repeats nil
         org-agenda-window-setup 'current-window
         org-agenda-files '("~/org/")
         org-agenda-diary-file "~/org/journal.org"
@@ -79,7 +79,6 @@
   :config
   ;; (setq org-stuck-projects
   ;;       '("+LEVEL=2/-DONE" ("TODO" "NEXT" "NEXTACTION") nil "CATEGORY=\"cal\""))
-
 
   ;; Project-based commands
 
@@ -123,7 +122,6 @@
                  "Today + Inbox"
                  ((agenda "" ((org-agenda-span 'day)))
                   (tags-todo "CATEGORY=\"inbox\"&LEVEL=2"
-
                              ))
                  ))
   )
@@ -131,13 +129,22 @@
 
 
 (use-package org-checklist
-  :ensure org-plus-contrib
-  :after (org))
-
+  :ensure org-plus-contrib)
 
 (use-package org-depend
-  :ensure org-plus-contrib
-  :after (org))
+  :ensure org-plus-contrib)
 
+(use-package org-tempo
+  :ensure org-plus-contrib)
+
+(use-package org-gcal
+  :ensure t
+  :commands (org-gcal-fetch org-gcal-sync)
+  :defer
+  :config
+  (use-package auth-source-pass :ensure t :demand)
+  (setq org-gcal-client-id (auth-source-pass-get "user" "developers.google.com/org-gcal")
+        org-gcal-file-alist '(("creichert07@gmail.com" . "~/org/cal.org"))
+        org-gcal-client-secret (auth-source-pass-get 'secret "developers.google.com/org-gcal")))
 
 (provide 'org-settings)
