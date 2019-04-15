@@ -49,7 +49,20 @@
     "n" 'magit-section-forward))
 
 
+(use-package magithub
+  :disabled
+  :after magit
+  :init
+  (use-package auth-source-pass
+    :ensure t :demand
+    :init (auth-source-pass-enable))
+  :config
+  (magithub-feature-autoinject t)
+  (setq magithub-clone-default-directory "~/dev"))
+
+
 (use-package magit-gh-pulls
+  :disabled
   :ensure t
   :hook (magit-mode . magit-gh-pulls-mode)
   :init
