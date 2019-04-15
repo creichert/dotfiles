@@ -40,6 +40,11 @@ themeFont = "monofur"
 main :: IO ()
 main = do
 
+    -- Although these are initially setup in .xprofile, they are called again
+    -- here as it's often useful to simply recompile xmonad if the keyboard or
+    -- mouse are disconnected.
+    spawn "xset r rate 250 60"
+    spawn "setxkbmap -option ctrl:nocaps"
     h <- spawnPipe $ "xmobar "
                    ++ " -f 'xft:" ++ themeFont ++ ":size=9:antialias=true'"
                    ++ " -B '" ++ backgroundColor ++ "'"
