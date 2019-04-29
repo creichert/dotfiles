@@ -4,6 +4,10 @@
 # are specific to my workflow, and is loaded from ~/.bashrc.
 
 
+function cdgit() {
+    cd "$(git rev-parse --show-toplevel)" || return 1
+}
+
 function git_delete_merged_branches() {
     git remote prune origin
     git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d
