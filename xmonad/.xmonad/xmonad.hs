@@ -123,6 +123,7 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
 
         , ((modm .|. shiftMask, xK_F1), spawn "emacs -fs")
         , ((modm .|. shiftMask, xK_F2), spawn "emacsclient -c")
+        , ((modm, xK_F9), spawn "systemctl restart --user pulseaudio.service")
 
         , ((modm, xK_apostrophe), passPrompt xpCfg)
         , ((modm, xK_s),          sshPrompt xpCfg)
