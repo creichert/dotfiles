@@ -4,7 +4,7 @@
 ;; Really basic ghcid+stack support in emacs with compilation-mode
 ;; Use M-x ghcid to launch
 
-(require 'cl)
+(require 'cl-lib)
 (require 'projectile)
 
 ;; Set ghcid-target to change the stack target

@@ -2,11 +2,13 @@
 
 (use-package haskell-mode
   :ensure t
+  :requires (compile evil)
   :mode (("\\.hs\\'"    . haskell-mode)
          ("\\.cabal\\'" . haskell-cabal-mode)
          ("\\.hcr\\'"   . haskell-core-mode)
          ("\\.lhs\\'"   . literate-haskell-mode))
   :interpreter
+  ("env stack"  . haskell-mode)
   ("stack"      . haskell-mode)
   ("runhaskell" . haskell-mode)
   ("haskell"    . haskell-mode)
@@ -22,29 +24,21 @@
               ("C-c h j" . haskell-run-function-under-cursor)
               ("C-c C-j" . haskell-run-last-function)
               )
-  ;; TODO keep tags up-to-date even if its the damn *.tags file.
-  ;; they incrementally update the xref tags tables
   :custom
+  (haskell-stylish-on-save t)
   (my-haskell-current-function "main")
   ;; enable debugging
   (haskell-process-log t)
   (haskell-process-suggest-haskell-docs-imports t)
   (haskell-process-suggest-restart nil)
-  ;; indentation
-  (haskell-indentation-electric-flag t)
-  (haskell-indentation-layout-offset 4)
-  (haskell-indentation-left-offset 4)
-  (haskell-indentation-starter-offset 4)
+
   ;; breaks often & doesn't work w/ even the most basic customizations
-  ;;
   ;;(haskell-interactive-mode-eval-mode t)
-  (haskell-stylish-on-save t)
-  (haskell-tags-on-save t)
-  ;;(haskell-hasktags-arguments '("-e" "-a"))
   ;;(haskell-session-tags-filename "TAGS.haskell-session")
-  ;;
+
   ;; this is set automatically when there is a `stack.yaml`
   ;; haskell-process-type 'stack-ghci
+
   ;; print type info to presentation-mode instead
   ;; of message area.
   (haskell-process-use-presentation-mode t)
@@ -52,9 +46,6 @@
   ;; bytecode takes up more memory than object code.
   ;; enable
   ;; (haskell-process-reload-with-fbytecode t)
-  ;;
-  ;; experimenting with brittany
-  ;; haskell-mode-stylish-haskell-path "brittany"
   :hook
   ((haskell-mode . haskell-doc-mode))
   ((haskell-mode . haskell-collapse-mode))

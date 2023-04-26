@@ -9,7 +9,7 @@ ghc-options:
 templates:
   params:
     author-email: <author@email.com>
-    copyright: 2018 Christopher Reichert
+    copyright: 2023 Christopher Reichert
     github-username: creichert
     author-name: Christopher Reichert
 

@@ -8,6 +8,7 @@
   :requires (evil)
   :ensure t
   :config
+  (setq magit-diff-refine-hunk 'all)
   (setq magit-section-initial-visibility-alist
         '((stashes   . hide)
           (untracked . hide)
@@ -32,7 +33,7 @@
     "SPC" 'magit-stash-show))
 
 
-(use-package evil-magit
+(use-package evil-collection
   :ensure t
   :requires (magit evil)
   :bind (:map evil-normal-state-map
