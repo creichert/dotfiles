@@ -25,7 +25,7 @@ xterm*renderFont: true
 ! xterm*colorBD: rgb:fc/fc/fc
 xterm*scrollBar: false
 xterm*letterSpace: 0
-xterm*forcePackedFont: false
+!xterm*forcePackedFont: false
 xterm*wideChars: true
 ! XTerm*colorBD: black
 ! XTerm*colorIT: black

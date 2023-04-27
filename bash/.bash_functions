@@ -91,7 +91,7 @@ function bootstrap_lang() {
             [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
             ;;
 
-        # Node
+        # Rust
         rust)
             # Rust
             export RSVM_DIR="$HOME/.rsvm"

@@ -27,5 +27,4 @@ extra-deps:
   - xmobar-0.26
   - xmonad-contrib-0.14
   - dbus-0.10.15
-  - git: "https://github.com/xmonad/xmonad"
-    commit: v0.14
+  - xmonad-0.14.2

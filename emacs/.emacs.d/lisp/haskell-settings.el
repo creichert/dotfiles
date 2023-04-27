@@ -39,13 +39,42 @@
   ;; this is set automatically when there is a `stack.yaml`
   ;; haskell-process-type 'stack-ghci
 
+  :config
+  (setq haskell-indentation-electric-flag t)
+  (setq haskell-indentation-layout-offset 4)
+  (setq haskell-indentation-left-offset 4)
+  (setq haskell-indentation-starter-offset 4)
+
   ;; print type info to presentation-mode instead
   ;; of message area.
-  (haskell-process-use-presentation-mode t)
-  (haskell-process-auto-import-loaded-modules t)
+  (setq haskell-process-use-presentation-mode t)
+  (setq haskell-process-auto-import-loaded-modules t)
+
   ;; bytecode takes up more memory than object code.
   ;; enable
   ;; (haskell-process-reload-with-fbytecode t)
+
+  (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
+  (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
+  ; "--ghci-options=-fshow-loaded-modules"
+  (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-O0")
+
+  (evil-set-initial-state 'haskell-presentation-mode 'emacs)
+  (evil-set-initial-state 'haskell-error-mode 'emacs)
+  (evil-leader/set-key-for-mode 'haskell-mode
+    "hir" 'hindent-reformat-region
+    "hid" 'hindent-reformat-decl-or-fill
+    "f"   'haskell-mode-jump-to-def-or-tag
+    "TAB" 'haskell-hide-toggle
+    "l"   'haskell-process-load-or-reload)
+
+  ;;(add-to-list 'electric-layout-rules
+  ;;             '((?\{ . around) (?\} . around)))
+  (add-to-list 'electric-layout-rules
+               '((?\{) (?\} . around)))
+  (add-to-list 'electric-layout-rules
+               '((?\[) (?\] . around)))
+
   :hook
   ((haskell-mode . haskell-doc-mode))
   ((haskell-mode . haskell-collapse-mode))
@@ -56,6 +85,11 @@
   ((haskell-mode . electric-layout-mode))
   ((haskell-mode . prettify-symbols-mode))
   ((haskell-interactive-mode . next-error-follow-minor-mode))
+
+  :init
+  (add-to-list 'compilation-error-regexp-alist
+        'haskell-compilation-error-regexp-alist)
+
   :preface
   ;; see `haskell-process-insert-type` for expanding on this solution
   (defun haskell-run-function-under-cursor ()
@@ -102,29 +136,7 @@
                          ((or (string-match "^Top level" response)
                               (string-match "^<interactive>" response))
                           (message "%s" response))
-                         (t (haskell-command-echo-or-present response))))))))))
-  :config
-  (add-to-list 'haskell-font-lock-quasi-quote-modes '("yamlQQ" . yaml-mode))
-  (add-to-list 'haskell-font-lock-quasi-quote-modes '("js"     . web-mode))
-  (add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-O0")
-  ;;(add-to-list 'haskell-process-args-stack-ghci "--ghci-options=-fshow-loaded-modules")
-
-  (use-package evil :ensure t :demand)
-  (evil-set-initial-state 'haskell-presentation-mode 'emacs)
-  (evil-set-initial-state 'haskell-error-mode 'emacs)
-  (evil-leader/set-key-for-mode 'haskell-mode
-    "hir" 'hindent-reformat-region
-    "hid" 'hindent-reformat-decl-or-fill
-    "f"   'haskell-mode-jump-to-def-or-tag
-    "TAB" 'haskell-hide-toggle
-    "l"   'haskell-process-load-or-reload)
-
-  ;;(add-to-list 'electric-layout-rules
-  ;;             '((?\{ . around) (?\} . around)))
-  (add-to-list 'electric-layout-rules
-               '((?\{) (?\} . around)))
-  (add-to-list 'electric-layout-rules
-               '((?\[) (?\] . around))))
+                         (t (haskell-command-echo-or-present response)))))))))))
 
 
 (use-package hindent

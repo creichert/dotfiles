@@ -10,7 +10,7 @@ import System.IO
 
 -- XMonad core
 import XMonad
-import XMonad.StackSet as W
+import XMonad.StackSet as W hiding (focus)
 
 -- XMonad contrib
 import XMonad.Hooks.DynamicLog
@@ -59,7 +59,8 @@ main = do
              , borderWidth = 1
              , normalBorderColor = foregroundColor
              , focusedBorderColor = color1
-             , keys        = keybindings def
+             , keys = keybindings def
+             , mouseBindings = mousebindings def
              , layoutHook  = smartBorders $ avoidStruts $ layoutHook def
              , manageHook  = composeAll [
                                className =? "Dunst" --> doIgnore
@@ -140,7 +141,20 @@ keybindings xPCfg x = keys' x `Map.union` keys def x
         , ((modm, xK_j),  namedScratchpadAction scratchpads "agenda")
         , ((modm, xK_g),  namedScratchpadAction scratchpads "ghci")
 
+        , ((modm .|. shiftMask, xK_period), spawn "dunstctl history-pop")
+        , ((modm .|. shiftMask, xK_space), spawn "dunstctl close")
         ]
+
+-- | Mouse bindings: default actions bound to mouse events
+mousebindings :: XPConfig -> XConfig Layout -> Map (KeyMask, Button) (Window -> X ())
+mousebindings _xPCfg x = mouse' x `Map.union` mouseBindings def x
+  where
+    mouse' XConfig { XMonad.modMask = modm } = Map.fromList [
+
+        ((modm .|. shiftMask, button1), (\w ->
+            focus w >> mouseResizeWindow w
+                    >> windows W.shiftMaster))
+      ]
 
 screenshotRegion :: String
 screenshotRegion = L.intercalate ";" [

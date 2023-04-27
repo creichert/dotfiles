@@ -52,7 +52,7 @@
       `((".*" ,temporary-file-directory t)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
-
+(setq confirm-kill-emacs 'y-or-n-p)
 
 (defun reload-dotemacs ()
   "Reload init file without restarting Emacs."
@@ -243,8 +243,7 @@
   :config
   (ido-ubiquitous-mode t)
   :init
-  (setq completing-read-function 'ido-completing-read+
-        ido-cr+-max-items nil))
+  (setq completing-read-function 'ido-completing-read+))
 
 
 (use-package projectile
@@ -290,6 +289,7 @@
 (use-package etags
   :defer
   :custom
+  (tags-case-fold-search nil)
   (tags-revert-without-query t)
   (tags-add-tables t))
 
@@ -327,7 +327,7 @@
 
 
 (use-package compile
-  :defer
+  :ensure t
   ;;:hook ((compilation-mode . (lambda () (setq scroll-margin 0))
   :init
   (setq compilation-read-command nil
@@ -411,12 +411,7 @@
   ((prog-mode . (lambda ()
                   (progn
                     (defalias #'forward-evil-word #'forward-evil-symbol)))))
-  :config
-  ;;((special-mode . evil-emacs-state))
-  ;;((xref--show-xref-buffer-mode . evil-emacs-state))
-  ;;((prog-mode . (lambda ()
-  ;;                (defalias #'forward-evil-word #'forward-evil-symbol))
-  ;;
+
   ;; vim-like bindings in the minibuffer
   ;;
   ;; doing it this way is a little tricky:
