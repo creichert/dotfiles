@@ -37,13 +37,12 @@ ENV LC_ALL en_US.UTF-8
 RUN apt-get install -y --no-install-recommends \
         systemd \
         systemd-container \
-        systemd-networkd \
         systemd-sysv
 
 # I use curl & libcurl-dev extensively
 RUN apt-get install -y --no-install-recommends \
             openssl                            \
-            libssl1.1                          \
+            libssl3                            \
             ca-certificates                    \
             curl
 
@@ -138,7 +137,7 @@ RUN apt-get -y build-dep emacs
 #
 # - https://gist.github.com/remarkablemark/aacf14c29b3f01d6900d13137b21db3a#file-dockerfile
 ENV NVM_DIR /usr/local/nvm
-ARG node_version=9.7.1
+ARG node_version=10.19.0
 ENV NODE_VERSION ${node_version}
 ENV NVM_INSTALL_URL https://raw.githubusercontent.com/creationix/nvm/v0.31.2/install.sh
 RUN curl --silent -o- $NVM_INSTALL_URL | bash
@@ -155,11 +154,11 @@ ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # Install stack
-ENV STACK_INSTALL_URL https://github.com/commercialhaskell/stack/releases/download/v1.9.1/stack-1.9.1-linux-x86_64.tar.gz
+ENV STACK_INSTALL_URL https://github.com/commercialhaskell/stack/releases/download/v2.9.3/stack-2.9.3-linux-x86_64.tar.gz
 RUN curl -L $STACK_INSTALL_URL -o /tmp/stack.tar.gz
 RUN tar -xvzf /tmp/stack.tar.gz
-RUN cp stack-1.9.1-linux-x86_64/stack /usr/local/bin/stack
-RUN rm -rf stack-1.9.1-linux-x86_64 /tmp/stack.tar.gz
+RUN cp stack-2.9.3-linux-x86_64/stack /usr/local/bin/stack
+RUN rm -rf stack-2.9.3-linux-x86_64 /tmp/stack.tar.gz
 
 
 # Print software versions
@@ -173,5 +172,5 @@ CMD bash
 
 # Local Variables:
 # dockerfile-image-name: "creichert/debian"
-# dockerfile-build-args: ("debian_mirror_url=http://192.168.1.189:3142/debian.cse.msu.edu/debian" "node_version=9.7.1")
+# dockerfile-build-args: ("debian_mirror_url=http://debian.cse.msu.edu/debian" "node_version=9.7.1")
 # End:

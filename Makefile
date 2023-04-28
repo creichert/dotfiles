@@ -50,7 +50,7 @@ simulate: submodules
 
 .PHONY: dotfiles
 dotfiles: submodules
-	@stow $(STOW_FLAGS) -v1 --target=$(PKG_DIR) $(PACKAGES)
+	@stow $(STOW_FLAGS) --no-folding -v1 --target=$(PKG_DIR) $(PACKAGES)
 	-@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
 
 .PHONY: clean
@@ -151,3 +151,10 @@ bin/bin/xflux:
 	tar xvzf xflux64.tgz
 	mv xflux bin/bin/xflux
 	rm xflux64.tgz
+
+dockerfile:
+	cd .circleci/images && \
+	docker build -t creichert/debian \
+		--build-arg debian_mirror_url="http://httpredir.debian.org/debian" \
+		.
+	docker push creichert/debian
