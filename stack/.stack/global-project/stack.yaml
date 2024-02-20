@@ -6,7 +6,7 @@
 # For more information about stack's configuration, see
 # http://docs.haskellstack.org/en/stable/yaml_configuration/
 #
-resolver: lts-12.16
+resolver: lts-17.15
 packages: []
 
 # Use compatible system-ghc over stack installed GHC when version is compatible.
@@ -22,9 +22,11 @@ flags:
     with_threaded: true
     with_rtsopts: true
     with_weather: true
+    #with_dbus: true
 
 extra-deps:
-  - xmobar-0.26
-  - xmonad-contrib-0.14
-  - dbus-0.10.15
-  - xmonad-0.14.2
+  - xmobar-0.39
+  - netlink-1.1.1.0 # xmobar
+  - xmonad-contrib-0.17.0
+  - xmonad-0.17.0
+  - X11-1.10.3

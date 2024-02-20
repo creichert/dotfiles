@@ -7,7 +7,7 @@
 # To see what's installed on Debian / Ubuntu through APT, you can
 # $ awk -vRS= '/Status: install/ {print $2}' /var/lib/dpkg/status | grep systemd
 
-FROM assertible/debian-min:unstable
+FROM debian:unstable-slim
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV SHELL /bin/bash
@@ -17,6 +17,7 @@ RUN printf "deb %s sid main contrib\n" ${debian_mirror_url} > /etc/apt/sources.l
 RUN printf "deb-src %s sid main contrib\n" ${debian_mirror_url} >> /etc/apt/sources.list
 RUN cat /etc/apt/sources.list
 RUN apt-get update
+RUN apt-get upgrade -y
 
 # Configure utf-8 system locale
 RUN apt-get install -y --no-install-recommends \
