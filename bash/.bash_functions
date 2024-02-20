@@ -49,12 +49,11 @@ function rapid_keys() {
 }
 
 function generate_password () {
-    tr -dc A-Za-z0-9_ < /dev/urandom | head -c8
+    tr -dc A-Za-z0-9_ < /dev/urandom | head -c16
     echo
 }
 
 function find_largest_files () {
-    #du -a . | sort -n -r | head -n 10
     du -a . | sort -n -r | head -n 10
 }
 
@@ -134,16 +133,14 @@ function dunst-toggle-notifications() {
     case "$1" in
         # Node
         on)
-            notify-send DUNST_COMMAND_RESUME
             notify-send "enabling dunst"
-            export DUNST_ENABLED=1
+            dunstctl set-paused false
             ;;
         off)
             notify-send "pausing dunst"
-            notify-send DUNST_COMMAND_PAUSE
-            export DUNST_ENABLED=0
+            dunstctl set-paused true
             ;;
         *)
-            echo $"Usage: $0 {on|pff}"
+            echo $"Usage: $0 {on|off}"
     esac
 }

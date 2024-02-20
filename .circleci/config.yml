@@ -20,8 +20,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-dotcache-{{ .Branch }}
-            - v1-dotcache
+            - v2-dotcache-{{ .Branch }}
+            - v2-dotcache
 
       - run: make dotfiles
       - run: xvfb-run make dotemacs
@@ -32,7 +32,7 @@ jobs:
       - run: xvfb-run make xmonad
 
       - save_cache:
-          key: v1-dotcache-{{ .Branch }}
+          key: v2-dotcache-{{ .Branch }}
           paths:
             - ~/.stack/
             - ~/.emacs.d/elpa

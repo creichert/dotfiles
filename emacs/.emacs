@@ -9,7 +9,7 @@
 
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -455,6 +455,8 @@
               :map minibuffer-local-must-match-map
               ("C-j" . next-history-element)
               ("C-k" . previous-history-element))
+  :custom
+  (evil-undo-system 'undo-redo)
   :init
   (setq evil-default-state 'normal)
   ;; :config not working w/ most of config. evil is simply loaded immediately

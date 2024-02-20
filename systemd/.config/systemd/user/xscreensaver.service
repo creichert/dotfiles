@@ -2,7 +2,9 @@
 Description=XScreenSaver
 PartOf=graphical.target
 [Service]
-ExecStart=/usr/bin/xscreensaver -no-capture-stderr -no-splash
-Restart=always
+ExecStart=/usr/bin/xscreensaver -no-splash
+Environment=DISPLAY=:0
+Restart=on-failure
+RestartSec=30s
 [Install]
 WantedBy=default.target

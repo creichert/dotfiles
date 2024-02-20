@@ -51,7 +51,7 @@ main = do
                    ++ " -F '" ++ foregroundColor ++ "'"
                    ++ " -p Top"
 
-    xmonad $ ewmh $ docks $ def {
+    xmonad $ ewmhFullscreen $ ewmh $ docks $ def {
                terminal    = "xterm"
                -- "Windows" key is used for key combinations to avoid
                -- collisions w/ emacs
@@ -81,7 +81,6 @@ main = do
                        -- window when WM_CLASS is set.
                        dynamicPropertyChange "WM_CLASS" (className =? "Spotify" --> doF (W.shift "9"))
                      , handleEventHook def
-                     , fullscreenEventHook
                      ]
              }
   where
