@@ -20,11 +20,11 @@ set -o vi
 shopt -s histappend
 shopt -s checkwinsize
 
+export EDITOR=vim
 export ALTERNATE_EDITOR="emacsclient -t"
 export VISUAL=$EDITOR
 
-export BROWSER=chromium
-#export TERM=xterm
+#export BROWSER=google-chrome
 export GPG_TTY=$(tty)
 
 HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
@@ -41,12 +41,12 @@ PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
 
 # use node/npm using nvm by default
-bootstrap_lang node
+# bootstrap_lang node
 
 # Export path w/ stack bins
 export PATH=${HOME}/.local/bin:$PATH
-eval "$(stack --bash-completion-script stack)"
+# eval "$(stack --bash-completion-script stack)"
 
-if hash aws_completer 2>/dev/null; then
-    complete -C aws_completer aws
-fi
+# if hash aws_completer 2>/dev/null; then
+#     complete -C aws_completer aws
+# fi

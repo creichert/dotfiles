@@ -44,10 +44,6 @@ function github_fetch_pr() {
     git checkout $NEW_BRANCH
 }
 
-function rapid_keys() {
-    xset r rate 250 60
-}
-
 function generate_password () {
     tr -dc A-Za-z0-9_ < /dev/urandom | head -c16
     echo
