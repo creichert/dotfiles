@@ -129,13 +129,13 @@
 
 
 (use-package org-checklist
-  :ensure org-plus-contrib)
+  :ensure org-contrib)
 
 (use-package org-depend
-  :ensure org-plus-contrib)
+  :ensure org-contrib)
 
 (use-package org-tempo
-  :ensure org-plus-contrib)
+  :ensure org-contrib)
 
 (use-package org-gcal
   :ensure t
