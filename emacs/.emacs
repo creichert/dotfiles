@@ -25,9 +25,7 @@
 
 ;;; configure emacs
 
-
 ;; Ensure system executables are installed for certain packages.
-(setq source-directory "~/dev/c/emacs")
 (setq custom-file "~/.emacs.d/custom.el")
 (setq frame-title-format "emacs - %b")
 (setq inhibit-startup-screen t)
@@ -110,15 +108,18 @@
 
 (use-package savehist
   :custom
-  (history-length 10000)
+  (history-length 1000)
   (history-delete-duplicates t)
   (savehist-save-minibuffer-history t)
+  (savehist-autosave-interval 30)
   :init
   (setq savehist-additional-variables
         '( ;;kill-ring  adds photos & other very large files
           compile-command
+          projectile-project-command-history
           search-ring
           regexp-search-ring))
+  (setq savehist-file "~/.emacs.d/history")
   :config
   (savehist-mode 1))
 
@@ -198,6 +199,7 @@
 
 (use-package ido
   :demand
+  :ensure t
   :bind
   (("C-x f" . ido-find-file)
    ("C-c C-x C-o" . ido-switch-buffer-other-window))
@@ -260,11 +262,18 @@
   :init
   (setq projectile-enable-caching t
         projectile-indexing-method 'alien
+        projectile-tags-command "make tags"
         ;;projectile-sort-order 'modification-time
         projectile-use-git-grep 't
         ;;projectile-project-search-path '("~/dev")
         projectile-globally-ignored-directories '("~/.stack/snapshots")
-        projectile-tags-command "make tags"
+        ; ignore projects added from jumping to tags
+        ;projectile-ignored-projects '("~/.stack/snapshots/*/*/*/*/*")
+        projectile-ignored-project-function
+        (lambda
+          (path)
+          ;(string-match "\\(:?\\`/\\(:?nix\\|tmp\\)\\|/\\.nix-profile\\)" path))
+          (string-match ".stack/snapshots" path))
         )
   :config
   (projectile-mode)
@@ -293,30 +302,6 @@
   (tags-revert-without-query t)
   (tags-add-tables t))
 
-
-;; Xresource based styles
-;;
-;; Uses colors supplied through xresources (xrdb -query) to make emacs
-;; consistent with other desktop applications. In theory, all apps should use
-;; this but "larger" apps like Chrome & Gnome apps will often just ignore it.
-;; This is only needed once, near the top of the file
-(use-package xresources-theme
-  :ensure t
-  :if window-system ;; display-graphic-p
-  :load-path "themes"
-  :config
-  ;; NOT WORKING
-  (setq ansi-color-names-vector (vector
-                                 (xresources-theme-color "background")
-                                 (xresources-theme-color "color1")
-                                 (xresources-theme-color "color2")
-                                 (xresources-theme-color "color3")
-                                 (xresources-theme-color "color4")
-                                 (xresources-theme-color "color5")
-                                 (xresources-theme-color "color6")
-                                 (xresources-theme-color "foreground")
-                                 ))
-  (load-theme 'xresources t))
 
 
 (use-package ansi-color
@@ -347,13 +332,30 @@
            ;; perl--Pod::Checker perl--Test perl--Test2 perl--Test::Harness
           ))
 
+  ;; TODO how to make this less complicated?
+  ;; NOTE currently required, do not touch without a clean git history
+  (eval-after-load 'compile
+    (lambda ()
+      ;; This lets next-error find errors generated under stack's
+      ;; --interleaved-output. The error from ghc is prefixed with
+      ;; "package-name> ". After that, the rest of the pattern comes from the
+      ;; "gnu" item in `compilation-error-regexp-alist-alist'. I stripped off
+      ;; the start of that pattern, which I think was matching program names, e.g.
+      ;;     gcc: filename:101:3
+      ;; It's still more complicated than necessary, but I didn't want to mess
+      ;; with it too much.
+      (let ((pat "\\(?:[[:alnum:]-] *> \\)\\(?1:\\(?:[0-9]*[^0-9\n]\\)\\(?:[^\n :]\\| [^-/\n]\\|:[^ \n]\\)*?\\)\\(?:: ?\\)\\(?2:[0-9]+\\)\\(?:-\\(?4:[0-9]+\\)\\(?:\\.\\(?5:[0-9]+\\)\\)?\\|[.:]\\(?3:[0-9]+\\)\\(?:-\\(?:\\(?4:[0-9]+\\)\\.\\)?\\(?5:[0-9]+\\)\\)?\\)?:\\(?: *\\(?6:\\(?:FutureWarning\\|RuntimeWarning\\|W\\(?::\\|arning\\)\\|warning\\)\\)\\| *\\(?7:[Ii]nfo\\(?:\\>\\|rmationa?l?\\)\\|I:\\|\\[ skipping \\.+ ]\\|instantiated from\\|required from\\|[Nn]ote\\)\\| *\\(?:[Ee]rror\\)\\|[0-9]?\\(?:[^0-9\n]\\|$\\)\\|[0-9][0-9][0-9]\\)"))
+        (add-to-list 'compilation-error-regexp-alist-alist
+                     `(stack-interleaved ,pat 1 (2 . 4) (3 . 5) (6 . 7)))
+        (add-to-list 'compilation-error-regexp-alist 'stack-interleaved))))
+
   :config
 
   (setq scroll-margin 0
         scroll-step 1
         scroll-conservatively 10000)
 
-  (defvar compilation-buffer-visible nil)
+  (defvar compilation-buffer-visible t)
 
   (defun toggle-compilation-visible ()
     (interactive)
@@ -407,10 +409,15 @@
   :hook
   ((with-editor-mode . evil-insert-state))
   ((with-presentation-mode . evil-motion-state))
+  ;;((special-mode . evil-emacs-state))
   ((archive-mode . evil-motion-state))
   ((prog-mode . (lambda ()
                   (progn
                     (defalias #'forward-evil-word #'forward-evil-symbol)))))
+  ;;:config
+  ;;((xref--show-xref-buffer-mode . evil-emacs-state))
+  ;;((prog-mode . (lambda ()
+  ;;                (defalias #'forward-evil-word #'forward-evil-symbol))
 
   ;; vim-like bindings in the minibuffer
   ;;
@@ -459,6 +466,7 @@
   (evil-undo-system 'undo-redo)
   :init
   (setq evil-default-state 'normal)
+  ;;(setq-default evil-kill-on-visual-paste nil)
   ;; :config not working w/ most of config. evil is simply loaded immediately
   ;; instead of lazily
   (use-package evil-leader
@@ -542,48 +550,50 @@
 
     "u"       'browse-url
     "U"       'browse-url-chromium
-    "G"       'google-this
+    ;;"G"       'google-this ;; TODO Fix
+
+    "x"       'gptel-menu
     ))
 
 
-(use-package w3m
-  :ensure t
-  :commands (w3m-browse-url w3m-find-file)
-  ;;:ensure-system-package ("w3m")
-  :preface
-  ;; (defun browse-url-chromium (url &optional _new-window)
-  (defun browse-url-prompt (browser-name)
-    (interactive (list (completing-read "Select browser: " '("chromium" "w3m" "firefox" "chrome"))))
-    (message (format "browser: %s" browser-name))
-    (pcase browser-name
-     ("chromium" 'browse-url-chromium)
-     ("w3m" 'w3m-browse-url)
-     ("chrome" 'browse-url-chrome)
-     ("firefox" 'browse-url-firefox)
-     (_ 'browse-url-chromium)))
-  :init (setq
-         browse-url-browser-function
-         '(("github.com" . browse-url-chromium)
-           ("trello.com" . browse-url-chromium)
-           ("circleci.com" . browse-url-chromium)
-           ("pagerduty.com" . browse-url-chromium)
-           ("accounts.google.com" . browse-url-chromium)
-           ("accounts.spotify.com" . browse-url-chromium)
-           ("assertible.com" . browse-url-chromium)
-           ("simplyrets.com/admin" . browse-url-chromium)
-           ("slack.com" . browse-url-chromium)
-           ("rollbar.com" . browse-url-chromium)
-           ("app.drift.com" . browse-url-chromium)
-           ("gmail.com" . browse-url-chromium)
-           ("aws.amazon.com" . browse-url-chromium)
-           ("youtube.com" . browse-url-chromium)
-           ("facebook.com" . browse-url-chromium)
-           ("upwork.com" . browse-url-chromium)
-           (".*\\.gov" . browse-url-chromium)
-           ("docusign.com\\|docusign.net" . browse-url-chromium)
-           ("." . (lambda (url &optional args)
-                    (lexical-let ((browserf (call-interactively #'browse-url-prompt)))
-                      (funcall browserf url args)))))))
+;; (use-package w3m
+;;   :ensure t
+;;   :commands (w3m-browse-url w3m-find-file)
+;;   ;;:ensure-system-package ("w3m")
+;;   :preface
+;;   ;; (defun browse-url-chromium (url &optional _new-window)
+;;   (defun browse-url-prompt (browser-name)
+;;     (interactive (list (completing-read "Select browser: " '("chromium" "w3m" "firefox" "chrome"))))
+;;     (message (format "browser: %s" browser-name))
+;;     (pcase browser-name
+;;      ("chromium" 'browse-url-chromium)
+;;      ("w3m" 'w3m-browse-url)
+;;      ("chrome" 'browse-url-chrome)
+;;      ("firefox" 'browse-url-firefox)
+;;      (_ 'browse-url-chromium)))
+;;   :init (setq
+;;          browse-url-handlers
+;;          '(("github.com" . browse-url-chromium)
+;;            ("trello.com" . browse-url-chromium)
+;;            ("circleci.com" . browse-url-chromium)
+;;            ("pagerduty.com" . browse-url-chromium)
+;;            ("accounts.google.com" . browse-url-chromium)
+;;            ("accounts.spotify.com" . browse-url-chromium)
+;;            ("assertible.com" . browse-url-chromium)
+;;            ("simplyrets.com/admin" . browse-url-chromium)
+;;            ("slack.com" . browse-url-chromium)
+;;            ("rollbar.com" . browse-url-chromium)
+;;            ("app.drift.com" . browse-url-chromium)
+;;            ("gmail.com" . browse-url-chromium)
+;;            ("aws.amazon.com" . browse-url-chromium)
+;;            ("youtube.com" . browse-url-chromium)
+;;            ("facebook.com" . browse-url-chromium)
+;;            ("upwork.com" . browse-url-chromium)
+;;            (".*\\.gov" . browse-url-chromium)
+;;            ("docusign.com\\|docusign.net" . browse-url-chromium)
+;;            ("." . (lambda (url &optional args)
+;;                     (lexical-let ((browserf (call-interactively #'browse-url-prompt)))
+;;                       (funcall browserf url args)))))))
 
 
 
@@ -592,18 +602,22 @@
   :hook ((after-init . global-flycheck-mode))
   ;;:ensure-system-package ((proselint . "pip install proselint"))
   :config
+  ;(setenv "USEIDE" "true")
   (setq flycheck-standard-error-navigation nil)
-  (flycheck-define-checker proselint
-    "A linter for prose."
-    :command ("proselint" source-inplace)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any " "))))
-              (message) line-end))
-    ;; doesn't work well with org-mode
-    :modes (message-mode text-mode markdown-mode gfm-mode)
-  :custom
-  (flycheck-emacs-lisp-load-path 'inherit)))
+  (setq flycheck-checker-error-threshold 10000)
+  ;;(flycheck-define-checker proselint
+  ;;  "A linter for prose."
+  ;;  :command ("proselint" source-inplace)
+  ;;  :error-patterns
+  ;;  ((warning line-start (file-name) ":" line ":" column ": "
+  ;;            (id (one-or-more (not (any " "))))
+  ;;            (message) line-end))
+  ;;  ;; doesn't work well with org-mode
+  ;;  :modes (message-mode text-mode markdown-mode gfm-mode)
+  ;;  :custom
+  ;;  (flycheck-emacs-lisp-load-path 'inherit)
+  ;;  )
+  )
 
 
 (use-package flyspell
@@ -661,34 +675,44 @@
   :ensure t :defer)
 
 
-(use-package google-this
-  :ensure-system-package (chromium)
-  :ensure t :defer)
+;;(use-package google-this
+;;  :ensure-system-package (chromium)
+;;  :ensure t :defer)
 
 
 ;; Gnus: required .emacs settings
-(use-package gnus
-  :commands gnus
-  :custom
-  (gnus-home-directory "~/")
-  (gnus-directory "~/.emacs.d/gnus/news/")
-  (message-directory "~/.emacs.d/gnus/mail/")
-  (nnfolder-directory "~/.emacs.d/gnus/mail/"))
+;; (use-package gnus
+;;   :commands gnus
+;;   :custom
+;;   (gnus-home-directory "~/")
+;;   (gnus-directory "~/.emacs.d/gnus/news/")
+;;   (message-directory "~/.emacs.d/gnus/mail/")
+;;   (nnfolder-directory "~/.emacs.d/gnus/mail/"))
 
 
-(use-package mm-decode
-  :defer
-  :custom
-  (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
-  (mm-verify-option 'always)
-  (mm-decrypt-option 'always))
+;;(use-package mm-decode
+;;  :defer
+;;  :custom
+;;  (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
+;;  (mm-verify-option 'always)
+;;  (mm-decrypt-option 'always))
 
-
-(use-package epa
-  :defer
-  :ensure-system-package (gpg2 . gnupg2)
-  :custom
-  (epa-pinentry-mode 'loopback))
+;(use-package pinentry)
+;(require 'pinentry)
+;(pinentry-start)
+;(setenv "INSIDE_EMACS" "YES")
+;;(use-package epg
+;;  :ensure-system-package (gpg2 . gnupg2)
+;;  :custom
+;;  (epg-debug t)
+;;  :config
+;;  (setq epg-pinentry-mode 'loopback))
+;;(use-package epa
+;;  ;:defer
+;;  :requires (epg)
+;;  :ensure-system-package (gpg2 . gnupg2)
+;;  :init
+;;  (setq epa-pinentry-mode 'loopback))
 
 ;; minimal modeline
 ;;
@@ -703,26 +727,26 @@
   (set-face-attribute 'mode-line-inactive nil :box nil))
 
 
-(use-package org-settings
-  :load-path "lisp/")
+;; (use-package org-settings
+;;   :load-path "lisp/")
 
 
-(use-package bbdb-settings
-  :load-path "lisp/")
+;; (use-package bbdb-settings
+;;   :load-path "lisp/")
 
 
-(use-package haskell-settings
-  :load-path "lisp/")
+;; (use-package haskell-settings
+;;   :load-path "lisp/")
 
 
-(use-package web-settings
-  :load-path "lisp/")
-
-(use-package git-settings
-  :load-path "lisp/")
+;; (use-package web-settings
+;;   :load-path "lisp/")
+;;
+;; (use-package git-settings
+;;   :load-path "lisp/")
 
 
 ;; extra emacs packages & utilities I use which aren't "core"
-(use-package extra
-  :load-path "lisp"
-  :if (file-exists-p "~/.emacs.d/lisp/extra.el"))
+;; (use-package extra
+;;   :load-path "lisp"
+;;   :if (file-exists-p "~/.emacs.d/lisp/extra.el"))
