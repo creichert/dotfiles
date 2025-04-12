@@ -19,11 +19,13 @@
 (eval-when-compile
   (require 'use-package))
 (use-package bind-key                          :ensure t :demand)
-(use-package use-package-ensure-system-package :ensure t :demand)
+;; (use-package use-package-ensure-system-package :ensure t :demand)
 ;; (setq use-package-expand-minimally t)
 (setq use-package-compute-statistics t)
 
 ;;; configure emacs
+(set-frame-font "Hack Nerd Font Mono" nil t)
+
 
 ;; Ensure system executables are installed for certain packages.
 (setq custom-file "~/.emacs.d/custom.el")
@@ -129,6 +131,23 @@
   :custom
   (vc-follow-symlinks t))
 
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (nerd-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (use-package xref
   :preface
@@ -216,7 +235,7 @@
 
 
 (use-package ido-vertical-mode
-  :load-path "site-lisp/ido-vertical-mode.el/"
+  :load-path "/home/c/dev/dotfiles/emacs/.emacs.d/site-lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :custom
@@ -411,6 +430,7 @@
   ((with-presentation-mode . evil-motion-state))
   ;;((special-mode . evil-emacs-state))
   ((archive-mode . evil-motion-state))
+  ((sql-interactive-mode . evil-motion-state))
   ((prog-mode . (lambda ()
                   (progn
                     (defalias #'forward-evil-word #'forward-evil-symbol)))))
@@ -517,7 +537,7 @@
   (evil-leader/set-key
     "1"       'delete-other-windows
     "o"       'other-window
-    "xc"      'save-buffers-kill-terminal
+    ;;"xc"      'save-buffers-kill-terminal
 
     "a"       'fill-paragraph
     "F"       'find-def
@@ -539,7 +559,6 @@
     ")"       'evil-next-close-paren
     "("       'insert-parentheses
     "9"       'insert-parentheses
-
     ;; currently overlapping to see which i prefer
     "gpgr"    'epa-sign-region
     "gpgf"    'epa-sign-file
@@ -626,13 +645,15 @@
         ((prog-mode     . flyspell-prog-mode)))
 
 
-
 (use-package sql
-  :defer
-  ;;:ensure-system-package ("postgresql-client-common")
-  :init
+  :ensure nil  ; sql is built into Emacs, so no need to install it
   :config
-  (add-to-list 'sql-postgres-options "--no-psqlrc"))
+  (add-to-list 'sql-postgres-options "--no-psqlrc")  ; Keep your PostgreSQL option
+  :init
+  (add-hook 'sql-interactive-mode-hook
+            (lambda ()
+              (goto-char (point-max))))  ; Move cursor to prompt
+  )
 
 
 (use-package sql-pgpass
@@ -652,7 +673,7 @@
 
 
 (use-package conf-mode
-  :mode "\\.inputrc\\'")
+  :mode "\\.*rc\\'")
 
 
 (use-package markdown-mode
@@ -721,10 +742,10 @@
 ;; (mode-line ((t (:background ,atom-one-dark-black :foreground ,atom-one-dark-silver))))
 ;; (mode-line-buffer-id ((t (:weight bold))))
 ;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
-(use-package faces
-  :config
-  (set-face-attribute 'mode-line nil :box '(:width 0.5))
-  (set-face-attribute 'mode-line-inactive nil :box nil))
+;; (use-package faces
+;;   :config
+;;   (set-face-attribute 'mode-line nil :box '(:width 0.5))
+;;   (set-face-attribute 'mode-line-inactive nil :box nil))
 
 
 ;; (use-package org-settings
@@ -741,9 +762,9 @@
 
 ;; (use-package web-settings
 ;;   :load-path "lisp/")
-;;
-;; (use-package git-settings
-;;   :load-path "lisp/")
+
+(use-package git-settings
+  :load-path "lisp/")
 
 
 ;; extra emacs packages & utilities I use which aren't "core"
