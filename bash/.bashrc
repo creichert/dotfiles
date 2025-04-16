@@ -5,13 +5,15 @@ set -o vi
 [ -r ~/.bash_functions ]       && . ~/.bash_functions
 
 # private bash functions
-[ -r ~/.bash_functions.local ] && . ~/.bash_functions.local
+#[ -r ~/.bash_functions.local ] && . ~/.bash_functions.local
 
 [ -r ~/.bash_aliases   ] && . ~/.bash_aliases
-[ -r ~/.inputrc        ] && bind -f ~/.inputrc
+#[ -r ~/.inputrc        ] && bind -f ~/.inputrc
 
 [ -r /etc/bash_completion ] && . /etc/bash_completion
 [ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+[ -f /usr/share/git/completion/git-prompt.sh ] && . /usr/share/git/completion/git-prompt.sh
 
 [ -r ~/.dircolors ] \
     && eval "$(dircolors -b ~/.dircolors)" \
@@ -24,15 +26,17 @@ export EDITOR=vim
 export ALTERNATE_EDITOR="emacsclient -t"
 export VISUAL=$EDITOR
 
-#export BROWSER=google-chrome
+export BROWSER=chromium
 export GPG_TTY=$(tty)
 
-HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
-HISTFILESIZE=1000000
-HISTSIZE=1000000
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups:erasedups
+HISTSIZE=10000
+HISTFILESIZE=10000
+HISTIGNORE=' *'
 
 # Share history between all terminals immediately
-PROMPT_COMMAND='history -a'
+PROMPT_COMMAND="history -a"
+# PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
 
 PS1_USER='\[\e[0;32m\]\u@\h\[[01m\]'
 PS1_DIR='\[[0;35m\]\w\[[00m\]\[[1;30m\]\[[0;37m\]'
@@ -45,8 +49,5 @@ PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
 # Export path w/ stack bins
 export PATH=${HOME}/.local/bin:$PATH
-# eval "$(stack --bash-completion-script stack)"
 
-# if hash aws_completer 2>/dev/null; then
-#     complete -C aws_completer aws
-# fi
+eval "$(stack --bash-completion-script stack)"

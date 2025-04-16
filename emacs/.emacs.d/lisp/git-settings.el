@@ -2,10 +2,12 @@
 (require 'use-package)
 
 
+(use-package magit-ido
+  :ensure t)
 (use-package magit
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
-  :requires (evil)
+  :requires (evil magit-ido)
   :ensure t
   :config
   (setq magit-diff-refine-hunk 'all)

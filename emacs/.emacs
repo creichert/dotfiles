@@ -19,11 +19,10 @@
 (eval-when-compile
   (require 'use-package))
 (use-package bind-key                          :ensure t :demand)
-;; (use-package use-package-ensure-system-package :ensure t :demand)
 ;; (setq use-package-expand-minimally t)
 (setq use-package-compute-statistics t)
 
-;;; configure emacs
+;; configure emacs
 (set-frame-font "Hack Nerd Font Mono" nil t)
 
 
@@ -138,6 +137,8 @@
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-one t)
+  ;;(load-theme 'doom-city-lights t)
+  ;;(load-theme 'doom-tokyo-night t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -646,7 +647,6 @@
 
 
 (use-package sql
-  :ensure nil  ; sql is built into Emacs, so no need to install it
   :config
   (add-to-list 'sql-postgres-options "--no-psqlrc")  ; Keep your PostgreSQL option
   :init
@@ -691,49 +691,29 @@
   :ensure t :defer)
 
 
-(use-package flycheck-yamllint
-  :ensure-system-package (yamllint)
-  :ensure t :defer)
+;(use-package flycheck-yamllint
+;  :ensure-system-package (yamllint)
+;  :ensure t :defer)
 
 
-;;(use-package google-this
-;;  :ensure-system-package (chromium)
-;;  :ensure t :defer)
+(use-package auth-source-pass
+  :ensure t
+  :defer
+  :config
+  (auth-source-pass-enable))
 
-
-;; Gnus: required .emacs settings
-;; (use-package gnus
-;;   :commands gnus
-;;   :custom
-;;   (gnus-home-directory "~/")
-;;   (gnus-directory "~/.emacs.d/gnus/news/")
-;;   (message-directory "~/.emacs.d/gnus/mail/")
-;;   (nnfolder-directory "~/.emacs.d/gnus/mail/"))
-
-
-;;(use-package mm-decode
-;;  :defer
-;;  :custom
-;;  (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
-;;  (mm-verify-option 'always)
-;;  (mm-decrypt-option 'always))
 
 ;(use-package pinentry)
 ;(require 'pinentry)
 ;(pinentry-start)
 ;(setenv "INSIDE_EMACS" "YES")
-;;(use-package epg
-;;  :ensure-system-package (gpg2 . gnupg2)
-;;  :custom
-;;  (epg-debug t)
-;;  :config
-;;  (setq epg-pinentry-mode 'loopback))
-;;(use-package epa
-;;  ;:defer
-;;  :requires (epg)
-;;  :ensure-system-package (gpg2 . gnupg2)
-;;  :init
-;;  (setq epa-pinentry-mode 'loopback))
+(use-package epg
+  :ensure-system-package (gpg2 . gnupg2)
+  :custom
+  (epg-debug t)
+  :config
+  (setq epg-pinentry-mode 'loopback))
+
 
 ;; minimal modeline
 ;;
@@ -756,8 +736,8 @@
 ;;   :load-path "lisp/")
 
 
-;; (use-package haskell-settings
-;;   :load-path "lisp/")
+(use-package haskell-settings
+  :load-path "lisp/")
 
 
 ;; (use-package web-settings
@@ -768,6 +748,6 @@
 
 
 ;; extra emacs packages & utilities I use which aren't "core"
-;; (use-package extra
-;;   :load-path "lisp"
-;;   :if (file-exists-p "~/.emacs.d/lisp/extra.el"))
+(use-package extra
+  :load-path "lisp"
+  :if (file-exists-p "~/.emacs.d/lisp/extra.el"))

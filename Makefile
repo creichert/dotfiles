@@ -6,12 +6,10 @@
 
 ALL_PACKAGES	:= \
 	emacs \
-	xmonad \
 	bash \
 	gnupg \
 	postgresql \
 	ssh \
-	x11 \
 	ghc \
 	git \
 	fonts \

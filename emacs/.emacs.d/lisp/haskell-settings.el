@@ -154,41 +154,41 @@
 
 
 ;; automatically apply hlint suggestions when applicable
-(use-package hlint-refactor
-  ;;:ensure-system-package ((refactor . "stack install ghc-exactprint"))
-  :after (haskell-mode)
-  :ensure t
-  :hook ((haskell-mode . hlint-refactor-mode))
-  :bind (("C-c h r" . hlint-refactor-refactor-at-point)
-         ("C-c h R" . hlint-refactor-refactor-buffer)))
+;; (use-package hlint-refactor
+;;   ;;:ensure-system-package ((refactor . "stack install ghc-exactprint"))
+;;   :after (haskell-mode)
+;;   :ensure t
+;;   :hook ((haskell-mode . hlint-refactor-mode))
+;;   :bind (("C-c h r" . hlint-refactor-refactor-at-point)
+;;          ("C-c h R" . hlint-refactor-refactor-buffer)))
 
 
-(use-package ghcid
-  ;;:ensure-system-package ((ghcid . "stack install ghcid"))
-  :defer
-  :load-path "site-lisp/"
-  :bind (:map projectile-mode-map
-              ("C-c m s" . ghcid)
-              ("C-c m b" . show-ghcid-buf)
-              ("C-c m t" . set-ghcid-target))
-  :custom
-  (ghcid-target "")
-  ;;:config (setq-local default-directory projectile-project-root)
-  :preface
-  (use-package haskell-mode :ensure t)
-  (defun show-ghcid-buf ()
-    (interactive)
-    (show-buffer ghcid-buf-name))
-  (defun set-ghcid-target (ghcid-targ &optional ghcid-test-targ)
-    (interactive
-     (list
-      (completing-read "ghcid target: " (map 'list (lambda (targ) (format "%s:%s" (projectile-project-name) targ)) (haskell-cabal-enum-targets)))
-      (completing-read "ghcid --test target: " '("--test=main" "--test=Main.main" nil))))
-    (setq ghcid-target ghcid-targ)
-    (when ghcid-test-targ
-      (setq ghcid-target-test (format "%s" ghcid-test-targ)))
-    (kill-ghcid)
-    (ghcid)))
+;; (use-package ghcid
+;;   ;;:ensure-system-package ((ghcid . "stack install ghcid"))
+;;   :defer
+;;   :load-path "site-lisp/"
+;;   :bind (:map projectile-mode-map
+;;               ("C-c m s" . ghcid)
+;;               ("C-c m b" . show-ghcid-buf)
+;;               ("C-c m t" . set-ghcid-target))
+;;   :custom
+;;   (ghcid-target "")
+;;   ;;:config (setq-local default-directory projectile-project-root)
+;;   :preface
+;;   (use-package haskell-mode :ensure t)
+;;   (defun show-ghcid-buf ()
+;;     (interactive)
+;;     (show-buffer ghcid-buf-name))
+;;   (defun set-ghcid-target (ghcid-targ &optional ghcid-test-targ)
+;;     (interactive
+;;      (list
+;;       (completing-read "ghcid target: " (map 'list (lambda (targ) (format "%s:%s" (projectile-project-name) targ)) (haskell-cabal-enum-targets)))
+;;       (completing-read "ghcid --test target: " '("--test=main" "--test=Main.main" nil))))
+;;     (setq ghcid-target ghcid-targ)
+;;     (when ghcid-test-targ
+;;       (setq ghcid-target-test (format "%s" ghcid-test-targ)))
+;;     (kill-ghcid)
+;;     (ghcid)))
 
 
 (provide 'haskell-settings)
