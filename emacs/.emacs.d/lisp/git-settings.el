@@ -2,10 +2,12 @@
 (require 'use-package)
 
 
+(use-package magit-ido
+  :ensure t)
 (use-package magit
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
-  :requires (evil)
+  :requires (evil magit-ido)
   :ensure t
   :config
   (setq magit-diff-refine-hunk 'all)
@@ -30,7 +32,8 @@
     "h" 'magit-toggle-diff-refine-hunk)
 
   (evil-leader/set-key-for-mode 'magit-status-mode
-    "SPC" 'magit-stash-show))
+    "SPC" 'magit-stash-show)
+  )
 
 
 (use-package evil-collection
@@ -50,37 +53,37 @@
     "n" 'magit-section-forward))
 
 
-(use-package magithub
-  :disabled
-  :after magit
-  :init
-  (use-package auth-source-pass
-    :ensure t :demand
-    :init (auth-source-pass-enable))
-  :config
-  (magithub-feature-autoinject t)
-  (setq magithub-clone-default-directory "~/dev"))
+;; (use-package magithub
+;;   :disabled
+;;   :after magit
+;;   :init
+;;   (use-package auth-source-pass
+;;     :ensure t :demand
+;;     :init (auth-source-pass-enable))
+;;   :config
+;;   (magithub-feature-autoinject t)
+;;   (setq magithub-clone-default-directory "~/dev"))
 
 
-(use-package magit-gh-pulls
-  :disabled
-  :ensure t
-  :hook (magit-mode . magit-gh-pulls-mode)
-  :init
-  (use-package magit-popup
-    :ensure t)
-  (setq magit-gh-pulls-pull-detail-limit 30)
-  (setq magit-gh-pulls-status-documentation t))
+;; (use-package magit-gh-pulls
+;;   :disabled
+;;   :ensure t
+;;   :hook (magit-mode . magit-gh-pulls-mode)
+;;   :init
+;;   (use-package magit-popup
+;;     :ensure t)
+;;   (setq magit-gh-pulls-pull-detail-limit 30)
+;;   (setq magit-gh-pulls-status-documentation t))
 
-(use-package github-clone
-  :defer
-  :ensure t)
-
-
-(use-package gist
-  :defer
-  :ensure-system-package (git)
-  :ensure t)
+;; (use-package github-clone
+;;   :defer
+;;   :ensure t)
+;;
+;;
+;; (use-package gist
+;;   :defer
+;;   :ensure-system-package (git)
+;;   :ensure t)
 
 
 
