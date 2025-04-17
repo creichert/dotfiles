@@ -30,9 +30,9 @@ export BROWSER=chromium
 export GPG_TTY=$(tty)
 
 HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups:erasedups
-HISTSIZE=10000
-HISTFILESIZE=10000
+HISTSIZE=5000
 HISTIGNORE=' *'
+
 
 # Share history between all terminals immediately
 PROMPT_COMMAND="history -a"
@@ -46,8 +46,5 @@ PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
 # use node/npm using nvm by default
 # bootstrap_lang node
-
-# Export path w/ stack bins
-export PATH=${HOME}/.local/bin:$PATH
 
 eval "$(stack --bash-completion-script stack)"

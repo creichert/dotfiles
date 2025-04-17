@@ -25,6 +25,11 @@
 	;gptel-model 'deepseek-r1-distill-llama-70b)
 	gptel-model 'grok-3-latest)
 
+  ;; auto scroll
+  ;; (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+
+  ;; move cursor to next prompt
+  ;; (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
   :preface
   ; remove the default model entries
   (with-eval-after-load 'gptel
