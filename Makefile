@@ -4,12 +4,17 @@
 #
 # See the README.md for more information about how symlinks are built.
 
-ALL_PACKAGES	:= \
+ALL_PACKAGES := \
 	emacs \
 	bash \
 	gnupg \
 	postgresql \
-	ssh
+	git \
+	hyprland
+	# ssh
+	# ghc
+	# stack
+	# bin
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 
@@ -25,16 +30,17 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore=".*.rej"		\
 		--ignore=".*.swp"		\
 		--ignore=".*~"			\
+		--ignore=".gnus"			\
 		--ignore="dotlocal/"
 
 .PHONY: simulate
-simulate: submodules
+simulate: #submodules
 	@stow $(STOW_FLAGS) --simulate $(PACKAGES)
 	-@[ -d "./dotlocal" ] && make -C dotlocal/ simulate
 
 .PHONY: dotfiles
-dotfiles: submodules
-	@stow $(STOW_FLAGS) --no-folding -v1 --target=$(PKG_DIR) $(PACKAGES)
+dotfiles: #submodules
+	@stow $(STOW_FLAGS) --target=$(PKG_DIR) $(PACKAGES)
 	-@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
 
 .PHONY: clean

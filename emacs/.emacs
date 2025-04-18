@@ -236,7 +236,7 @@
 
 
 (use-package ido-vertical-mode
-  :load-path "/home/c/dev/dotfiles/emacs/.emacs.d/site-lisp/ido-vertical-mode.el/"
+  :load-path "~/.emacs.d/site-lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :custom
@@ -406,7 +406,9 @@
   (defun whitespace-local-mode ()
     (add-hook (make-local-variable 'before-save-hook)
               'delete-trailing-whitespace))
-  :hook ((prog-mode . whitespace-local-mode)))
+  :hook ((prog-mode . whitespace-local-mode)
+         (conf-mode . whitespace-local-mode)
+         ))
 
 
 (use-package register
@@ -640,13 +642,14 @@
   )
 
 
-(use-package flyspell
-  :requires (flycheck)
-  :hook ((markdown-mode . turn-on-flyspell))
-        ((prog-mode     . flyspell-prog-mode)))
+; (use-package flyspell
+;   :requires (flycheck)
+;   :hook ((markdown-mode . turn-on-flyspell))
+;         ((prog-mode     . flyspell-prog-mode)))
 
 
 (use-package sql
+  :defer
   :config
   (add-to-list 'sql-postgres-options "--no-psqlrc")  ; Keep your PostgreSQL option
   :init
@@ -673,7 +676,7 @@
 
 
 (use-package conf-mode
-  :mode "\\.*rc\\'")
+  :mode ("\\.*rc\\'" "\\.*conf\\'"))
 
 
 (use-package markdown-mode
