@@ -10,11 +10,11 @@ ALL_PACKAGES := \
 	gnupg \
 	postgresql \
 	git \
-	hyprland
+	bin \
+	hypr
 	# ssh
 	# ghc
 	# stack
-	# bin
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 
@@ -30,18 +30,19 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore=".*.rej"		\
 		--ignore=".*.swp"		\
 		--ignore=".*~"			\
-		--ignore=".gnus"			\
+		--ignore=".gnus"		\
+		--ignore=".*local/bin/kvm_.*"	\
 		--ignore="dotlocal/"
 
 .PHONY: simulate
 simulate: #submodules
 	@stow $(STOW_FLAGS) --simulate $(PACKAGES)
-	-@[ -d "./dotlocal" ] && make -C dotlocal/ simulate
+#	-@[ -d "./dotlocal" ] && make -C dotlocal/ simulate
 
 .PHONY: dotfiles
 dotfiles: #submodules
 	@stow $(STOW_FLAGS) --target=$(PKG_DIR) $(PACKAGES)
-	-@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
+#	-@[ -d "./dotlocal" ] && make -C dotlocal/ dotfiles
 
 .PHONY: clean
 clean:
