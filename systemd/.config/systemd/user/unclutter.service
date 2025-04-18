@@ -1,8 +1,0 @@
-[Unit]
-Description=Unclutter
-PartOf=graphical.target
-[Service]
-ExecStart=/usr/bin/unclutter -idle 2 -noevents
-Restart=always
-[Install]
-WantedBy=default.target
