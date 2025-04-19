@@ -458,10 +458,10 @@
   ;;
   :bind (:map evil-motion-state-map
               ("f" . xref-find-definitions)
-              ("s" . xref-pop-marker-stack)
+              ("s" . xref-go-back)
               :map evil-normal-state-map
               ("f" . xref-find-definitions)
-              ("s" . xref-pop-marker-stack)
+              ("s" . xref-go-back)
               (";" . evil-ex)
               ("\\" . smex)
               :map evil-insert-state-map
@@ -652,11 +652,22 @@
 (use-package sql
   :defer
   :config
-  (add-to-list 'sql-postgres-options "--no-psqlrc")  ; Keep your PostgreSQL option
-  :init
-  (add-hook 'sql-interactive-mode-hook
-            (lambda ()
-              (goto-char (point-max))))  ; Move cursor to prompt
+  (add-to-list 'sql-postgres-options "--no-psqlrc")
+  (add-to-list 'sql-postgres-options "--expanded")
+  (add-to-list 'sql-postgres-options "--echo-queries")
+  (defun c/setup-pgsql ()
+    ;; Setting the variable truncate-lines in any way makes it local to the
+    ;; current buffer; until that time, the default value, which is normally
+    ;; nil, is in effect.
+    (setq truncate-lines t)
+    ;(when (eq sql-product 'postgres)
+    ;  (sql-send-string "\\set QUIET 1")
+    ;  (sql-send-string "\\x")
+    ;  (sql-send-string "\\pset null '[NULL]'")
+    ;  (sql-send-string "\\unset QUIET")
+    ;  )
+    )
+  :hook ((sql-interactive-mode-hook . c/setup-pgsql))
   )
 
 
