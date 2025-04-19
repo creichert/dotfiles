@@ -11,8 +11,10 @@ ALL_PACKAGES := \
 	postgresql \
 	git \
 	bin \
-	hypr \
-	wofi
+	waybar \
+	wofi \
+	mako \
+	hypr
 	# ssh
 	# ghc
 	# stack
