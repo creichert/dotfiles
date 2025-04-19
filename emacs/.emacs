@@ -323,18 +323,19 @@
   (tags-add-tables t))
 
 
-
-(use-package ansi-color
-  :hook
-  (( compilation-filter . (lambda ()
-                            (let ((inhibit-read-only t))
-                              (ansi-color-apply-on-region (point-min) (point-max)))) )))
-
-
 (use-package compile
+  :defer
   :ensure t
   ;;:hook ((compilation-mode . (lambda () (setq scroll-margin 0))
   :init
+
+  (use-package ansi-color
+    :defer
+    :hook
+    (( compilation-filter . (lambda ()
+                              (let ((inhibit-read-only t))
+                                (ansi-color-apply-on-region (point-min) (point-max)))) )))
+
   (setq compilation-read-command nil
         compilation-scroll-output t
         ;; make compilation-mode a lot faster but excluding cpu intensive regexp's which
@@ -711,6 +712,7 @@
 ;(pinentry-start)
 ;(setenv "INSIDE_EMACS" "YES")
 (use-package epg
+  :defer
   :ensure-system-package (gpg2 . gnupg2)
   :custom
   (epg-debug t)

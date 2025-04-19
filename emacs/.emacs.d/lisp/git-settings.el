@@ -2,13 +2,12 @@
 (require 'use-package)
 
 
-(use-package magit-ido
-  :ensure t)
 (use-package magit
+  :defer
+  :ensure t
   :bind (([f9]   . magit-status)
          ([C-f9] . magit-log))
-  :requires (evil magit-ido)
-  :ensure t
+  :requires (evil)
   :config
   (setq magit-diff-refine-hunk 'all)
   (setq magit-section-initial-visibility-alist
@@ -16,7 +15,10 @@
           (untracked . hide)
           (pulls . show)
           ))
+  (use-package magit-ido :ensure t
+    :init
   (setq magit-completing-read-function 'magit-ido-completing-read)
+    )
   (evil-set-initial-state 'magit-log-edit-mode 'emacs)
   (evil-set-initial-state 'magit-status-mode 'emacs)
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
