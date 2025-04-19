@@ -19,7 +19,8 @@
 
   (setq-default sql-production-connection-regexp "production")
 
-  (defadvice sql-send-string (around sql-send-prod-y-or-n-p)
+  (defun my-sql-send-prod-y-or-n-p (orig-fun &rest args)
+    "Advice for `sql-send-string' to prompt before sending to production."
     (save-excursion
       ;; Set product context
       (with-current-buffer sql-buffer
@@ -28,13 +29,12 @@
         (message (format "%s" sql-connection))
         (cond
          ((string-match sql-production-connection-regexp sql-connection)
-               ;;(not (string-match "^\\n\\|^\\set ECHO queries" str))
           (when (y-or-n-p "Send statement to PRODUCTION host? ")
-            ad-do-it))
-         ;; if not a production host, just run it
-         (t ad-do-it)))))
+            (apply orig-fun args)))
+         ;; If not a production host, just run it
+         (t (apply orig-fun args))))))
 
-  (ad-activate 'sql-send-string)
+  (advice-add 'sql-send-string :around #'my-sql-send-prod-y-or-n-p)
 
   ;; .pgpass parser
   (defun read-file (file)
