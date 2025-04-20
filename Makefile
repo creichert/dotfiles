@@ -15,9 +15,6 @@ ALL_PACKAGES := \
 	wofi \
 	mako \
 	hypr
-	# ssh
-	# ghc
-	# stack
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 
