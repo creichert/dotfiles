@@ -25,6 +25,8 @@ PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 PKG_DIR         ?= $(or $(target),$(HOME))
 
 
+# Use --no-folding to avoid linking directories
+# (e.g. .emacs.d is too high level)
 STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
 STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore=".*.pem"		\

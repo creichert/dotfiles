@@ -4,9 +4,6 @@ set -o vi
 
 [ -r ~/.bash_functions ]       && . ~/.bash_functions
 
-# private bash functions
-#[ -r ~/.bash_functions.local ] && . ~/.bash_functions.local
-
 [ -r ~/.bash_aliases   ] && . ~/.bash_aliases
 #[ -r ~/.inputrc        ] && bind -f ~/.inputrc
 
@@ -46,5 +43,3 @@ PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
 # use node/npm using nvm by default
 # bootstrap_lang node
-
-eval "$(stack --bash-completion-script stack)"
