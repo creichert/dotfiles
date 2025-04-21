@@ -72,6 +72,7 @@
 
 
 (use-package help
+  :defer
   :custom
   (help-window-select t))
 
