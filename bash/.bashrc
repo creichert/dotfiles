@@ -5,7 +5,7 @@ set -o vi
 [ -r ~/.bash_functions ]       && . ~/.bash_functions
 
 [ -r ~/.bash_aliases   ] && . ~/.bash_aliases
-#[ -r ~/.inputrc        ] && bind -f ~/.inputrc
+[ -r ~/.inputrc        ] && bind -f ~/.inputrc
 
 [ -r /etc/bash_completion ] && . /etc/bash_completion
 [ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
