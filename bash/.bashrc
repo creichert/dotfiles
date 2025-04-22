@@ -20,16 +20,15 @@ shopt -s histappend
 shopt -s checkwinsize
 
 export EDITOR=vim
-export ALTERNATE_EDITOR="emacsclient -t"
+export ALTERNATE_EDITOR="emacs -nw"
 export VISUAL=$EDITOR
 
 export BROWSER=chromium
 export GPG_TTY=$(tty)
 
-HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups:erasedups
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
 HISTSIZE=5000
 HISTIGNORE=' *'
-
 
 # Share history between all terminals immediately
 PROMPT_COMMAND="history -a"
@@ -39,7 +38,6 @@ PS1_USER='\[\e[0;32m\]\u@\h\[[01m\]'
 PS1_DIR='\[[0;35m\]\w\[[00m\]\[[1;30m\]\[[0;37m\]'
 PS1_GITBRANCH='`__git_ps1 " (%s)"`\[[00m\]\[[0;37m\]'
 PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
-
 
 # use node/npm using nvm by default
 # bootstrap_lang node

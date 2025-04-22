@@ -11,7 +11,6 @@ alias la='ls -lah $LS_COLOR'
 alias ll='ls -l'
 alias ls='ls --color=auto'
 alias m='make -j'
-alias mi='make -j install'
 alias nil-uuid="echo 00000000-0000-0000-0000-000000000000"
 
 # arch/pacman

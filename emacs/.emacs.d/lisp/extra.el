@@ -8,10 +8,12 @@
   :defer
   :config
   (gptel-make-xai "xAI"
-                  :stream t
-                  :key (auth-source-pass-get 'secret "x/xai/creichert07"))
+    :stream t
+    :key (auth-source-pass-get 'secret "x/xai/creichert07"))
 
-  ;;(gptel-make-gemini "Gemini" :key "YOUR_GEMINI_API_KEY" :stream t)
+  (gptel-make-gemini "Gemini"
+    :stream t
+    :key (auth-source-pass-get 'secret "aistudio.google.com/rbros/api-token"))
 
   ;; (gptel-make-openai "Groq"
   ;;   :host "api.groq.com"
@@ -30,6 +32,7 @@
 
   ;; move cursor to next prompt
   ;; (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+
   :preface
   ; remove the default model entries
   (with-eval-after-load 'gptel
@@ -43,15 +46,15 @@
 ;;   (put 'dockerfile-image-name 'safe-local-variable #'stringp)
 ;;   (put 'dockerfile-build-args 'safe-local-variable #'sequencep)
 ;;   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
-;;
-;;
+
+
 ;; (use-package docker
 ;;   :ensure t
 ;;   :commands (docker)
 ;;   :ensure-system-package (docker . "docker.io")
 ;;   :bind (("C-c d" . docker)))
-;;
-;;
+
+
 ;; (use-package ggtags
 ;;   :defer
 ;;   :requires (evil)
@@ -93,8 +96,8 @@
 ;; (use-package etags-select
 ;;   :disabled
 ;;   :load-path "site-lisp/etags-select.el/")
-;;
-;;
+
+
 ;; (use-package gif-screencast
 ;;   :defer
 ;;   :ensure t
