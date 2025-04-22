@@ -18,7 +18,7 @@
 
 (eval-when-compile
   (require 'use-package))
-(use-package bind-key                          :ensure t :demand)
+(use-package bind-key :ensure t :demand)
 ;; (setq use-package-expand-minimally t)
 (setq use-package-compute-statistics t)
 
@@ -485,7 +485,7 @@
   (evil-leader/set-key
     "1"       'delete-other-windows
     "o"       'other-window
-    ;;"xc"      'save-buffers-kill-terminal
+    "O"       'previous-window-any-frame
 
     "a"       'fill-paragraph
     "F"       'find-def
