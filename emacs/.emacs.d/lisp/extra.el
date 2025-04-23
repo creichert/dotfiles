@@ -15,12 +15,10 @@
     :stream t
     :key (auth-source-pass-get 'secret "aistudio.google.com/rbros/api-token"))
 
-  ;; (gptel-make-openai "Groq"
-  ;;   :host "api.groq.com"
-  ;;   :endpoint "/openai/v1/chat/completions"
-  ;;   :key gptel-api-key
-  ;;   :stream t
-  ;;   :models '(deepseek-r1-distill-llama-70b llama-3.3-70b-versatile))
+  ;; (gptel-make-ollama "Ollama"
+  ;; :host "localhost:11434"
+  ;; :stream t
+  ;; :models '(mistral:latest))
 
   (setq gptel-default-mode 'markdown-mode
 	gptel-backend (gptel-get-backend "xAI")
@@ -39,13 +37,14 @@
     (setf (gptel-get-backend "ChatGPT") nil))
   )
 
-;; (use-package dockerfile-mode
-;;   :ensure t
-;;   :ensure-system-package (docker . "docker.io")
-;;   :config
-;;   (put 'dockerfile-image-name 'safe-local-variable #'stringp)
-;;   (put 'dockerfile-build-args 'safe-local-variable #'sequencep)
-;;   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
+(use-package dockerfile-mode
+  :defer
+  :ensure t
+  ;:ensure-system-package (docker . "docker.io")
+  :config
+  (put 'dockerfile-image-name 'safe-local-variable #'stringp)
+  (put 'dockerfile-build-args 'safe-local-variable #'sequencep)
+  :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
 
 
 ;; (use-package docker

@@ -595,23 +595,21 @@
 
 (use-package sql
   :defer
+  :preface
+  (defun c/setup-pgsql-buffer ()
+    ;; (bug) make comint use entire buffer
+    (setq truncate-lines t))
+
   :config
   (add-to-list 'sql-postgres-options "--no-psqlrc")
   (add-to-list 'sql-postgres-options "--expanded")
   (add-to-list 'sql-postgres-options "--echo-queries")
-  (defun c/setup-pgsql ()
-    ;; Setting the variable truncate-lines in any way makes it local to the
-    ;; current buffer; until that time, the default value, which is normally
-    ;; nil, is in effect.
-    (setq truncate-lines t)
-    ;(when (eq sql-product 'postgres)
-    ;  (sql-send-string "\\set QUIET 1")
-    ;  (sql-send-string "\\x")
-    ;  (sql-send-string "\\pset null '[NULL]'")
-    ;  (sql-send-string "\\unset QUIET")
-    ;  )
-    )
-  :hook ((sql-interactive-mode-hook . c/setup-pgsql))
+  (add-to-list 'sql-postgres-options "--pset=null=[NULL]")
+  ; can't get working w/ dbname
+  ;(add-to-list 'sql-postgres-options "--variable=HISTFILE=~/.cache/psql_history-:DBNAME")
+  (add-to-list 'sql-postgres-options "--variable=HISTFILE=/dev/null")
+  :hook
+  ((sql-interactive-mode-hook . c/setup-pgsql-buffer))
   )
 
 
