@@ -27,7 +27,7 @@ export BROWSER=chromium
 export GPG_TTY=$(tty)
 
 HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
-HISTSIZE=5000
+HISTSIZE=10000
 HISTIGNORE=' *'
 
 # Share history between all terminals immediately
