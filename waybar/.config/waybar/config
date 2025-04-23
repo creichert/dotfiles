@@ -150,7 +150,6 @@
         // "hwmon-path": "/sys/bus/pci/drivers/k10temp/0000:00:18.3/hwmon/hwmon3/temp1_input",
         // "format-critical": "{temperatureC}°C {icon}",
         //"format-icons": ["", "", ""]
-        //"format-icons": ["🥶", "", "🥵"]
         // "format-icons": ["", "", "", "", ""]
         "hwmon-path-abs": "/sys/bus/pci/drivers/k10temp/0000:00:18.3/hwmon",
         "input-filename": "temp1_input",
