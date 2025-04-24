@@ -14,11 +14,15 @@
         '((stashes   . hide)
           (untracked . hide)
           (pulls . show)
+          (unpushed . show)
+          (commit . show)
+          (status . show)
           ))
+
   (use-package magit-ido :ensure t
     :init
-  (setq magit-completing-read-function 'magit-ido-completing-read)
-    )
+    (setq magit-completing-read-function 'magit-ido-completing-read))
+
   (evil-set-initial-state 'magit-log-edit-mode 'emacs)
   (evil-set-initial-state 'magit-status-mode 'emacs)
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
@@ -31,10 +35,21 @@
   (evil-add-hjkl-bindings magit-status-mode-map 'emacs
     "K" 'magit-discard
     "l" 'magit-log
-    "h" 'magit-toggle-diff-refine-hunk)
+    "h" 'magit-diff-toggle-refine-hunk
+    )
 
   (evil-leader/set-key-for-mode 'magit-status-mode
-    "SPC" 'magit-stash-show)
+    ;"SPC" 'magit-visit-ref
+    "H" 'magit-go-backward)
+  (evil-leader/set-key-for-mode 'magit-diff-mode
+    ;"SPC" 'magit-visit-ref
+    "H" 'magit-go-backward)
+  (evil-leader/set-key-for-mode 'magit-revision-mode
+    ;"SPC" 'magit-visit-ref
+    "H" 'magit-go-backward)
+  (evil-leader/set-key-for-mode 'magit-log-mode
+    ;"SPC" 'magit-visit-ref
+    "H" 'magit-go-backward)
   )
 
 
@@ -76,6 +91,7 @@
 ;;     :ensure t)
 ;;   (setq magit-gh-pulls-pull-detail-limit 30)
 ;;   (setq magit-gh-pulls-status-documentation t))
+
 
 ;; (use-package github-clone
 ;;   :defer

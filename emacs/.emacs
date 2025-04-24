@@ -131,6 +131,7 @@
   :custom
   (vc-follow-symlinks t))
 
+
 (use-package doom-themes
   :ensure t
   :config
@@ -150,15 +151,6 @@
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-
-
-(use-package xref
-  :defer
-  :preface
-  (defun bury-xref-buffer ()
-    (delete-windows-on "*xref*"))
-  :config
-  (add-to-list 'xref-after-return-hook 'bury-xref-buffer))
 
 
 (use-package ido
@@ -212,10 +204,42 @@
   (setq completing-read-function 'ido-completing-read+))
 
 
+(use-package xref
+  ;:defer
+  :requires (ido)
+  :preface
+  (defun bury-xref-buffer ()
+    (delete-windows-on "*xref*"))
+  :config
+  (defun xref-show-definitions-ido (fetcher alist)
+    "Use ido for xref, skip prompt for single match, replace current buffer."
+    (let* ((xrefs (funcall fetcher))
+           (summaries (mapcar (lambda (x) (slot-value x 'summary)) xrefs)))
+      (if (= (length xrefs) 1)
+          (xref--show-def-in-current-window (car xrefs))
+        (let ((selected (ido-completing-read "Definitions: " summaries nil t)))
+          (when selected
+            (let ((xref (nth (cl-position selected summaries :test #'equal) xrefs)))
+              (xref--show-def-in-current-window xref)))))))
+
+  (defun xref--show-def-in-current-window (xref)
+    "Show XREF in current window, center point."
+    (let* ((location (slot-value xref 'location))
+           (buffer (or (and (fboundp 'xref-location-marker)
+                            (marker-buffer (xref-location-marker location)))
+                       (find-file-noselect (xref-location-file location)))))
+      (pop-to-buffer buffer '((display-buffer-same-window)))
+      (xref--goto-location location)
+      (recenter nil t)))
+
+  (setq xref-show-definitions-function #'xref-show-definitions-ido)
+  (add-to-list 'xref-after-return-hook 'bury-xref-buffer))
+
+
 (use-package projectile
   :ensure t
   :requires (ido)
-  ;;:hook (( projectile-after-switch-project . magit-status ))
+  ;:hook (( projectile-after-switch-project . magit-status ))
   :bind
   (("C-x C-d" . projectile-switch-project)
    (:map projectile-mode-map
@@ -227,16 +251,15 @@
   (setq projectile-enable-caching t
         projectile-indexing-method 'alien
         projectile-tags-command "make tags"
-        ;;projectile-sort-order 'modification-time
         projectile-use-git-grep 't
-        ;;projectile-project-search-path '("~/dev")
         projectile-globally-ignored-directories '("~/.stack/snapshots")
+        ;;projectile-project-search-path '("~/dev")
         ; ignore projects added from jumping to tags
         ;projectile-ignored-projects '("~/.stack/snapshots/*/*/*/*/*")
         projectile-ignored-project-function
-        (lambda
-          (path)
+        (lambda (path)
           ;(string-match "\\(:?\\`/\\(:?nix\\|tmp\\)\\|/\\.nix-profile\\)" path))
+          ;(string-match ".emacs.d/elpa/*" path)
           (string-match ".stack/snapshots" path))
         )
   :config
@@ -508,8 +531,10 @@
     "("       'insert-parentheses
     "9"       'insert-parentheses
     ;; currently overlapping to see which i prefer
-    "gpgr"    'epa-sign-region
-    "gpgf"    'epa-sign-file
+    "gpgsr"   'epa-sign-region
+    "gpgsf"   'epa-sign-file
+    "gpger"   'epa-encrypt-region
+    "gpgef"   'epa-encrypt-file
     "gpgvr"   'epa-verify-region
     "gpgvf"   'epa-verify-file
 
@@ -673,17 +698,10 @@
   (setq epg-pinentry-mode 'loopback))
 
 
-;; minimal modeline
-;;
-;; (set-face-attribute 'mode-line-emphasis :weight 1)
-;; (set-face-attribute 'mode-line-highlight :background (x-get-resource "color2" ""))
-;; (mode-line ((t (:background ,atom-one-dark-black :foreground ,atom-one-dark-silver))))
-;; (mode-line-buffer-id ((t (:weight bold))))
-;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
-;; (use-package faces
-;;   :config
-;;   (set-face-attribute 'mode-line nil :box '(:width 0.5))
-;;   (set-face-attribute 'mode-line-inactive nil :box nil))
+(use-package mood-line
+  :ensure t
+  :init
+  (mood-line-mode))
 
 
 ;; (use-package org-settings

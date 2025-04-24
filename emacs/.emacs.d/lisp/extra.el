@@ -22,20 +22,21 @@
 
   (setq gptel-default-mode 'markdown-mode
 	gptel-backend (gptel-get-backend "xAI")
+        gptel-response-separator "\n\n------------------------------------------------\n\n"
 	;gptel-model 'deepseek-r1-distill-llama-70b
 	gptel-model 'grok-3-latest)
 
   ;; auto scroll
-  ;; (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
 
   ;; move cursor to next prompt
-  ;; (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
 
   :preface
   ; remove the default model entries
   (with-eval-after-load 'gptel
-    (setf (gptel-get-backend "ChatGPT") nil))
-  )
+    (setf (gptel-get-backend "ChatGPT") nil)))
+
 
 (use-package dockerfile-mode
   :defer
