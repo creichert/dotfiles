@@ -13,6 +13,8 @@ alias ls='ls --color=auto'
 alias m='make -j'
 alias nil-uuid="echo 00000000-0000-0000-0000-000000000000"
 
+alias empty_trash="find ~/.local/share/Trash -type f -delete"
+
 # arch/pacman
 alias pacman_cache_clean="sudo pacman -Scc"
 alias pacman_remove_orphans="sudo pacman -Qdtq | sudo pacman -R -"
