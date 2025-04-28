@@ -3,6 +3,7 @@
 alias ..="cd ../.."
 alias ...="cd ../../.."
 alias ....="cd ../../../.."
+alias s="kitten ssh"
 alias e="emacs -nw"
 alias em="emacs -nw --color=never"
 alias grep='grep --color=auto'
