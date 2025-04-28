@@ -21,23 +21,13 @@
               ("C-c C-l" . haskell-process-reload)
               ("C-c i"   . haskell-navigate-imports-go)
               ("C-c I"   . haskell-navigate-imports-return)
-              ("C-c h j" . haskell-run-function-under-cursor)
-              ("C-c C-j" . haskell-run-last-function)
               )
   :custom
   (haskell-stylish-on-save t)
-  (my-haskell-current-function "main")
   ;; enable debugging
   (haskell-process-log t)
   (haskell-process-suggest-haskell-docs-imports t)
   (haskell-process-suggest-restart nil)
-
-  ;; breaks often & doesn't work w/ even the most basic customizations
-  ;;(haskell-interactive-mode-eval-mode t)
-  ;;(haskell-session-tags-filename "TAGS.haskell-session")
-
-  ;; this is set automatically when there is a `stack.yaml`
-  ;; haskell-process-type 'stack-ghci
 
   :config
   (setq haskell-indentation-electric-flag t)
@@ -89,54 +79,7 @@
   :init
   (add-to-list 'compilation-error-regexp-alist
         'haskell-compilation-error-regexp-alist)
-
-  :preface
-  ;; see `haskell-process-insert-type` for expanding on this solution
-  (defun haskell-run-function-under-cursor ()
-    (interactive)
-    (let ((ident (haskell-ident-at-point)))
-      (when ident
-        (setq my-haskell-current-function ident)
-        (let ((process (haskell-interactive-process))
-              (query ident))
-          (haskell-process-queue-command
-           process
-           (make-haskell-command
-            :state (list process query (current-buffer))
-            :go (lambda (state)
-                  (haskell-process-send-string (nth 0 state)
-                                               (nth 1 state)))
-            :complete (lambda (state response)
-                        (cond
-                         ;; TODO: Generalize this into a function.
-                         ((or (string-match "^Top level" response)
-                              (string-match "^<interactive>" response))
-                          (message "%s" response))
-                         (t (haskell-command-echo-or-present response))))))))))
-  (defun haskell-run-last-function ()
-    ;; TODO completing-read the comint haskell-process repl history
-    ;; and use that instead
-    (interactive)
-    (let ((ident my-haskell-current-function))
-      (when ident
-        (setq my-haskell-current-function ident)
-        (let ((process (haskell-interactive-process))
-              (query ident)
-              )
-          (haskell-process-queue-command
-           process
-           (make-haskell-command
-            :state (list process query (current-buffer))
-            :go (lambda (state)
-                  (haskell-process-send-string (nth 0 state)
-                                               (nth 1 state)))
-            :complete (lambda (state response)
-                        (cond
-                         ;; TODO: Generalize this into a function.
-                         ((or (string-match "^Top level" response)
-                              (string-match "^<interactive>" response))
-                          (message "%s" response))
-                         (t (haskell-command-echo-or-present response)))))))))))
+  )
 
 
 (use-package hindent
