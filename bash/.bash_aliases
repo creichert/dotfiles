@@ -18,9 +18,9 @@ alias empty_trash="find ~/.local/share/Trash -type f -delete"
 alias zzz="systemctl poweroff"
 
 # arch/pacman
-alias pacman_cache_clean="sudo pacman -Scc"
-alias pacman_remove_orphans="sudo pacman -Qdtq | sudo pacman -R -"
-alias pacman_update="sudo pacman -Syu"
+alias arch_cache_clean="sudo pacman -Scc"
+alias arch_rm_orphans="sudo pacman -Qdtq | sudo pacman -R -"
+alias arch_update="sudo pacman -Syu"
 
 # nvidia
 alias nvda="nvidia-smi"
