@@ -12,6 +12,7 @@
 
 
 (use-package web-mode
+  :defer
   :ensure t
   :mode "\\.js\\'"
   :hook
@@ -44,6 +45,7 @@
 
 (use-package flowmacs
   :load-path "site-lisp/flowmacs"
+  :defer
   :hook ((web-mode . flowmacs-mode))
   :bind (("C-c f f" . flowmacs/jump-to-def)
          ("C-c f t" . flowmacs/type-at-pos))
@@ -61,8 +63,9 @@
 
 
 (use-package webpack-dev-server
-  :commands (webpack-dev-server)
   :load-path "site-lisp/webpack-dev-server.el"
+  :defer
+  :commands (webpack-dev-server)
   :custom
   (webpack-dev-server-command  "make frontend-dev")
   :config

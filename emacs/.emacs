@@ -538,13 +538,14 @@
     "gpgvr"   'epa-verify-region
     "gpgvf"   'epa-verify-file
 
-    "isw"     'ispell-word
+    ;"isw"     'ispell-word
 
     "u"       'browse-url
     "U"       'browse-url-chromium
     ;;"G"       'google-this ;; TODO Fix
 
     "x"       'gptel-menu
+    "X"       'gptel
     ))
 
 
@@ -716,8 +717,8 @@
   :load-path "lisp/")
 
 
-;; (use-package web-settings
-;;   :load-path "lisp/")
+(use-package web-settings
+  :load-path "lisp/")
 
 (use-package git-settings
   :load-path "lisp/")
