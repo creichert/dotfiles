@@ -709,10 +709,6 @@
 ;;   :load-path "lisp/")
 
 
-;; (use-package bbdb-settings
-;;   :load-path "lisp/")
-
-
 (use-package haskell-settings
   :load-path "lisp/")
 
