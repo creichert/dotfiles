@@ -153,6 +153,12 @@
   (doom-themes-org-config))
 
 
+(use-package mood-line
+  :ensure t
+  :init
+  (mood-line-mode))
+
+
 (use-package ido
   :demand
   :ensure t
@@ -205,7 +211,7 @@
 
 
 (use-package xref
-  ;:defer
+  :defer
   :requires (ido)
   :preface
   (defun bury-xref-buffer ()
@@ -405,10 +411,6 @@
   ((prog-mode . (lambda ()
                   (progn
                     (defalias #'forward-evil-word #'forward-evil-symbol)))))
-  ;;:config
-  ;;((xref--show-xref-buffer-mode . evil-emacs-state))
-  ;;((prog-mode . (lambda ()
-  ;;                (defalias #'forward-evil-word #'forward-evil-symbol))
 
   ;; vim-like bindings in the minibuffer
   ;;
@@ -549,46 +551,6 @@
     ))
 
 
-;; (use-package w3m
-;;   :ensure t
-;;   :commands (w3m-browse-url w3m-find-file)
-;;   ;;:ensure-system-package ("w3m")
-;;   :preface
-;;   ;; (defun browse-url-chromium (url &optional _new-window)
-;;   (defun browse-url-prompt (browser-name)
-;;     (interactive (list (completing-read "Select browser: " '("chromium" "w3m" "firefox" "chrome"))))
-;;     (message (format "browser: %s" browser-name))
-;;     (pcase browser-name
-;;      ("chromium" 'browse-url-chromium)
-;;      ("w3m" 'w3m-browse-url)
-;;      ("chrome" 'browse-url-chrome)
-;;      ("firefox" 'browse-url-firefox)
-;;      (_ 'browse-url-chromium)))
-;;   :init (setq
-;;          browse-url-handlers
-;;          '(("github.com" . browse-url-chromium)
-;;            ("trello.com" . browse-url-chromium)
-;;            ("circleci.com" . browse-url-chromium)
-;;            ("pagerduty.com" . browse-url-chromium)
-;;            ("accounts.google.com" . browse-url-chromium)
-;;            ("accounts.spotify.com" . browse-url-chromium)
-;;            ("assertible.com" . browse-url-chromium)
-;;            ("simplyrets.com/admin" . browse-url-chromium)
-;;            ("slack.com" . browse-url-chromium)
-;;            ("rollbar.com" . browse-url-chromium)
-;;            ("app.drift.com" . browse-url-chromium)
-;;            ("gmail.com" . browse-url-chromium)
-;;            ("aws.amazon.com" . browse-url-chromium)
-;;            ("youtube.com" . browse-url-chromium)
-;;            ("facebook.com" . browse-url-chromium)
-;;            ("upwork.com" . browse-url-chromium)
-;;            (".*\\.gov" . browse-url-chromium)
-;;            ("docusign.com\\|docusign.net" . browse-url-chromium)
-;;            ("." . (lambda (url &optional args)
-;;                     (lexical-let ((browserf (call-interactively #'browse-url-prompt)))
-;;                       (funcall browserf url args)))))))
-
-
 
 (use-package flycheck
   :ensure t
@@ -699,12 +661,6 @@
   (setq epg-pinentry-mode 'loopback))
 
 
-(use-package mood-line
-  :ensure t
-  :init
-  (mood-line-mode))
-
-
 ;; (use-package org-settings
 ;;   :load-path "lisp/")
 
@@ -720,7 +676,6 @@
   :load-path "lisp/")
 
 
-;; extra emacs packages & utilities I use which aren't "core"
 (use-package extra
   :load-path "lisp"
   :if (file-exists-p "~/.emacs.d/lisp/extra.el"))
