@@ -55,7 +55,7 @@
 
 (use-package evil-collection
   :ensure t
-  :requires (magit evil)
+  :after (magit evil)
   :bind (:map evil-normal-state-map
               ("\\" . smex)
               :map evil-insert-state-map

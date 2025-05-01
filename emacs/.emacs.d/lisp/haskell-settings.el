@@ -2,7 +2,7 @@
 
 (use-package haskell-mode
   :ensure t
-  :requires (compile evil)
+  :after (compile evil)
   :mode (("\\.hs\\'"    . haskell-mode)
          ("\\.cabal\\'" . haskell-cabal-mode)
          ("\\.hcr\\'"   . haskell-core-mode)
@@ -58,33 +58,29 @@
     "TAB" 'haskell-hide-toggle
     "l"   'haskell-process-load-or-reload)
 
-  ;;(add-to-list 'electric-layout-rules
-  ;;             '((?\{ . around) (?\} . around)))
   (add-to-list 'electric-layout-rules
-               '((?\{) (?\} . around)))
-  (add-to-list 'electric-layout-rules
-               '((?\[) (?\] . around)))
+               '((?\{ . around) (?\} . around)))
+  ;(add-to-list 'electric-layout-rules
+  ;             '((?\{) (?\} . around)))
+
+  (add-to-list 'compilation-error-regexp-alist
+        'haskell-compilation-error-regexp-alist)
 
   :hook
   ((haskell-mode . haskell-doc-mode))
   ((haskell-mode . haskell-collapse-mode))
   ((haskell-mode . haskell-decl-scan-mode))
   ((haskell-mode . haskell-indentation-mode))
+  ((haskell-mode . electric-layout-mode))
   ((haskell-mode . electric-pair-local-mode))
   ((haskell-mode . electric-indent-local-mode))
-  ((haskell-mode . electric-layout-mode))
   ((haskell-mode . prettify-symbols-mode))
   ((haskell-interactive-mode . next-error-follow-minor-mode))
-
-  :init
-  (add-to-list 'compilation-error-regexp-alist
-        'haskell-compilation-error-regexp-alist)
   )
 
 
 (use-package hindent
   :ensure t
-  ;; :init (hindent-mode)
   :after (haskell-mode)
   :hook ((haskell-mode . hindent-mode)))
 
@@ -92,18 +88,42 @@
 (use-package flycheck-haskell
   :ensure t
   :after (flycheck haskell-mode)
-  :custom (flycheck-ghc-args '("-Wall"))
-  :hook ((haskell-mode . flycheck-haskell-setup)))
+  :hook ((haskell-mode . flycheck-haskell-setup))
+  :custom
+  ;(flycheck-ghc-args '("-Wall" "-O0" "-fno-code"))
+  (flycheck-ghc-args '("-O0"))
+  :init
+  (setq flycheck-ghc-search-path '("."))
+  ;; monorepo
+  ;;
+  ;; maybe check if:
+  ;; - current dir has stack.yaml
+  ;; - does current directory have a package.yaml
+  ;; - subdirs have package.yaml
+  ;;
+  ;; load extensions appropriately
+  (add-to-list 'flycheck-ghc-language-extensions "DerivingStrategies")
+  (add-to-list 'flycheck-ghc-language-extensions "RecordWildCards")
+  (add-to-list 'flycheck-ghc-language-extensions "DeriveGeneric")
+  (add-to-list 'flycheck-ghc-language-extensions "DeriveLift")
+  (add-to-list 'flycheck-ghc-language-extensions "LambdaCase")
+  (add-to-list 'flycheck-ghc-language-extensions "ViewPatterns")
+  (add-to-list 'flycheck-ghc-language-extensions "QuasiQuotes")
+  (add-to-list 'flycheck-ghc-language-extensions "TemplateHaskell")
+  (add-to-list 'flycheck-ghc-language-extensions "CPP")
+  (add-to-list 'flycheck-ghc-language-extensions "StandaloneDeriving")
+  (add-to-list 'flycheck-ghc-language-extensions "NoImplicitPrelude")
+  )
 
 
 ;; automatically apply hlint suggestions when applicable
-;; (use-package hlint-refactor
-;;   ;;:ensure-system-package ((refactor . "stack install ghc-exactprint"))
-;;   :after (haskell-mode)
-;;   :ensure t
-;;   :hook ((haskell-mode . hlint-refactor-mode))
-;;   :bind (("C-c h r" . hlint-refactor-refactor-at-point)
-;;          ("C-c h R" . hlint-refactor-refactor-buffer)))
+(use-package hlint-refactor
+  ;;:ensure-system-package ((refactor . "stack install apply-refact"))
+  :after (haskell-mode)
+  :ensure t
+  :hook ((haskell-mode . hlint-refactor-mode))
+  :bind (("C-c h r" . hlint-refactor-refactor-at-point)
+         ("C-c h R" . hlint-refactor-refactor-buffer)))
 
 
 ;; (use-package ghcid
