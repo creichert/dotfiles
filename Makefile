@@ -37,11 +37,11 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore="dotlocal/"
 
 .PHONY: simulate
-simulate: #submodules
+simulate: submodules
 	@stow $(STOW_FLAGS) --simulate $(PACKAGES)
 
 .PHONY: dotfiles
-dotfiles: #submodules
+dotfiles: submodules
 	@stow $(STOW_FLAGS) --target=$(PKG_DIR) $(PACKAGES)
 
 .PHONY: clean
@@ -56,7 +56,7 @@ clean:
 # It's possible check if they not initialized _or_ dirty using '^[-]|^[+]'
 .PHONY: submodules
 submodules:
-	@if git submodule status | egrep -q '^[-]'; then \
+	@if git submodule status | grep -E -q '^[-]'; then \
 		git submodule update --init;                 \
 	fi
 
@@ -65,12 +65,16 @@ submodules:
 dotemacs:
 	@emacs --batch --debug-init										\
 		--eval='(setq use-package-verbose t)'								\
+		--eval='(setq use-package-compute-statistics t)'						\
+		--eval='(package-initialize)'									\
 		--eval='(load "~/.emacs")'									\
 		--eval='(use-package-report)'									\
 		--eval='(message "%s" (with-current-buffer "*use-package statistics*" (buffer-string)))'
 
 elpa:
 	rm -rf $(HOME)/.emacs.d/elpa
+	@# not strictly necessary
+	@#emacs --batch --eval='(package-refresh-contents)'
 	$(MAKE) dotemacs
 
 # dockerfile:

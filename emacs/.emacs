@@ -3,30 +3,44 @@
 
 ;;; Code:
 
-;; bootstrap use-package
-
 (require 'package)
 
-(setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
-(package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; Prior to emacs 27 the below was necessary
+;;
+;; Installed packages are now activated before loading the init file. As a
+;; result of this change, it is no longer necessary to call 'package-initialize'
+;; in your init file.
+;;
+;;
+;; OLD WAY:
+;; (setq package-enable-at-startup nil)
+;; (package-initialize)
+;;
+;;  NEW WAY:
+;; (when (< emacs-major-version 27)
+;;   (setq package-enable-at-startup nil)
+;;   (package-initialize))
+;;
+
+;; This also seems to just work automatically now (keeping around just in case)
+;;
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
 
 (eval-when-compile
   (require 'use-package))
-(use-package bind-key :ensure t :demand)
-;; (setq use-package-expand-minimally t)
-(setq use-package-compute-statistics t)
 
-;; configure emacs
+;; minimize byte-compiled config
+;; (setq use-package-expand-minimally t)
+
+(use-package bind-key :ensure t :demand)
+
 (set-frame-font "Hack Nerd Font Mono" nil t)
 
-
-;; Ensure system executables are installed for certain packages.
 (setq custom-file "~/.emacs.d/custom.el")
 (setq frame-title-format "emacs - %b")
 (setq inhibit-startup-screen t)
