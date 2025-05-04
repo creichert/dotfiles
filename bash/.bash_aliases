@@ -7,10 +7,10 @@ alias s="kitten ssh"
 alias e="emacs -nw"
 alias em="emacs -nw --color=never"
 alias grep='grep --color=auto'
+alias ls='ls --hyperlink=auto --color=auto'
 alias l='ls -CF'
-alias la='ls -lah $LS_COLOR'
+alias la='ls -lah'
 alias ll='ls -l'
-alias ls='ls --color=auto'
 alias m='make -j'
 alias nil-uuid="echo 00000000-0000-0000-0000-000000000000"
 
