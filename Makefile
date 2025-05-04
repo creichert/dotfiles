@@ -14,6 +14,7 @@ ALL_PACKAGES := \
 	waybar \
 	wofi \
 	mako \
+	kitty \
 	hypr
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
