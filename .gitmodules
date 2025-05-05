@@ -1,12 +1,6 @@
-[submodule "x11/.local/share/base16-xresources"]
-	path = docs/assets/base16-xresources
-	url = https://github.com/creichert/base16-xresources
 [submodule "emacs/.emacs.d/ido-vertical-mode.el"]
 	path = emacs/.emacs.d/site-lisp/ido-vertical-mode.el
 	url = git@github.com:creichert/ido-vertical-mode.el
-[submodule "x11/.config/cvim"]
-	path = x11/.config/cvim
-	url = https://gist.github.com/creichert/31914a6dc517b22f4a21777c463ab4ff
 [submodule "emacs/.emacs.d/site-lisp/flowmacs"]
 	path = emacs/.emacs.d/site-lisp/flowmacs
 	url = https://github.com/CodyReichert/flowmacs

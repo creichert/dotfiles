@@ -1,0 +1,62 @@
+output=DP-1
+font=Hack Nerd Font Mono 10
+icons=1
+markup=1
+
+# Ligher theme
+background-color=#1e1e1eD9
+
+# Slightly darker than rgba(30, 30, 30, 0.85)
+background-color=#191919D9
+
+# Matches wofi’s blue-cyan (rgba(50, 204, 255, 0.9))
+text-color=#32ccffE6
+
+# Matches wofi’s border
+border-color=#32ccffE6
+border-size=2
+
+# Matches hyprland’s rounding
+border-radius=10
+padding=10
+margin=10
+width=400
+height=130
+
+# Transparency and blur (requires compositor support)
+layer=overlay
+#backdrop=blur
+
+# Group by application, show only one notification per app
+group-by=app-name
+#max-history=10
+
+# Positioning
+anchor=top-right
+#offset=10 10
+
+# Default timeout (ms)
+default-timeout=5000
+
+
+# format='<b>%a ⏵</b> %s\n%b'
+
+# [app-name=Chromium]
+# format=%s\n%b
+
+[urgency=high]
+background-color=#191919D9
+# Vibrant red to complement blue
+text-color=#ff5555E6
+border-color=#ff5555E6
+# Longer visibility for urgency
+default-timeout=0
+
+# # == Mode: Away ==
+# [mode=away]
+# default-timeout=0
+# ignore-timeout=1
+#
+# # == Mode: Do Not Disturb ==
+# [mode=do-not-disturb]
+# invisible=1

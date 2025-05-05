@@ -1,0 +1,8 @@
+term=kitty
+key_expand=Tab
+key_down=Ctrl-j
+key_up=Ctrl-k
+key_left=Ctrl-h
+key_right=Ctrl-l
+allow_images=true
+insensitive=true

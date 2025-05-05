@@ -1,9 +1,9 @@
 [include]
 	# includes personal/private info like github oauth tokens, email, and
 	# pgp key id.
-	path = ~/.gitconfig.local
+	path = ~/.config/git/gitconfig.local
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = ~/.config/git/gitignore_global
 	autocrlf = false
 [tag]
 	forceSignAnnotated = true
@@ -21,15 +21,15 @@
 	default = simple
 [magit]
 	hideCampaign = true
-[url "git://github.com/ghc/packages-"]
-	insteadOf = git://github.com/ghc/packages/
-[url "http://github.com/ghc/packages-"]
-	insteadOf = http://github.com/ghc/packages/
-[url "https://github.com/ghc/packages-"]
-	insteadOf = https://github.com/ghc/packages/
-[url "ssh://git@github.com/ghc/packages-"]
-	insteadOf = ssh://git@github.com/ghc/packages/
-[url "git@github.com:ghc/packages-"]
-	insteadOf = git@github.com:ghc/packages/
+#[url "git://github.com/ghc/packages-"]
+#	insteadOf = git://github.com/ghc/packages/
+#[url "http://github.com/ghc/packages-"]
+#	insteadOf = http://github.com/ghc/packages/
+#[url "https://github.com/ghc/packages-"]
+#	insteadOf = https://github.com/ghc/packages/
+#[url "ssh://git@github.com/ghc/packages-"]
+#	insteadOf = ssh://git@github.com/ghc/packages/
+#[url "git@github.com:ghc/packages-"]
+#	insteadOf = git@github.com:ghc/packages/
 [rerere]
 	enabled = true

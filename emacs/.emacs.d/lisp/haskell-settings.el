@@ -2,7 +2,7 @@
 
 (use-package haskell-mode
   :ensure t
-  :requires (compile evil)
+  :after (compile evil)
   :mode (("\\.hs\\'"    . haskell-mode)
          ("\\.cabal\\'" . haskell-cabal-mode)
          ("\\.hcr\\'"   . haskell-core-mode)
@@ -21,23 +21,13 @@
               ("C-c C-l" . haskell-process-reload)
               ("C-c i"   . haskell-navigate-imports-go)
               ("C-c I"   . haskell-navigate-imports-return)
-              ("C-c h j" . haskell-run-function-under-cursor)
-              ("C-c C-j" . haskell-run-last-function)
               )
   :custom
   (haskell-stylish-on-save t)
-  (my-haskell-current-function "main")
   ;; enable debugging
   (haskell-process-log t)
   (haskell-process-suggest-haskell-docs-imports t)
   (haskell-process-suggest-restart nil)
-
-  ;; breaks often & doesn't work w/ even the most basic customizations
-  ;;(haskell-interactive-mode-eval-mode t)
-  ;;(haskell-session-tags-filename "TAGS.haskell-session")
-
-  ;; this is set automatically when there is a `stack.yaml`
-  ;; haskell-process-type 'stack-ghci
 
   :config
   (setq haskell-indentation-electric-flag t)
@@ -68,80 +58,29 @@
     "TAB" 'haskell-hide-toggle
     "l"   'haskell-process-load-or-reload)
 
-  ;;(add-to-list 'electric-layout-rules
-  ;;             '((?\{ . around) (?\} . around)))
   (add-to-list 'electric-layout-rules
-               '((?\{) (?\} . around)))
-  (add-to-list 'electric-layout-rules
-               '((?\[) (?\] . around)))
+               '((?\{ . around) (?\} . around)))
+  ;(add-to-list 'electric-layout-rules
+  ;             '((?\{) (?\} . around)))
+
+  (add-to-list 'compilation-error-regexp-alist
+        'haskell-compilation-error-regexp-alist)
 
   :hook
   ((haskell-mode . haskell-doc-mode))
   ((haskell-mode . haskell-collapse-mode))
   ((haskell-mode . haskell-decl-scan-mode))
   ((haskell-mode . haskell-indentation-mode))
+  ((haskell-mode . electric-layout-mode))
   ((haskell-mode . electric-pair-local-mode))
   ((haskell-mode . electric-indent-local-mode))
-  ((haskell-mode . electric-layout-mode))
   ((haskell-mode . prettify-symbols-mode))
   ((haskell-interactive-mode . next-error-follow-minor-mode))
-
-  :init
-  (add-to-list 'compilation-error-regexp-alist
-        'haskell-compilation-error-regexp-alist)
-
-  :preface
-  ;; see `haskell-process-insert-type` for expanding on this solution
-  (defun haskell-run-function-under-cursor ()
-    (interactive)
-    (let ((ident (haskell-ident-at-point)))
-      (when ident
-        (setq my-haskell-current-function ident)
-        (let ((process (haskell-interactive-process))
-              (query ident))
-          (haskell-process-queue-command
-           process
-           (make-haskell-command
-            :state (list process query (current-buffer))
-            :go (lambda (state)
-                  (haskell-process-send-string (nth 0 state)
-                                               (nth 1 state)))
-            :complete (lambda (state response)
-                        (cond
-                         ;; TODO: Generalize this into a function.
-                         ((or (string-match "^Top level" response)
-                              (string-match "^<interactive>" response))
-                          (message "%s" response))
-                         (t (haskell-command-echo-or-present response))))))))))
-  (defun haskell-run-last-function ()
-    ;; TODO completing-read the comint haskell-process repl history
-    ;; and use that instead
-    (interactive)
-    (let ((ident my-haskell-current-function))
-      (when ident
-        (setq my-haskell-current-function ident)
-        (let ((process (haskell-interactive-process))
-              (query ident)
-              )
-          (haskell-process-queue-command
-           process
-           (make-haskell-command
-            :state (list process query (current-buffer))
-            :go (lambda (state)
-                  (haskell-process-send-string (nth 0 state)
-                                               (nth 1 state)))
-            :complete (lambda (state response)
-                        (cond
-                         ;; TODO: Generalize this into a function.
-                         ((or (string-match "^Top level" response)
-                              (string-match "^<interactive>" response))
-                          (message "%s" response))
-                         (t (haskell-command-echo-or-present response)))))))))))
+  )
 
 
 (use-package hindent
   :ensure t
-  ;; :init (hindent-mode)
   :after (haskell-mode)
   :hook ((haskell-mode . hindent-mode)))
 
@@ -149,13 +88,37 @@
 (use-package flycheck-haskell
   :ensure t
   :after (flycheck haskell-mode)
-  :custom (flycheck-ghc-args '("-Wall"))
-  :hook ((haskell-mode . flycheck-haskell-setup)))
+  :hook ((haskell-mode . flycheck-haskell-setup))
+  :custom
+  ;(flycheck-ghc-args '("-Wall" "-O0" "-fno-code"))
+  (flycheck-ghc-args '("-O0"))
+  :init
+  (setq flycheck-ghc-search-path '("."))
+  ;; monorepo
+  ;;
+  ;; maybe check if:
+  ;; - current dir has stack.yaml
+  ;; - does current directory have a package.yaml
+  ;; - subdirs have package.yaml
+  ;;
+  ;; load extensions appropriately
+  (add-to-list 'flycheck-ghc-language-extensions "DerivingStrategies")
+  (add-to-list 'flycheck-ghc-language-extensions "RecordWildCards")
+  (add-to-list 'flycheck-ghc-language-extensions "DeriveGeneric")
+  (add-to-list 'flycheck-ghc-language-extensions "DeriveLift")
+  (add-to-list 'flycheck-ghc-language-extensions "LambdaCase")
+  (add-to-list 'flycheck-ghc-language-extensions "ViewPatterns")
+  (add-to-list 'flycheck-ghc-language-extensions "QuasiQuotes")
+  (add-to-list 'flycheck-ghc-language-extensions "TemplateHaskell")
+  (add-to-list 'flycheck-ghc-language-extensions "CPP")
+  (add-to-list 'flycheck-ghc-language-extensions "StandaloneDeriving")
+  (add-to-list 'flycheck-ghc-language-extensions "NoImplicitPrelude")
+  )
 
 
 ;; automatically apply hlint suggestions when applicable
 (use-package hlint-refactor
-  ;;:ensure-system-package ((refactor . "stack install ghc-exactprint"))
+  ;;:ensure-system-package ((refactor . "stack install apply-refact"))
   :after (haskell-mode)
   :ensure t
   :hook ((haskell-mode . hlint-refactor-mode))
@@ -163,32 +126,32 @@
          ("C-c h R" . hlint-refactor-refactor-buffer)))
 
 
-(use-package ghcid
-  ;;:ensure-system-package ((ghcid . "stack install ghcid"))
-  :defer
-  :load-path "site-lisp/"
-  :bind (:map projectile-mode-map
-              ("C-c m s" . ghcid)
-              ("C-c m b" . show-ghcid-buf)
-              ("C-c m t" . set-ghcid-target))
-  :custom
-  (ghcid-target "")
-  ;;:config (setq-local default-directory projectile-project-root)
-  :preface
-  (use-package haskell-mode :ensure t)
-  (defun show-ghcid-buf ()
-    (interactive)
-    (show-buffer ghcid-buf-name))
-  (defun set-ghcid-target (ghcid-targ &optional ghcid-test-targ)
-    (interactive
-     (list
-      (completing-read "ghcid target: " (map 'list (lambda (targ) (format "%s:%s" (projectile-project-name) targ)) (haskell-cabal-enum-targets)))
-      (completing-read "ghcid --test target: " '("--test=main" "--test=Main.main" nil))))
-    (setq ghcid-target ghcid-targ)
-    (when ghcid-test-targ
-      (setq ghcid-target-test (format "%s" ghcid-test-targ)))
-    (kill-ghcid)
-    (ghcid)))
+;; (use-package ghcid
+;;   ;;:ensure-system-package ((ghcid . "stack install ghcid"))
+;;   :defer
+;;   :load-path "site-lisp/"
+;;   :bind (:map projectile-mode-map
+;;               ("C-c m s" . ghcid)
+;;               ("C-c m b" . show-ghcid-buf)
+;;               ("C-c m t" . set-ghcid-target))
+;;   :custom
+;;   (ghcid-target "")
+;;   ;;:config (setq-local default-directory projectile-project-root)
+;;   :preface
+;;   (use-package haskell-mode :ensure t)
+;;   (defun show-ghcid-buf ()
+;;     (interactive)
+;;     (show-buffer ghcid-buf-name))
+;;   (defun set-ghcid-target (ghcid-targ &optional ghcid-test-targ)
+;;     (interactive
+;;      (list
+;;       (completing-read "ghcid target: " (map 'list (lambda (targ) (format "%s:%s" (projectile-project-name) targ)) (haskell-cabal-enum-targets)))
+;;       (completing-read "ghcid --test target: " '("--test=main" "--test=Main.main" nil))))
+;;     (setq ghcid-target ghcid-targ)
+;;     (when ghcid-test-targ
+;;       (setq ghcid-target-test (format "%s" ghcid-test-targ)))
+;;     (kill-ghcid)
+;;     (ghcid)))
 
 
 (provide 'haskell-settings)

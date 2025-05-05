@@ -3,31 +3,44 @@
 
 ;;; Code:
 
-;; bootstrap use-package
-
 (require 'package)
 
-(setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
-(package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; Prior to emacs 27 the below was necessary
+;;
+;; Installed packages are now activated before loading the init file. As a
+;; result of this change, it is no longer necessary to call 'package-initialize'
+;; in your init file.
+;;
+;;
+;; OLD WAY:
+;; (setq package-enable-at-startup nil)
+;; (package-initialize)
+;;
+;;  NEW WAY:
+;; (when (< emacs-major-version 27)
+;;   (setq package-enable-at-startup nil)
+;;   (package-initialize))
+;;
+
+;; This also seems to just work automatically now (keeping around just in case)
+;;
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
 
 (eval-when-compile
   (require 'use-package))
-(use-package bind-key                          :ensure t :demand)
-(use-package use-package-ensure-system-package :ensure t :demand)
+
+;; minimize byte-compiled config
 ;; (setq use-package-expand-minimally t)
-(setq use-package-compute-statistics t)
 
-;;; configure emacs
+(use-package bind-key :ensure t :demand)
 
+(set-frame-font "Hack Nerd Font Mono" nil t)
 
-;; Ensure system executables are installed for certain packages.
-(setq source-directory "~/dev/c/emacs")
 (setq custom-file "~/.emacs.d/custom.el")
 (setq frame-title-format "emacs - %b")
 (setq inhibit-startup-screen t)
@@ -73,6 +86,7 @@
 
 
 (use-package help
+  :defer
   :custom
   (help-window-select t))
 
@@ -110,15 +124,18 @@
 
 (use-package savehist
   :custom
-  (history-length 10000)
+  (history-length 1000)
   (history-delete-duplicates t)
   (savehist-save-minibuffer-history t)
+  (savehist-autosave-interval 30)
   :init
   (setq savehist-additional-variables
         '( ;;kill-ring  adds photos & other very large files
           compile-command
+          projectile-project-command-history
           search-ring
           regexp-search-ring))
+  (setq savehist-file "~/.emacs.d/history")
   :config
   (savehist-mode 1))
 
@@ -129,75 +146,36 @@
   (vc-follow-symlinks t))
 
 
-(use-package xref
-  :preface
-  (defun bury-xref-buffer ()
-    (delete-windows-on "*xref*"))
+(use-package doom-themes
+  :ensure t
   :config
-  (add-to-list 'xref-after-return-hook 'bury-xref-buffer)
-  ;;:init
-  ;;(setq xref-show-xrefs-function
-  ;;      (lambda (xrefs alist)
-  ;;        (let ((buffer (xref--show-xref-buffer xrefs alist)))
-  ;;          (quit-window)
-  ;;          (let ((orig-buf (current-buffer))
-  ;;                (orig-pos (point))
-  ;;                (done)
-  ;;                (candidate
-  ;;                 ;;(ido-completing-read+
-  ;;                 (completing-read
-  ;;                  "xref: "
-  ;;                  (let ((collection nil))
-  ;;                    (dolist (xref xrefs)
-  ;;                      (with-slots (summary location) xref
-  ;;                        (let* ((line (xref-location-line location))
-  ;;                               (file (xref-location-group location))
-  ;;                               (candidate
-  ;;                                (concat
-  ;;                                 (propertize
-  ;;                                  (concat
-  ;;                                   file
-  ;;                                   ;;(if ivy-xref-use-file-path
-  ;;                                   ;;    file
-  ;;                                   ;;  (file-name-nondirectory file))
-  ;;                                   (if (integerp line)
-  ;;                                       (format ":%d: " line)
-  ;;                                     ": "))
-  ;;                                  'face 'compilation-info)
-  ;;                                 (progn
-  ;;                                   ;;(when ivy-xref-remove-text-properties
-  ;;                                   (set-text-properties 0 (length summary) nil summary)
-  ;;                                   ;;)
-  ;;                                   summary
-  ;;                                   ))))
-  ;;                          ;;xref-etags-location
-  ;;                          (push `(,candidate . ,location) collection))))
-  ;;                          ;;(push (cons candidate xref) collection))))
-  ;;                    (nreverse collection))))
-  ;;                 )
-  ;;             ;;(setq done (eq 'ivy-done this-command))
-  ;;             (condition-case err
-  ;;                 ;; (let* ((marker (xref-location-marker ((car candidate) (cdr candidate))))
-  ;;                 ;; (let* ((marker (xref-location-marker (cdr candidate)))
-  ;;                 (with-slots (summary location) candidate
-  ;;                 (let* ((marker (xref-location-marker location))
-  ;;                        (buf (marker-buffer marker)))
-  ;;                   (with-current-buffer buffer
-  ;;                     (select-window
-  ;;                      ;; function signature changed in
-  ;;                      ;; 2a973edeacefcabb9fd8024188b7e167f0f9a9b6
-  ;;                      (if (version< emacs-version "26.0.90")
-  ;;                          (xref--show-pos-in-buf marker buf t)
-  ;;                        (xref--show-pos-in-buf marker buf)))))
-  ;;                 )
-  ;;               (user-error (message (error-message-string err)))))
-  ;;          buffer)
-  ;;      ))
-)
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+  ;;(load-theme 'doom-city-lights t)
+  ;;(load-theme 'doom-tokyo-night t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (nerd-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+
+(use-package mood-line
+  :ensure t
+  :init
+  (mood-line-mode))
 
 
 (use-package ido
   :demand
+  :ensure t
   :bind
   (("C-x f" . ido-find-file)
    ("C-c C-x C-o" . ido-switch-buffer-other-window))
@@ -214,7 +192,7 @@
 
 
 (use-package ido-vertical-mode
-  :load-path "site-lisp/ido-vertical-mode.el/"
+  :load-path "~/.emacs.d/site-lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :custom
@@ -246,10 +224,42 @@
   (setq completing-read-function 'ido-completing-read+))
 
 
+(use-package xref
+  :defer
+  :requires (ido)
+  :preface
+  (defun bury-xref-buffer ()
+    (delete-windows-on "*xref*"))
+  :config
+  (defun xref-show-definitions-ido (fetcher alist)
+    "Use ido for xref, skip prompt for single match, replace current buffer."
+    (let* ((xrefs (funcall fetcher))
+           (summaries (mapcar (lambda (x) (slot-value x 'summary)) xrefs)))
+      (if (= (length xrefs) 1)
+          (xref--show-def-in-current-window (car xrefs))
+        (let ((selected (ido-completing-read "Definitions: " summaries nil t)))
+          (when selected
+            (let ((xref (nth (cl-position selected summaries :test #'equal) xrefs)))
+              (xref--show-def-in-current-window xref)))))))
+
+  (defun xref--show-def-in-current-window (xref)
+    "Show XREF in current window, center point."
+    (let* ((location (slot-value xref 'location))
+           (buffer (or (and (fboundp 'xref-location-marker)
+                            (marker-buffer (xref-location-marker location)))
+                       (find-file-noselect (xref-location-file location)))))
+      (pop-to-buffer buffer '((display-buffer-same-window)))
+      (xref--goto-location location)
+      (recenter nil t)))
+
+  (setq xref-show-definitions-function #'xref-show-definitions-ido)
+  (add-to-list 'xref-after-return-hook 'bury-xref-buffer))
+
+
 (use-package projectile
   :ensure t
   :requires (ido)
-  ;;:hook (( projectile-after-switch-project . magit-status ))
+  ;:hook (( projectile-after-switch-project . magit-status ))
   :bind
   (("C-x C-d" . projectile-switch-project)
    (:map projectile-mode-map
@@ -260,11 +270,17 @@
   :init
   (setq projectile-enable-caching t
         projectile-indexing-method 'alien
-        ;;projectile-sort-order 'modification-time
-        projectile-use-git-grep 't
-        ;;projectile-project-search-path '("~/dev")
-        projectile-globally-ignored-directories '("~/.stack/snapshots")
         projectile-tags-command "make tags"
+        projectile-use-git-grep 't
+        projectile-globally-ignored-directories '("~/.stack/snapshots")
+        ;;projectile-project-search-path '("~/dev")
+        ; ignore projects added from jumping to tags
+        ;projectile-ignored-projects '("~/.stack/snapshots/*/*/*/*/*")
+        projectile-ignored-project-function
+        (lambda (path)
+          ;(string-match "\\(:?\\`/\\(:?nix\\|tmp\\)\\|/\\.nix-profile\\)" path))
+          ;(string-match ".emacs.d/elpa/*" path)
+          (string-match ".stack/snapshots" path))
         )
   :config
   (projectile-mode)
@@ -294,42 +310,19 @@
   (tags-add-tables t))
 
 
-;; Xresource based styles
-;;
-;; Uses colors supplied through xresources (xrdb -query) to make emacs
-;; consistent with other desktop applications. In theory, all apps should use
-;; this but "larger" apps like Chrome & Gnome apps will often just ignore it.
-;; This is only needed once, near the top of the file
-(use-package xresources-theme
-  :ensure t
-  :if window-system ;; display-graphic-p
-  :load-path "themes"
-  :config
-  ;; NOT WORKING
-  (setq ansi-color-names-vector (vector
-                                 (xresources-theme-color "background")
-                                 (xresources-theme-color "color1")
-                                 (xresources-theme-color "color2")
-                                 (xresources-theme-color "color3")
-                                 (xresources-theme-color "color4")
-                                 (xresources-theme-color "color5")
-                                 (xresources-theme-color "color6")
-                                 (xresources-theme-color "foreground")
-                                 ))
-  (load-theme 'xresources t))
-
-
-(use-package ansi-color
-  :hook
-  (( compilation-filter . (lambda ()
-                            (let ((inhibit-read-only t))
-                              (ansi-color-apply-on-region (point-min) (point-max)))) )))
-
-
 (use-package compile
+  :defer
   :ensure t
   ;;:hook ((compilation-mode . (lambda () (setq scroll-margin 0))
   :init
+
+  (use-package ansi-color
+    :defer
+    :hook
+    (( compilation-filter . (lambda ()
+                              (let ((inhibit-read-only t))
+                                (ansi-color-apply-on-region (point-min) (point-max)))) )))
+
   (setq compilation-read-command nil
         compilation-scroll-output t
         ;; make compilation-mode a lot faster but excluding cpu intensive regexp's which
@@ -347,13 +340,30 @@
            ;; perl--Pod::Checker perl--Test perl--Test2 perl--Test::Harness
           ))
 
+  ;; TODO how to make this less complicated?
+  ;; NOTE currently required, do not touch without a clean git history
+  (eval-after-load 'compile
+    (lambda ()
+      ;; This lets next-error find errors generated under stack's
+      ;; --interleaved-output. The error from ghc is prefixed with
+      ;; "package-name> ". After that, the rest of the pattern comes from the
+      ;; "gnu" item in `compilation-error-regexp-alist-alist'. I stripped off
+      ;; the start of that pattern, which I think was matching program names, e.g.
+      ;;     gcc: filename:101:3
+      ;; It's still more complicated than necessary, but I didn't want to mess
+      ;; with it too much.
+      (let ((pat "\\(?:[[:alnum:]-] *> \\)\\(?1:\\(?:[0-9]*[^0-9\n]\\)\\(?:[^\n :]\\| [^-/\n]\\|:[^ \n]\\)*?\\)\\(?:: ?\\)\\(?2:[0-9]+\\)\\(?:-\\(?4:[0-9]+\\)\\(?:\\.\\(?5:[0-9]+\\)\\)?\\|[.:]\\(?3:[0-9]+\\)\\(?:-\\(?:\\(?4:[0-9]+\\)\\.\\)?\\(?5:[0-9]+\\)\\)?\\)?:\\(?: *\\(?6:\\(?:FutureWarning\\|RuntimeWarning\\|W\\(?::\\|arning\\)\\|warning\\)\\)\\| *\\(?7:[Ii]nfo\\(?:\\>\\|rmationa?l?\\)\\|I:\\|\\[ skipping \\.+ ]\\|instantiated from\\|required from\\|[Nn]ote\\)\\| *\\(?:[Ee]rror\\)\\|[0-9]?\\(?:[^0-9\n]\\|$\\)\\|[0-9][0-9][0-9]\\)"))
+        (add-to-list 'compilation-error-regexp-alist-alist
+                     `(stack-interleaved ,pat 1 (2 . 4) (3 . 5) (6 . 7)))
+        (add-to-list 'compilation-error-regexp-alist 'stack-interleaved))))
+
   :config
 
   (setq scroll-margin 0
         scroll-step 1
         scroll-conservatively 10000)
 
-  (defvar compilation-buffer-visible nil)
+  (defvar compilation-buffer-visible t)
 
   (defun toggle-compilation-visible ()
     (interactive)
@@ -384,7 +394,9 @@
   (defun whitespace-local-mode ()
     (add-hook (make-local-variable 'before-save-hook)
               'delete-trailing-whitespace))
-  :hook ((prog-mode . whitespace-local-mode)))
+  :hook ((prog-mode . whitespace-local-mode)
+         (conf-mode . whitespace-local-mode)
+         ))
 
 
 (use-package register
@@ -407,7 +419,9 @@
   :hook
   ((with-editor-mode . evil-insert-state))
   ((with-presentation-mode . evil-motion-state))
+  ;;((special-mode . evil-emacs-state))
   ((archive-mode . evil-motion-state))
+  ((sql-interactive-mode . evil-motion-state))
   ((prog-mode . (lambda ()
                   (progn
                     (defalias #'forward-evil-word #'forward-evil-symbol)))))
@@ -427,10 +441,10 @@
   ;;
   :bind (:map evil-motion-state-map
               ("f" . xref-find-definitions)
-              ("s" . xref-pop-marker-stack)
+              ("s" . xref-go-back)
               :map evil-normal-state-map
               ("f" . xref-find-definitions)
-              ("s" . xref-pop-marker-stack)
+              ("s" . xref-go-back)
               (";" . evil-ex)
               ("\\" . smex)
               :map evil-insert-state-map
@@ -459,6 +473,7 @@
   (evil-undo-system 'undo-redo)
   :init
   (setq evil-default-state 'normal)
+  ;;(setq-default evil-kill-on-visual-paste nil)
   ;; :config not working w/ most of config. evil is simply loaded immediately
   ;; instead of lazily
   (use-package evil-leader
@@ -509,7 +524,7 @@
   (evil-leader/set-key
     "1"       'delete-other-windows
     "o"       'other-window
-    "xc"      'save-buffers-kill-terminal
+    "O"       'previous-window-any-frame
 
     "a"       'fill-paragraph
     "F"       'find-def
@@ -531,59 +546,23 @@
     ")"       'evil-next-close-paren
     "("       'insert-parentheses
     "9"       'insert-parentheses
-
     ;; currently overlapping to see which i prefer
-    "gpgr"    'epa-sign-region
-    "gpgf"    'epa-sign-file
+    "gpgsr"   'epa-sign-region
+    "gpgsf"   'epa-sign-file
+    "gpger"   'epa-encrypt-region
+    "gpgef"   'epa-encrypt-file
     "gpgvr"   'epa-verify-region
     "gpgvf"   'epa-verify-file
 
-    "isw"     'ispell-word
+    ;"isw"     'ispell-word
 
     "u"       'browse-url
     "U"       'browse-url-chromium
-    "G"       'google-this
+    ;;"G"       'google-this ;; TODO Fix
+
+    "x"       'gptel-menu
+    "X"       'gptel
     ))
-
-
-(use-package w3m
-  :ensure t
-  :commands (w3m-browse-url w3m-find-file)
-  ;;:ensure-system-package ("w3m")
-  :preface
-  ;; (defun browse-url-chromium (url &optional _new-window)
-  (defun browse-url-prompt (browser-name)
-    (interactive (list (completing-read "Select browser: " '("chromium" "w3m" "firefox" "chrome"))))
-    (message (format "browser: %s" browser-name))
-    (pcase browser-name
-     ("chromium" 'browse-url-chromium)
-     ("w3m" 'w3m-browse-url)
-     ("chrome" 'browse-url-chrome)
-     ("firefox" 'browse-url-firefox)
-     (_ 'browse-url-chromium)))
-  :init (setq
-         browse-url-browser-function
-         '(("github.com" . browse-url-chromium)
-           ("trello.com" . browse-url-chromium)
-           ("circleci.com" . browse-url-chromium)
-           ("pagerduty.com" . browse-url-chromium)
-           ("accounts.google.com" . browse-url-chromium)
-           ("accounts.spotify.com" . browse-url-chromium)
-           ("assertible.com" . browse-url-chromium)
-           ("simplyrets.com/admin" . browse-url-chromium)
-           ("slack.com" . browse-url-chromium)
-           ("rollbar.com" . browse-url-chromium)
-           ("app.drift.com" . browse-url-chromium)
-           ("gmail.com" . browse-url-chromium)
-           ("aws.amazon.com" . browse-url-chromium)
-           ("youtube.com" . browse-url-chromium)
-           ("facebook.com" . browse-url-chromium)
-           ("upwork.com" . browse-url-chromium)
-           (".*\\.gov" . browse-url-chromium)
-           ("docusign.com\\|docusign.net" . browse-url-chromium)
-           ("." . (lambda (url &optional args)
-                    (lexical-let ((browserf (call-interactively #'browse-url-prompt)))
-                      (funcall browserf url args)))))))
 
 
 
@@ -592,33 +571,48 @@
   :hook ((after-init . global-flycheck-mode))
   ;;:ensure-system-package ((proselint . "pip install proselint"))
   :config
+  ;(setenv "USEIDE" "true")
   (setq flycheck-standard-error-navigation nil)
-  (flycheck-define-checker proselint
-    "A linter for prose."
-    :command ("proselint" source-inplace)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any " "))))
-              (message) line-end))
-    ;; doesn't work well with org-mode
-    :modes (message-mode text-mode markdown-mode gfm-mode)
-  :custom
-  (flycheck-emacs-lisp-load-path 'inherit)))
+  (setq flycheck-checker-error-threshold 10000)
+  ;;(flycheck-define-checker proselint
+  ;;  "A linter for prose."
+  ;;  :command ("proselint" source-inplace)
+  ;;  :error-patterns
+  ;;  ((warning line-start (file-name) ":" line ":" column ": "
+  ;;            (id (one-or-more (not (any " "))))
+  ;;            (message) line-end))
+  ;;  ;; doesn't work well with org-mode
+  ;;  :modes (message-mode text-mode markdown-mode gfm-mode)
+  ;;  :custom
+  ;;  (flycheck-emacs-lisp-load-path 'inherit)
+  ;;  )
+  )
 
 
-(use-package flyspell
-  :requires (flycheck)
-  :hook ((markdown-mode . turn-on-flyspell))
-        ((prog-mode     . flyspell-prog-mode)))
-
+; (use-package flyspell
+;   :requires (flycheck)
+;   :hook ((markdown-mode . turn-on-flyspell))
+;         ((prog-mode     . flyspell-prog-mode)))
 
 
 (use-package sql
   :defer
-  ;;:ensure-system-package ("postgresql-client-common")
-  :init
+  :preface
+  (defun c/setup-pgsql-buffer ()
+    ;; (bug) make comint use entire buffer
+    (setq truncate-lines t))
+
   :config
-  (add-to-list 'sql-postgres-options "--no-psqlrc"))
+  (add-to-list 'sql-postgres-options "--no-psqlrc")
+  (add-to-list 'sql-postgres-options "--expanded")
+  (add-to-list 'sql-postgres-options "--echo-queries")
+  (add-to-list 'sql-postgres-options "--pset=null=[NULL]")
+  ; can't get working w/ dbname
+  ;(add-to-list 'sql-postgres-options "--variable=HISTFILE=~/.cache/psql_history-:DBNAME")
+  (add-to-list 'sql-postgres-options "--variable=HISTFILE=/dev/null")
+  :hook
+  ((sql-interactive-mode-hook . c/setup-pgsql-buffer))
+  )
 
 
 (use-package sql-pgpass
@@ -638,7 +632,7 @@
 
 
 (use-package conf-mode
-  :mode "\\.inputrc\\'")
+  :mode ("\\.*rc\\'" "\\.*conf\\'"))
 
 
 (use-package markdown-mode
@@ -656,59 +650,33 @@
   :ensure t :defer)
 
 
-(use-package flycheck-yamllint
-  :ensure-system-package (yamllint)
-  :ensure t :defer)
+;(use-package flycheck-yamllint
+;  :ensure-system-package (yamllint)
+;  :ensure t :defer)
 
 
-(use-package google-this
-  :ensure-system-package (chromium)
-  :ensure t :defer)
-
-
-;; Gnus: required .emacs settings
-(use-package gnus
-  :commands gnus
-  :custom
-  (gnus-home-directory "~/")
-  (gnus-directory "~/.emacs.d/gnus/news/")
-  (message-directory "~/.emacs.d/gnus/mail/")
-  (nnfolder-directory "~/.emacs.d/gnus/mail/"))
-
-
-(use-package mm-decode
+(use-package auth-source-pass
+  :ensure t
   :defer
-  :custom
-  (mm-coding-system-priorities '(utf-8 iso-latin-1 iso-latin-9 mule-utf-8))
-  (mm-verify-option 'always)
-  (mm-decrypt-option 'always))
+  :config
+  (auth-source-pass-enable))
 
 
-(use-package epa
+;(use-package pinentry)
+;(require 'pinentry)
+;(pinentry-start)
+;(setenv "INSIDE_EMACS" "YES")
+(use-package epg
   :defer
   :ensure-system-package (gpg2 . gnupg2)
   :custom
-  (epa-pinentry-mode 'loopback))
-
-;; minimal modeline
-;;
-;; (set-face-attribute 'mode-line-emphasis :weight 1)
-;; (set-face-attribute 'mode-line-highlight :background (x-get-resource "color2" ""))
-;; (mode-line ((t (:background ,atom-one-dark-black :foreground ,atom-one-dark-silver))))
-;; (mode-line-buffer-id ((t (:weight bold))))
-;; (mode-line-inactive ((t (:background ,atom-one-dark-gray))))
-(use-package faces
+  (epg-debug t)
   :config
-  (set-face-attribute 'mode-line nil :box '(:width 0.5))
-  (set-face-attribute 'mode-line-inactive nil :box nil))
+  (setq epg-pinentry-mode 'loopback))
 
 
-(use-package org-settings
-  :load-path "lisp/")
-
-
-(use-package bbdb-settings
-  :load-path "lisp/")
+;; (use-package org-settings
+;;   :load-path "lisp/")
 
 
 (use-package haskell-settings
@@ -722,7 +690,6 @@
   :load-path "lisp/")
 
 
-;; extra emacs packages & utilities I use which aren't "core"
 (use-package extra
   :load-path "lisp"
   :if (file-exists-p "~/.emacs.d/lisp/extra.el"))

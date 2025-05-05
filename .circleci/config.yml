@@ -3,41 +3,36 @@ jobs:
   build:
     working_directory: ~/dotfiles/dotfiles
     docker:
-      - image: creichert/debian
+      - image: archlinux:latest
+    environment:
+      WAYLAND_DISPLAY: wl-test-env
     steps:
+
+      - run: pacman -Syu --noconfirm
+      - run: pacman -S --noconfirm openssh git stow emacs-wayland make sudo
+
       - checkout
 
-      - run: apt update
-
-      # While this is not recommended in general, but for my system integration
-      # I always want packages to work w/ the latest debian/sid packages.
-      - run: apt upgrade -y
-
-      - run: apt install stow emacs -y --no-install-recommends
-
-      # remove pre-existing dotfiles (stow will not)
-      - run: rm ~/.profile ~/.bashrc ~/.gitconfig
+      # headless wayland for testing configs
+      # - run: pacman -S --noconfirm weston
+      # - run: weston --no-config --socket=wl-test-env --backend=headless
 
       - restore_cache:
           keys:
-            - v2-dotcache-{{ .Branch }}
-            - v2-dotcache
+            - v3-dotcache-{{ .Branch }}
+            - v3-dotcache
 
+      # remove pre-existing dotfiles (stow will not)
+      - run: rm -f ~/.profile ~/.bashrc ~/.gitconfig && mkdir ~/.emacs.d
       - run: make dotfiles
-      - run: xvfb-run make dotemacs
-
-      - run: xvfb-run make theme
-      - run: xvfb-run make fonts
-
-      - run: xvfb-run make xmonad
+      - run: make elpa
+      #- run: hyprctl configerrors
 
       - save_cache:
-          key: v2-dotcache-{{ .Branch }}
+          key: v3-dotcache-{{ .Branch }}
           paths:
             - ~/.stack/
             - ~/.emacs.d/elpa
-
-      - run: make xflux
 
       # NOTE can't run systemd inside circle ci containers (yet) as cgroup
       # passthrough is needed.
