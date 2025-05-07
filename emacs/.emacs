@@ -175,7 +175,6 @@
 
 (use-package ido
   :demand
-  :ensure t
   :bind
   (("C-x f" . ido-find-file)
    ("C-c C-x C-o" . ido-switch-buffer-other-window))
@@ -675,8 +674,8 @@
   (setq epg-pinentry-mode 'loopback))
 
 
-;; (use-package org-settings
-;;   :load-path "lisp/")
+(use-package org-settings
+  :load-path "lisp/")
 
 
 (use-package haskell-settings

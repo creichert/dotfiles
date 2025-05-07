@@ -13,7 +13,8 @@ jobs:
 
       - checkout
 
-      # headless wayland for testing configs
+      # headless wayland for testing configs (like xvfb-run for x11)
+      #
       # - run: pacman -S --noconfirm weston
       # - run: weston --no-config --socket=wl-test-env --backend=headless
 
@@ -23,7 +24,7 @@ jobs:
             - v3-dotcache
 
       # remove pre-existing dotfiles (stow will not)
-      - run: rm -f ~/.profile ~/.bashrc ~/.gitconfig && mkdir ~/.emacs.d
+      - run: rm -f ~/.profile ~/.bashrc ~/.gitconfig && mkdir -p ~/.emacs.d
       - run: make dotfiles
       - run: make elpa
       #- run: hyprctl configerrors
@@ -33,12 +34,3 @@ jobs:
           paths:
             - ~/.stack/
             - ~/.emacs.d/elpa
-
-      # NOTE can't run systemd inside circle ci containers (yet) as cgroup
-      # passthrough is needed.
-      #
-      #- run: xvfb-run systemd-analyze --user verify xflux.service
-      #- run: xvfb-run systemd-analyze --user verify unclutter.service
-      #- run: xvfb-run systemd-analyze --user verify xscreensaver.service
-      #
-      #- run: cd $HOME && xvfb-run startx
