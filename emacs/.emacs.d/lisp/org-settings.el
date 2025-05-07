@@ -132,9 +132,11 @@
                '("d"
                  "Today + Inbox"
                  ((agenda "" ((org-agenda-span 'day)))
-                  (tags-todo "CATEGORY=\"inbox\"&LEVEL=2"
-                             ))
-                 ))
+                  ; in the inbox
+                  (tags-todo "CATEGORY=\"inbox\"&LEVEL=2")
+                  ;; in the inbox or categorized unschedule
+                  (tags-todo "-CATEGORY=\"inbox\"&-SCHEDULED={.+}&LEVEL=1")
+                  )))
   )
 
 
