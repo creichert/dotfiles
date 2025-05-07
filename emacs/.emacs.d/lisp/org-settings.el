@@ -14,6 +14,7 @@
   :config
 
   (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle)
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
   (use-package ob-http  :ensure t)
   ;; add :async to virtually any babel language
