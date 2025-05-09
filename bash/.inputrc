@@ -1,2 +1,31 @@
+set editing-mode vi
+#set show-mode-in-prompt on
+set vi-ins-mode-string \1\e[6 q\2
+set vi-cmd-mode-string \1\e[2 q\2
+
+# Color files by types
+# note: this may cause completion text to blink in some terminals (e.g. xterm).
 set colored-stats on
+
+# Color the common prefix
 set colored-completion-prefix on
+
+# Append char to indicate type
+set visible-stats on
+
+# Mark symlinked directories
+set mark-symlinked-directories on
+
+# Color the common prefix in menu-complete
+set menu-complete-display-prefix on
+
+# Readline causes the terminal to echo ^C after Ctrl+c is pressed. For users who
+# wish to disable this, simply add the following to ~/.inputrc:
+set echo-control-characters off
+
+# When performing tab completion, a single tab attempts to partially complete
+# the current word. If no partial completions are possible, a double tab shows
+# all possible completions.
+#
+# The double tab can be changed to a single tab by setting:
+set show-all-if-unmodified on
