@@ -162,7 +162,8 @@
          ("C-c n i" . org-roam-node-insert)
          ;; create an org-roam node from heading
          ("C-c n c" . org-id-get-create)
-         ;("C-c n s" . <SEARCH>)
+         ;("C-c n s" . <TODO SEARCH>)
+         ([C-f6] . org-roam-dailies-capture-today)
          :map org-mode-map
          ("C-M-i" . completion-at-point)
          :map org-roam-dailies-map
