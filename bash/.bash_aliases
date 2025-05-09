@@ -14,13 +14,17 @@ alias ll='ls -l'
 alias m='make -j'
 alias nil-uuid="echo 00000000-0000-0000-0000-000000000000"
 
+# other `gio trash` commands such as --list and --restore won't work without
+# more of gnome being initialized.
+alias clean_downloads="find downloads/ -type f -mtime +30 -exec gio trash {} \;"
 alias empty_trash="find ~/.local/share/Trash -type f -delete"
 alias zzz="systemctl poweroff"
 
 # arch/pacman
-alias arch_cache_clean="sudo pacman -Scc"
-alias arch_rm_orphans="sudo pacman -Qdtq | sudo pacman -R -"
-alias arch_update="sudo pacman -Syu"
+alias arch_update="paru -Syu"
+# paccache-hook already handles this automatically
+alias arch_rm_orphans="paru -Qdtq | paru -R -"
+alias arch_search_core="paru --searchby name --mode=r -Ss"
 
 # nvidia
 alias nvda="nvidia-smi"
