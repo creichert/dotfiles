@@ -1,6 +1,6 @@
 runtime defaults.vim
 set directory=/tmp
-set term=kitty
+set term=xterm-kitty
 set viminfo+=n~/.cache/vim/viminfo
 
 set tabstop     =4
