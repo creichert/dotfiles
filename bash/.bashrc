@@ -2,13 +2,12 @@
 
 set -o vi
 
-[ -r ~/.bash_functions ]       && . ~/.bash_functions
+[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+[ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+[ -r ~/.bash_functions ] && . ~/.bash_functions
 [ -r ~/.bash_aliases   ] && . ~/.bash_aliases
 [ -r ~/.inputrc        ] && bind -f ~/.inputrc
-
-[ -r /etc/bash_completion ] && . /etc/bash_completion
-[ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 [ -f /usr/share/git/completion/git-prompt.sh ] && . /usr/share/git/completion/git-prompt.sh
 

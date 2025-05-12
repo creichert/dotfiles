@@ -28,3 +28,9 @@ alias arch_search_core="paru --searchby name --mode=r -Ss"
 
 # nvidia
 alias nvda="nvidia-smi"
+
+# bash completion for aliases
+#
+# for a more complete approach use https://github.com/cykerway/complete-alias
+_completion_loader ssh
+complete -F _comp_cmd_ssh s
