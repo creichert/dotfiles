@@ -17,7 +17,7 @@ alias nil-uuid="echo 00000000-0000-0000-0000-000000000000"
 # other `gio trash` commands such as --list and --restore won't work without
 # more of gnome being initialized.
 alias clean_downloads="find downloads/ -type f -mtime +30 -exec gio trash {} \;"
-alias empty_trash="find ~/.local/share/Trash -type f -delete"
+alias empty_trash="find ~/.local/share/Trash/files/* ~/.local/share/Trash/info/* -delete"
 alias zzz="systemctl poweroff"
 
 # arch/pacman
