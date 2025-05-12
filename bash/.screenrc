@@ -13,12 +13,11 @@
 #   - <spc>      -> end copy
 #   - Ctrl+a ]   -> paste
 
-#deflogin off
 defscrollback 5000
 altscreen on
-term xterm-kitty
-termcapinfo kitty* ti@:te@
-termcapinfo xterm* ti@:te@
+#term xterm-kitty
+#termcapinfo kitty* ti@:te@
+#termcapinfo xterm* ti@:te@
 bind ',' prev
 bind '.' next
 hardstatus alwayslastline
