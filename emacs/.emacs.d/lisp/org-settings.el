@@ -38,7 +38,7 @@
    org-refile-targets '((org-agenda-files :maxlevel . 3))
    org-hide-leading-stars nil
    org-log-reschedule 'time
-   org-log-into-drawer 'time
+   org-log-into-drawer t
    org-src-fontify-natively t
    org-src-strip-leading-and-trailing-blank-lines t
    org-confirm-babel-evaluate nil)
@@ -73,6 +73,7 @@
   )
 
 
+(use-package org-tempo :after (org))
 (use-package org-agenda
   :after (org)
   :hook
