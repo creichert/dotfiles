@@ -1,0 +1,21 @@
+
+# Quick ref: https://gist.github.com/miguelmota/0e1189d89acfb97bd185c470505c1ded
+#
+# - Ctrl+a :     -> command mode
+# - Ctrl+a c     -> new tab
+# - Ctrl+a "     -> select tab
+# - Ctrl+a A     -> rename tab/window
+# - Ctrl+a ,     -> tab left
+# - Ctrl+a .     -> tab right
+# - Ctrl+a <esc> -> copy mode (hit <esc> to exit mode)
+# - Ctrl+a [     -> scroll back
+#   - <spc>      -> start copy
+#   - <spc>      -> end copy
+#   - Ctrl+a ]   -> paste
+
+defscrollback 5000
+altscreen on
+bind ',' prev
+bind '.' next
+hardstatus alwayslastline
+hardstatus string '%{= kG}[%{G}%H%? %1`%?%{g}][%= %{= kw}%-w%{+b yk} %n*%t%?(%u)%? %{-}%+w %=%{g}][%{B}%m/%d %{W}%C%A%{g}]'

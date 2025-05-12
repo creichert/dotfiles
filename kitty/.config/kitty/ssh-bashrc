@@ -1,0 +1,21 @@
+# ~/.bashrc:
+
+set -o vi
+
+[ -r /etc/bash_completion ] && . /etc/bash_completion
+[ -x /usr/bin/lesspipe    ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+[ -r ~/.bash_functions ] && . ~/.bash_functions
+[ -r ~/.bash_aliases   ] && . ~/.bash_aliases
+[ -r ~/.inputrc        ] && bind -f ~/.inputrc
+
+[ -r ~/.dircolors ] \
+    && eval "$(dircolors -b ~/.dircolors)" \
+    || eval "$(dircolors -b)"
+
+export EDITOR=vim
+
+PS1_DIR='\[[0;35m\]\w\[[00m\]\[[1;30m\]\[[0;37m\]'
+PS1_SSH='\e[1;31m[ssh]\e[m'
+PS1_USER='\[\e[1;34m\]\u@\h\[[01m\]'
+PS1='\n'$PS1_USER$PS1_SSH':'$PS1_DIR'\n\$ '
