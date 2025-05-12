@@ -31,7 +31,6 @@
      (scheme . t)
      (C . t)
      (gnuplot . t)
-     (ledger . t)
      (shell . t)))
 
   (setq
