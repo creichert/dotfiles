@@ -35,6 +35,7 @@ STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
 		--ignore=".*~"			\
 		--ignore=".gnus"		\
 		--ignore=".*local/bin/kvm_.*"	\
+		--ignore=".*screenrc.*"		\
 		--ignore="dotlocal/"
 
 .PHONY: simulate
