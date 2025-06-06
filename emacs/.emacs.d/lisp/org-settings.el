@@ -46,8 +46,11 @@
   (setq org-todo-keywords
         '((sequence
            "TODO(t)" ; doing later
-          ;"NEXT(n)" ; doing now or soon
+           ;"NEXT(n)" ; doing now or soon
+           "WAIT(w)" ; doing now or soon
            "|"
+           ;; Add ! or @ to the short form to log timestamp/note:
+           ;; https://orgmode.org/manual/Tracking-TODO-state-changes.html
            "DONE(d)" ; done
            )
           ;(sequence
