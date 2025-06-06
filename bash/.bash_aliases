@@ -3,7 +3,6 @@
 alias ..="cd ../.."
 alias ...="cd ../../.."
 alias ....="cd ../../../.."
-alias s="kitten ssh"
 alias e="emacs -nw"
 alias em="emacs -nw --color=never"
 alias grep='grep --color=auto'
@@ -31,6 +30,9 @@ alias nvda="nvidia-smi"
 
 # bash completion for aliases
 #
+# find via `complete -p | less` (many programs just load on demand)
+#
 # for a more complete approach use https://github.com/cykerway/complete-alias
+alias s="kitten ssh"
 _completion_loader ssh
 complete -F _comp_cmd_ssh s
