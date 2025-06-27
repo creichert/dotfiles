@@ -67,9 +67,9 @@
   (org-startup-with-inline-images t)
   (org-completion-use-ido t)
   (org-log-done 'time)
-  (org-directory "~/dev/org")
+  (org-directory "~/code/org")
   ;; inbox.org captures all incoming tasks
-  (org-default-notes-file "~/dev/org/inbox.org")
+  (org-default-notes-file "~/code/org/inbox.org")
   (org-agenda-text-search-extra-files '(agenda-archives))
   ;; allow ido completion
   (org-outline-path-complete-in-steps nil)
@@ -95,8 +95,8 @@
   (setq org-agenda-todo-ignore-scheduled 'future
         org-agenda-show-future-repeats nil
         org-agenda-window-setup 'current-window
-        org-agenda-files '("~/dev/org/" "~/dev/org/roam/daily/")
-        org-agenda-diary-file "~/dev/org/journal.org"
+        org-agenda-files '("~/code/org/" "~/code/org/roam/daily/")
+        org-agenda-diary-file "~/code/org/journal.org"
         org-deadline-warning-days 7
         org-agenda-include-diary t
         org-log-done 'time)
@@ -149,7 +149,7 @@
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-directory "~/dev/org/roam")
+  (org-roam-directory "~/code/org/roam")
   (org-roam-completion-everywhere t)
   ;; Capture a journal entry
   ;;
