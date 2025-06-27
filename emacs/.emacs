@@ -272,7 +272,7 @@
         projectile-tags-command "make tags"
         projectile-use-git-grep 't
         projectile-globally-ignored-directories '("~/.stack/snapshots")
-        ;;projectile-project-search-path '("~/dev")
+        ;;projectile-project-search-path '("~/code")
         ; ignore projects added from jumping to tags
         ;projectile-ignored-projects '("~/.stack/snapshots/*/*/*/*/*")
         projectile-ignored-project-function

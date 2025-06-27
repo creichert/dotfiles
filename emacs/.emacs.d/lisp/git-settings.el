@@ -79,7 +79,7 @@
 ;;     :init (auth-source-pass-enable))
 ;;   :config
 ;;   (magithub-feature-autoinject t)
-;;   (setq magithub-clone-default-directory "~/dev"))
+;;   (setq magithub-clone-default-directory "~/code"))
 
 
 ;; (use-package magit-gh-pulls
