@@ -44,5 +44,10 @@ GIT_PS1_SHOWDIRTYSTATE=1
 PS1_GITBRANCH='`__git_ps1 " (%s)"`\[[00m\]\[[0;37m\]'
 PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
 
-# use node/npm using nvm by default
-# bootstrap_lang node
+# bootstrap programming languages:
+#
+# - python (uv)
+# - rust (rustup)
+# - haskell (stack)
+# - nodejs (fnm)
+#   $ eval "$(fnm env --use-on-cd)"
