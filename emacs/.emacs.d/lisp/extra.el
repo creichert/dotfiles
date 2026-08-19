@@ -48,78 +48,10 @@
   :mode ("\\.Dockerfile.\\'" . dockerfile-mode))
 
 
-;; (use-package docker
-;;   :ensure t
-;;   :commands (docker)
-;;   :ensure-system-package (docker . "docker.io")
-;;   :bind (("C-c d" . docker)))
-
-
-;; (use-package ggtags
-;;   :defer
-;;   :requires (evil)
-;;   :ensure t
-;;   :commands (ggtags-mode
-;;              ggtags-find-reference
-;;              ggtags-idutils-query
-;;              pop-tag-mark)
-;;   :ensure-system-package
-;;   ((gtags    . "global")
-;;    ;;(pip      . "pip install pygments")
-;;    (pygments . "pip install pygments"))
-;;   :init
-;;   (add-hook 'c-mode-common-hook
-;;             (lambda ()
-;;               (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-;;                 (ggtags-mode 1))))
-;;   :config
-;;   (setq-local imenu-create-index-function #'ggtags-build-imenu-index)
-;;   :bind (
-;;          ("M-," . pop-tag-mark)
-;;          ("M-/" . ggtags-find-reference)
-;;          ("M-]" . ggtags-idutils-query)
-;;          :map ggtags-navigation-map
-;;          ("M-u" . ggtags-navigation-previous-file)
-;;          ("M-o" . ggtags-navigation-next-file)
-;;          ("M-l" . ggtags-navigation-visible-mode)
-;;          ("M-j" . ggtags-navigation-visible-mode)
-;;          ("M-k" . next-error)
-;;          ("M-i" . previous-error)))
-
-
 ; set background color when rgb text is discovered
 (use-package rainbow-mode
   :defer
   :ensure t)
-
-
-;; (use-package etags-select
-;;   :disabled
-;;   :load-path "site-lisp/etags-select.el/")
-
-
-;; (use-package gif-screencast
-;;   :defer
-;;   :ensure t
-;;   :if window-system
-;;   ;;:ensure-system-package (gifsicle
-;;   ;;                        mogrify
-;;   ;;                        imagemagick)
-;;   :init
-;;   (setq gif-screencast-screenshot-directory "~/downloads/screencasts/tmp")
-;;   (setq gif-screencast-output-directory "~/downloads/screencasts")
-;;   :bind
-;;   (([f11] . gif-screencast)
-;;    ([f12] . gif-screencast-stop)))
-;;
-;; (use-package slack-settings
-;;   :load-path "lisp"
-;;   :if (file-exists-p "~/.emacs.d/lisp/slack-settings.el"))
-;;
-;;
-;; (use-package erc-settings
-;;   :load-path "lisp"
-;;   :if (file-exists-p "~/.emacs.d/lisp/erc-settings.el"))
 
 
 (provide 'extra)

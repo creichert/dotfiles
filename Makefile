@@ -15,6 +15,7 @@ ALL_PACKAGES := \
 	wofi \
 	mako \
 	kitty \
+	vim \
 	hypr
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
