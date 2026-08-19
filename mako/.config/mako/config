@@ -21,7 +21,7 @@ border-radius=10
 padding=10
 margin=10
 width=400
-height=130
+height=150
 
 # Transparency and blur (requires compositor support)
 layer=overlay
