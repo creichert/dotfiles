@@ -18,6 +18,8 @@ set -o vi
 shopt -s histappend
 shopt -s checkwinsize
 
+bind 'set completion-ignore-case on'
+
 export EDITOR=vim
 export ALTERNATE_EDITOR="emacs -nw"
 export VISUAL=$EDITOR
