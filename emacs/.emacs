@@ -645,6 +645,12 @@
   :mode ("\\.env.sample" . dotenv-mode))
 
 
+(use-package lua-mode
+  :ensure t
+  :mode "\\.lua\\'"
+  :interpreter "lua")
+
+
 (use-package yaml-mode
   :ensure t :defer)
 
