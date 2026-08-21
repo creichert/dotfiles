@@ -29,5 +29,6 @@ export MANROFFOPT="-P -c"
 # eval "$(stack --bash-completion-script stack)"
 
 if uwsm check may-start; then
+    export HOSTNAME # export HOSTNAME to the hyprland session
     exec uwsm start hyprland.desktop
 fi
