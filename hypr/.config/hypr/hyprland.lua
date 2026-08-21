@@ -31,10 +31,16 @@ hl.env("GTK_THEME", "adw-gtk3-dark")
 ----------------
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
-hl.monitor({ output = "DP-1", mode = "3440x1440@144", position = "0x0", scale = 1 })
-hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@144", position = "3440x0", scale = 1, transform = 3 })
-hl.workspace_rule({ workspace = "1", monitor = "DP-1", default = true })
-hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
+local isLaptop = os.getenv("HOSTNAME") == "laptop"
+
+if isLaptop then
+    hl.monitor({ output = "eDP-1", mode = "2560x1440@60", position = "0x0", scale = 1.66666 })
+else
+    hl.monitor({ output = "DP-1", mode = "3440x1440@144", position = "0x0", scale = 1 })
+    hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@144", position = "3440x0", scale = 1, transform = 3 })
+    hl.workspace_rule({ workspace = "1", monitor = "DP-1", default = true })
+    hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
+end
 
 
 ---------------------
@@ -114,7 +120,7 @@ hl.config({
         active_opacity = 1.0,
         inactive_opacity = 1.0,
         shadow = {
-            enabled = true,
+            enabled = not isLaptop,
             range = 4,
             render_power = 3,
             color = "rgba(1a1a1aee)",
