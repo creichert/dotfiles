@@ -3,7 +3,7 @@
 -- Required packages:
 -- - uwsm
 -- - kitty
--- - gammastep (migrate to hyprsunset)
+-- - hyprsunset
 -- - hyprshot
 -- - hyprpicker
 -- - wofi
@@ -65,7 +65,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("rm ~/.cache/cliphist/db")
     hl.exec_cmd("uwsm app -s b -t service hypridle")
     hl.exec_cmd("uwsm app -s b -t service waybar")
-    hl.exec_cmd("uwsm app -s b -t service -- gammastep -t 6500:3500 -l 29.76:-95.37 -m wayland")
+    hl.exec_cmd("uwsm app -s b -t service -- hyprsunset")
 
     -- hyprpolkitagent is a polkit authentication daemon. It is required for GUI
     -- applications to be able to request elevated privileges.
