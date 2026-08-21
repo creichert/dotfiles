@@ -564,28 +564,12 @@
     ))
 
 
-
 (use-package flycheck
-  :ensure t
-  :hook ((after-init . global-flycheck-mode))
-  ;;:ensure-system-package ((proselint . "pip install proselint"))
+  :init
+  (global-flycheck-mode)
   :config
-  ;(setenv "USEIDE" "true")
   (setq flycheck-standard-error-navigation nil)
-  (setq flycheck-checker-error-threshold 10000)
-  ;;(flycheck-define-checker proselint
-  ;;  "A linter for prose."
-  ;;  :command ("proselint" source-inplace)
-  ;;  :error-patterns
-  ;;  ((warning line-start (file-name) ":" line ":" column ": "
-  ;;            (id (one-or-more (not (any " "))))
-  ;;            (message) line-end))
-  ;;  ;; doesn't work well with org-mode
-  ;;  :modes (message-mode text-mode markdown-mode gfm-mode)
-  ;;  :custom
-  ;;  (flycheck-emacs-lisp-load-path 'inherit)
-  ;;  )
-  )
+  (setq flycheck-global-modes '(not lisp-interaction-mode)))
 
 
 ; (use-package flyspell
