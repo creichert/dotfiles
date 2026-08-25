@@ -24,22 +24,13 @@ PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 PKG_DIR         ?= $(or $(target),$(HOME))
 
 
-# Use --no-folding to avoid linking directories
-# (e.g. .emacs.d is too high level)
-#
-# The problem comes in where we want to selective fold a few directories like .emacs.d/lisp
-STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
-STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
-		--ignore=".*.pem"		\
-		--ignore=".*TAGS"		\
-		--ignore="flycheck_.*"		\
+# Do not link directories: applications can create local files without writing
+# into the dotfiles repository through a folded directory symlink.
+STOW_FLAGS := --no-folding --verbose -v1 --target=$(PKG_DIR)
+STOW_FLAGS += --ignore=".*local/bin/kvm_.*"	\
 		--ignore=".*.rej"		\
 		--ignore=".*.swp"		\
-		--ignore=".*~"			\
-		--ignore=".gnus"		\
-		--ignore=".*local/bin/kvm_.*"	\
-		--ignore=".*screenrc.*"		\
-		--ignore="dotlocal/"
+		--ignore=".*screenrc.*"
 
 .PHONY: simulate
 simulate: submodules

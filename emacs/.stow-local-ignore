@@ -1,0 +1,14 @@
+# Emacs-generated or machine-local state.
+.*TAGS
+flycheck_.*
+.ert-runner$
+.git$
+.gitignore$
+.travis.yml$
+^.*/Cask$
+
+# Only the mode itself is needed at runtime; retain no submodule development
+# metadata, tests, or documentation in the installed Emacs configuration.
+^/\.emacs\.d/lisp/ido-vertical-mode\.el/README\.md$
+^/\.emacs\.d/lisp/ido-vertical-mode\.el/screenshot\.gif$
+^/\.emacs\.d/lisp/ido-vertical-mode\.el/test$
