@@ -631,7 +631,10 @@
 (use-package lua-mode
   :ensure t
   :mode "\\.lua\\'"
-  :interpreter "lua")
+  :interpreter "lua"
+  :config
+  (setq lua-indent-level 4)
+  (setq indent-tabs-mode nil))
 
 
 (use-package yaml-mode
