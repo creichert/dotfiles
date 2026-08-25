@@ -191,7 +191,7 @@
 
 
 (use-package ido-vertical-mode
-  :load-path "~/.emacs.d/site-lisp/ido-vertical-mode.el/"
+  :load-path "~/.emacs.d/lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :custom
