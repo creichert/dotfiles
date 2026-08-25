@@ -1,4 +1,4 @@
-
+;;; web-settings.el --- -*- lexical-binding: t -*-
 
 ;; add node_modules to `exec-path`
 (use-package add-node-modules-path

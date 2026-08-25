@@ -1,3 +1,4 @@
+;;; sql-pgpass.el --- -*- lexical-binding: nil; -*-
 
 ;;; Code:
 

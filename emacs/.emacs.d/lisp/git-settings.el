@@ -1,3 +1,4 @@
+;;; git-settings.el --- -*- lexical-binding: nil; -*-
 
 (require 'use-package)
 

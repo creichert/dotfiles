@@ -1,5 +1,4 @@
-
-;;; creichert emacs configuration
+;;; creichert emacs configuration --- -*- lexical-binding: t -*-
 
 ;;; Code:
 
