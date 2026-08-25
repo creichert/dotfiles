@@ -27,7 +27,6 @@ PKG_DIR         ?= $(or $(target),$(HOME))
 # Use --no-folding to avoid linking directories
 # (e.g. .emacs.d is too high level)
 #
-
 # The problem comes in where we want to selective fold a few directories like .emacs.d/lisp
 STOW_FLAGS := --verbose -v1 --target=$(PKG_DIR)
 STOW_FLAGS += --ignore="gnupg/.gnupg/.*.gpg"	\
@@ -56,7 +55,6 @@ clean:
 
 
 
-
 # Check for git submodules which are not initialized (prefixed with "-").
 #
 # It's possible check if they not initialized _or_ dirty using '^[-]|^[+]'
@@ -82,10 +80,3 @@ elpa:
 	@# not strictly necessary
 	@#emacs --batch --eval='(package-refresh-contents)'
 	$(MAKE) dotemacs
-
-# dockerfile:
-# 	cd .circleci/images && \
-# 	docker build -t creichert/debian \
-# 		--build-arg debian_mirror_url="http://httpredir.debian.org/debian" \
-# 		.
-# 	docker push creichert/debian

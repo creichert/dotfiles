@@ -3,6 +3,7 @@
 -- Required packages:
 -- - uwsm
 -- - kitty
+-- - hyprpaper
 -- - hyprsunset
 -- - hyprshot
 -- - hyprpicker
@@ -60,12 +61,17 @@ local menu = "pkill wofi || wofi --show drun --term=kitty --define=drun-print_de
 hl.on("hyprland.start", function()
     hl.exec_cmd("uwsm app " .. terminal, { workspace = "2 silent" })
     hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:magic silent" })
+
+    -- clipboard
+    os.remove(os.getenv("HOME") .. "/.cache/cliphist/db")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t text --watch cliphist store")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t image --watch cliphist store")
-    hl.exec_cmd("rm ~/.cache/cliphist/db")
+
+    -- background services
     hl.exec_cmd("uwsm app -s b -t service hypridle")
+    hl.exec_cmd("uwsm app -s b -t service hyprpaper")
+    hl.exec_cmd("uwsm app -s b -t service hyprsunset")
     hl.exec_cmd("uwsm app -s b -t service waybar")
-    hl.exec_cmd("uwsm app -s b -t service -- hyprsunset")
 
     -- hyprpolkitagent is a polkit authentication daemon. It is required for GUI
     -- applications to be able to request elevated privileges.
@@ -117,8 +123,8 @@ hl.config({
         rounding = 10,
         rounding_power = 2,
         -- Change transparency of focused and unfocused windows.
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
+        active_opacity = 0.9,
+        inactive_opacity = 0.8,
         shadow = {
             enabled = not isLaptop,
             range = 4,
@@ -131,7 +137,7 @@ hl.config({
             passes = 1,
             vibrancy = 0.1696,
             new_optimizations = true,
-            -- xray = false,
+            -- xray = true,
             -- special = true,
             -- popups = false,
         },
@@ -347,23 +353,18 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 -- See https://wiki.hypr.land/Configuring/Basics/Window-Rules/
 -- and https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 
--- Give maximized/"full screen" apps a red border (not f11 fullscreen but simply
--- hiding other tiled windows in the workspace.
 hl.window_rule({
     name = "maximized-red-border",
     match = { fullscreen = true },
     border_color = "rgba(FF0050FF)",
 })
 
--- Window opacity theme.
 hl.window_rule({
-    name = "window-opacity",
-    match = { class = ".*" },
-    opacity = "0.9 0.8",
-    suppress_event = "maximize",
+    name = "chromium-opacity",
+    match = { class = "^?(chromium|emacs)$" },
+    opacity = "0.95 0.85"
 })
-hl.window_rule({ name = "chromium-opacity", match = { class = "chromium" }, opacity = "0.95 0.85" })
-hl.window_rule({ name = "emacs-opacity", match = { class = "emacs" }, opacity = "0.95 0.85" })
+
 
 -- Float file dialog popups and FreeCAD utility windows.
 local centeredRules = {
