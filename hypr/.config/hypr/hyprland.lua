@@ -125,8 +125,8 @@ hl.config({
         rounding = 10,
         rounding_power = 2,
         -- Change transparency of focused and unfocused windows.
-        active_opacity = 0.9,
-        inactive_opacity = 0.8,
+        active_opacity = 0.95,
+        inactive_opacity = 0.9,
         shadow = {
             enabled = not isLaptop,
             range = 4,
@@ -361,11 +361,11 @@ hl.window_rule({
     border_color = "rgba(FF0050FF)",
 })
 
-hl.window_rule({
-    name = "chromium-opacity",
-    match = { class = "^?(chromium|emacs)$" },
-    opacity = "0.95 0.85"
-})
+-- hl.window_rule({
+--     name = "chromium-opacity",
+--     match = { class = "(?i)^(chromium|emacs)$" },
+--     opacity = "0.95 0.95"
+-- })
 
 
 -- Float file dialog popups and FreeCAD utility windows.
