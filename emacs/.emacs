@@ -1,4 +1,4 @@
-;;; creichert emacs configuration --- -*- lexical-binding: t -*-
+;;; .emacs --- creichert emacs configuration -*- lexical-binding: nil; -*-
 
 ;;; Code:
 
@@ -7,28 +7,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
 
-;; Prior to emacs 27 the below was necessary
-;;
-;; Installed packages are now activated before loading the init file. As a
-;; result of this change, it is no longer necessary to call 'package-initialize'
-;; in your init file.
-;;
-;;
-;; OLD WAY:
-;; (setq package-enable-at-startup nil)
-;; (package-initialize)
-;;
-;;  NEW WAY:
-;; (when (< emacs-major-version 27)
-;;   (setq package-enable-at-startup nil)
-;;   (package-initialize))
-;;
-
-;; This also seems to just work automatically now (keeping around just in case)
-;;
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
 
 (eval-when-compile
   (require 'use-package))
@@ -610,7 +588,13 @@
 
 
 (use-package js
-  :mode "\\.json.template\\'")
+  :defer t
+  :mode (;; todo setup better web-settings.el
+         ;; ("\\.js\\'" . js-mode)
+         ("\\.jsonc\\'" . js-mode)
+         ("\\.json.template\\'" . js-mode))
+  :config
+  (setq js-indent-level 2))
 
 
 (use-package conf-mode
