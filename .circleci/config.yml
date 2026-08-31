@@ -20,8 +20,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - v3-dotcache-{{ .Branch }}
-            - v3-dotcache
+            - v4-dotcache-{{ .Branch }}
+            - v4-dotcache
 
       # remove pre-existing dotfiles (stow will not)
       - run: rm -f ~/.profile ~/.bashrc ~/.gitconfig && mkdir -p ~/.emacs.d
@@ -30,7 +30,7 @@ jobs:
       #- run: hyprctl configerrors
 
       - save_cache:
-          key: v3-dotcache-{{ .Branch }}
+          key: v4-dotcache-{{ .Branch }}
           paths:
             - ~/.stack/
             - ~/.emacs.d/elpa
