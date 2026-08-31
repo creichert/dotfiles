@@ -1,4 +1,4 @@
-
+;;; haskell-settings.el --- -*- lexical-binding: t -*-
 
 (use-package haskell-mode
   :ensure t
@@ -129,7 +129,7 @@
 ;; (use-package ghcid
 ;;   ;;:ensure-system-package ((ghcid . "stack install ghcid"))
 ;;   :defer
-;;   :load-path "site-lisp/"
+;;   :load-path "lisp/"
 ;;   :bind (:map projectile-mode-map
 ;;               ("C-c m s" . ghcid)
 ;;               ("C-c m b" . show-ghcid-buf)

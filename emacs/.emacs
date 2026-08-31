@@ -1,5 +1,4 @@
-
-;;; creichert emacs configuration
+;;; .emacs --- creichert emacs configuration -*- lexical-binding: nil; -*-
 
 ;;; Code:
 
@@ -8,28 +7,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
 
-;; Prior to emacs 27 the below was necessary
-;;
-;; Installed packages are now activated before loading the init file. As a
-;; result of this change, it is no longer necessary to call 'package-initialize'
-;; in your init file.
-;;
-;;
-;; OLD WAY:
-;; (setq package-enable-at-startup nil)
-;; (package-initialize)
-;;
-;;  NEW WAY:
-;; (when (< emacs-major-version 27)
-;;   (setq package-enable-at-startup nil)
-;;   (package-initialize))
-;;
-
-;; This also seems to just work automatically now (keeping around just in case)
-;;
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
 
 (eval-when-compile
   (require 'use-package))
@@ -191,7 +168,7 @@
 
 
 (use-package ido-vertical-mode
-  :load-path "~/.emacs.d/site-lisp/ido-vertical-mode.el/"
+  :load-path "~/.emacs.d/lisp/ido-vertical-mode.el/"
   :requires (ido)
   :config (ido-vertical-mode)
   :custom
@@ -564,28 +541,12 @@
     ))
 
 
-
 (use-package flycheck
-  :ensure t
-  :hook ((after-init . global-flycheck-mode))
-  ;;:ensure-system-package ((proselint . "pip install proselint"))
+  :init
+  (global-flycheck-mode)
   :config
-  ;(setenv "USEIDE" "true")
   (setq flycheck-standard-error-navigation nil)
-  (setq flycheck-checker-error-threshold 10000)
-  ;;(flycheck-define-checker proselint
-  ;;  "A linter for prose."
-  ;;  :command ("proselint" source-inplace)
-  ;;  :error-patterns
-  ;;  ((warning line-start (file-name) ":" line ":" column ": "
-  ;;            (id (one-or-more (not (any " "))))
-  ;;            (message) line-end))
-  ;;  ;; doesn't work well with org-mode
-  ;;  :modes (message-mode text-mode markdown-mode gfm-mode)
-  ;;  :custom
-  ;;  (flycheck-emacs-lisp-load-path 'inherit)
-  ;;  )
-  )
+  (setq flycheck-global-modes '(not lisp-interaction-mode)))
 
 
 ; (use-package flyspell
@@ -627,7 +588,13 @@
 
 
 (use-package js
-  :mode "\\.json.template\\'")
+  :defer t
+  :mode (;; todo setup better web-settings.el
+         ;; ("\\.js\\'" . js-mode)
+         ("\\.jsonc\\'" . js-mode)
+         ("\\.json.template\\'" . js-mode))
+  :config
+  (setq js-indent-level 2))
 
 
 (use-package conf-mode
@@ -648,7 +615,10 @@
 (use-package lua-mode
   :ensure t
   :mode "\\.lua\\'"
-  :interpreter "lua")
+  :interpreter "lua"
+  :config
+  (setq lua-indent-level 4)
+  (setq indent-tabs-mode nil))
 
 
 (use-package yaml-mode

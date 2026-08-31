@@ -1,3 +1,4 @@
+;;; extra.el --- -*- lexical-binding: nil; -*-
 
 ;;; Code:
 

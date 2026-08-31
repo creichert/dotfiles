@@ -1,4 +1,4 @@
-
+;;; web-settings.el --- -*- lexical-binding: t -*-
 
 ;; add node_modules to `exec-path`
 (use-package add-node-modules-path
@@ -42,39 +42,6 @@
   (add-to-list 'electric-layout-rules
                '((?\[ . around) (?\] . around))))
 
-
-(use-package flowmacs
-  :load-path "site-lisp/flowmacs"
-  :defer
-  :hook ((web-mode . flowmacs-mode))
-  :bind (("C-c f f" . flowmacs/jump-to-def)
-         ("C-c f t" . flowmacs/type-at-pos))
-  :init
-  (creichert/set-flowmacs-flow)
-  :preface
-  (defun creichert/set-flowmacs-flow ()
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory) "node_modules"))
-           (flow (and root (expand-file-name "node_modules/.bin/flow" root))))
-      (when (and flow (file-executable-p flow))
-        ;; Set binary path
-        (setq-local flowmacs/+flow+ flow)))))
-
-
-
-(use-package webpack-dev-server
-  :load-path "site-lisp/webpack-dev-server.el"
-  :defer
-  :commands (webpack-dev-server)
-  :custom
-  (webpack-dev-server-command  "make frontend-dev")
-  :config
-  (use-package projectile :demand :ensure t)
-  (setq webpack-dev-server-project-root (projectile-project-root))
-  :bind (:map projectile-mode-map
-              ("C-c w p" . webpack-dev-server)
-              ("C-c w k" . webpack-dev-server-stop)
-              ("C-c w b" . webpack-dev-server-browse)))
 
 
 (provide 'web-settings)

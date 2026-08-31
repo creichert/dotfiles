@@ -3,7 +3,8 @@
 -- Required packages:
 -- - uwsm
 -- - kitty
--- - gammastep (migrate to hyprsunset)
+-- - hyprpaper
+-- - hyprsunset
 -- - hyprshot
 -- - hyprpicker
 -- - wofi
@@ -38,6 +39,8 @@ if isLaptop then
 else
     hl.monitor({ output = "DP-1", mode = "3440x1440@144", position = "0x0", scale = 1 })
     hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@144", position = "3440x0", scale = 1, transform = 3 })
+    -- improves display but much harder on igpu. leave for testing
+    -- hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60", position = "3440x0", scale = 2, transform = 3 })
     hl.workspace_rule({ workspace = "1", monitor = "DP-1", default = true })
     hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
 end
@@ -60,12 +63,17 @@ local menu = "pkill wofi || wofi --show drun --term=kitty --define=drun-print_de
 hl.on("hyprland.start", function()
     hl.exec_cmd("uwsm app " .. terminal, { workspace = "2 silent" })
     hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:magic silent" })
+
+    -- clipboard
+    os.remove(os.getenv("HOME") .. "/.cache/cliphist/db")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t text --watch cliphist store")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t image --watch cliphist store")
-    hl.exec_cmd("rm ~/.cache/cliphist/db")
+
+    -- background services
     hl.exec_cmd("uwsm app -s b -t service hypridle")
+    hl.exec_cmd("uwsm app -s b -t service hyprpaper")
+    hl.exec_cmd("uwsm app -s b -t service hyprsunset")
     hl.exec_cmd("uwsm app -s b -t service waybar")
-    hl.exec_cmd("uwsm app -s b -t service -- gammastep -t 6500:3500 -l 29.76:-95.37 -m wayland")
 
     -- hyprpolkitagent is a polkit authentication daemon. It is required for GUI
     -- applications to be able to request elevated privileges.
@@ -117,8 +125,8 @@ hl.config({
         rounding = 10,
         rounding_power = 2,
         -- Change transparency of focused and unfocused windows.
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
+        active_opacity = 0.95,
+        inactive_opacity = 0.9,
         shadow = {
             enabled = not isLaptop,
             range = 4,
@@ -131,7 +139,7 @@ hl.config({
             passes = 1,
             vibrancy = 0.1696,
             new_optimizations = true,
-            -- xray = false,
+            -- xray = true,
             -- special = true,
             -- popups = false,
         },
@@ -222,8 +230,8 @@ hl.config({
 hl.device({
     name = "logitech-usb-receiver-mouse",
     -- Hold right click to scroll w/ trackball.
-    -- scroll_method = "on_button_down",
-    -- scroll_button = 273,
+    scroll_method = "on_button_down",
+    scroll_button = 273,
 })
 
 
@@ -265,8 +273,9 @@ hl.define_submap("resize", function()
 end)
 
 -- Special workspaces (scratchpads).
-hl.bind(mainMod .. " + K", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(mainMod .. " + L", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + R", hl.dsp.workspace.toggle_special("db"))
+hl.bind(mainMod .. " + K", hl.dsp.workspace.toggle_special("terms"))
 
 hl.bind(mainMod .. " + space", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mainMod .. " + SHIFT + space", hl.dsp.exec_cmd("hyprctl keyword general:layout dwindle"))
@@ -314,8 +323,8 @@ hl.bind(mainMod .. " + SHIFT + 7", hl.dsp.window.move({ workspace = "7", follow 
 hl.bind(mainMod .. " + SHIFT + 8", hl.dsp.window.move({ workspace = "8", follow = false }))
 hl.bind(mainMod .. " + SHIFT + 9", hl.dsp.window.move({ workspace = "9", follow = false }))
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = "10", follow = false }))
--- mod+shift+equal -> move window to magic workspace.
-hl.bind(mainMod .. " + SHIFT + equal", hl.dsp.window.move({ workspace = "special:magic", follow = false }))
+-- mod+shift+equal -> move window to terms workspace.
+hl.bind(mainMod .. " + SHIFT + equal", hl.dsp.window.move({ workspace = "special:terms", follow = false }))
 
 -- Scroll through existing workspaces with mainMod + scroll.
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
@@ -347,23 +356,18 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 -- See https://wiki.hypr.land/Configuring/Basics/Window-Rules/
 -- and https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 
--- Give maximized/"full screen" apps a red border (not f11 fullscreen but simply
--- hiding other tiled windows in the workspace.
 hl.window_rule({
     name = "maximized-red-border",
     match = { fullscreen = true },
     border_color = "rgba(FF0050FF)",
 })
 
--- Window opacity theme.
-hl.window_rule({
-    name = "window-opacity",
-    match = { class = ".*" },
-    opacity = "0.9 0.8",
-    suppress_event = "maximize",
-})
-hl.window_rule({ name = "chromium-opacity", match = { class = "chromium" }, opacity = "0.95 0.85" })
-hl.window_rule({ name = "emacs-opacity", match = { class = "emacs" }, opacity = "0.95 0.85" })
+-- hl.window_rule({
+--     name = "chromium-opacity",
+--     match = { class = "(?i)^(chromium|emacs)$" },
+--     opacity = "0.95 0.95"
+-- })
+
 
 -- Float file dialog popups and FreeCAD utility windows.
 local centeredRules = {

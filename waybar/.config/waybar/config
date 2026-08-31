@@ -20,13 +20,12 @@
         "hyprland/window"
     ],
     "modules-right": [
-        //"custom/gpu",
         // "mpd",
-        "idle_inhibitor",
         "pulseaudio",
         "network",
         // "power-profiles-daemon",
         "cpu",
+        "custom/gpu",
         "memory",
         "temperature",
         //"backlight",
@@ -36,6 +35,7 @@
         //"battery#bat2",
         "clock",
         "tray",
+        "idle_inhibitor",
         "custom/power"
     ],
     // Modules configuration
@@ -81,17 +81,6 @@
     //     "format-icons": ["", ""],
     //     "tooltip": true,
     //     "tooltip-format": "{app}: {title}"
-    // },
-
-    // "custom/gpu": {
-    //     "format": "{text} ",
-    //     "interval": 5,
-    //     // "exec": "nvidia-smi --id=0 --query-gpu=utilization.gpu,temperature.gpu,utilization.memory --format=csv,noheader,nounits",
-    //     "exec": "nvidia-smi --id=0 --query-gpu=utilization.gpu --format=csv,noheader,nounits",
-    //     "exec-if": "[ \"0\" -ne $(nvidia-smi --id=0 --query-gpu=utilization.gpu --format=csv,noheader,nounits) ]"
-    //     // "return-type": "json",
-    //     // "max-length": 1000,
-    //     // "on-click": "gpuinfo.sh --toggle",
     // },
 
     // "mpd": {
@@ -141,6 +130,18 @@
         "format": "{usage}% ",
         "tooltip": true
     },
+
+    "custom/gpu": {
+        "format": "{text} ",
+        "interval": 5,
+        // "exec": "nvidia-smi --id=0 --query-gpu=utilization.gpu,temperature.gpu,utilization.memory --format=csv,noheader,nounits",
+        "exec": "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits",
+        // "exec-if": "[ \"0\" -ne $(nvidia-smi --id=0 --query-gpu=utilization.gpu --format=csv,noheader,nounits) ]"
+        // "return-type": "json",
+        // "max-length": 1000,
+        // "on-click": "gpuinfo.sh --toggle",
+    },
+
     "memory": {
         "format": "{}% "
     },

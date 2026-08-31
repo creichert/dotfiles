@@ -1,7 +1,6 @@
+;;; org-settings.el --- -*- lexical-binding: nil; -*-
 
 (require 'use-package)
-
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa"))
 
 (use-package org
   :defer
