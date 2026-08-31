@@ -71,3 +71,35 @@ elpa:
 	@# not strictly necessary
 	@#emacs --batch --eval='(package-refresh-contents)'
 	$(MAKE) dotemacs
+
+
+## Arch setup
+#
+# base install: https://gist.github.com/mjkstra/96ce7a5689d753e7a6bdd92cdc169bae
+#
+# `pacman -Qe`
+#
+# - hyprshot: scripted in bin/
+.PHONY: arch
+arch:
+	sudo pacman -S base-devel \
+		git \
+		stow \
+		vim \
+		emacs-wayland \
+		uwsm \
+		hyprland \
+		kitty \
+		hyprpaper \
+		hyprsunset \
+		inotify-tools \
+		hyprpicker \
+		wofi \
+		mako \
+		pass \
+		wl-clipboard \
+		cliphist \
+		playerctl \
+		adw-gtk-theme \
+		ttf-hack-nerd \
+		noto-fonts-emoji
