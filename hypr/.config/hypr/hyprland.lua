@@ -273,8 +273,9 @@ hl.define_submap("resize", function()
 end)
 
 -- Special workspaces (scratchpads).
-hl.bind(mainMod .. " + K", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(mainMod .. " + L", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + R", hl.dsp.workspace.toggle_special("db"))
+hl.bind(mainMod .. " + K", hl.dsp.workspace.toggle_special("terms"))
 
 hl.bind(mainMod .. " + space", hl.dsp.window.fullscreen({ mode = "maximized" }))
 hl.bind(mainMod .. " + SHIFT + space", hl.dsp.exec_cmd("hyprctl keyword general:layout dwindle"))
@@ -322,8 +323,8 @@ hl.bind(mainMod .. " + SHIFT + 7", hl.dsp.window.move({ workspace = "7", follow 
 hl.bind(mainMod .. " + SHIFT + 8", hl.dsp.window.move({ workspace = "8", follow = false }))
 hl.bind(mainMod .. " + SHIFT + 9", hl.dsp.window.move({ workspace = "9", follow = false }))
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = "10", follow = false }))
--- mod+shift+equal -> move window to magic workspace.
-hl.bind(mainMod .. " + SHIFT + equal", hl.dsp.window.move({ workspace = "special:magic", follow = false }))
+-- mod+shift+equal -> move window to terms workspace.
+hl.bind(mainMod .. " + SHIFT + equal", hl.dsp.window.move({ workspace = "special:terms", follow = false }))
 
 -- Scroll through existing workspaces with mainMod + scroll.
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
