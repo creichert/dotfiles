@@ -61,6 +61,8 @@ local menu = "pkill wofi || wofi --show drun --term=kitty --define=drun-print_de
 
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
+    hl.exec_cmd("uwsm app -- chromium --restore-last-session", { workspace = "1" })
+
     -- open editor and term for cfg editing
     hl.exec_cmd("uwsm app emacs", { workspace = "special:cfg silent" })
     hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:cfg silent" })
