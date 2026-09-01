@@ -61,8 +61,9 @@ local menu = "pkill wofi || wofi --show drun --term=kitty --define=drun-print_de
 
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
-    hl.exec_cmd("uwsm app " .. terminal, { workspace = "2 silent" })
-    hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:magic silent" })
+    -- open editor and term for cfg editing
+    hl.exec_cmd("uwsm app emacs", { workspace = "special:cfg silent" })
+    hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:cfg silent" })
 
     -- clipboard
     os.remove(os.getenv("HOME") .. "/.cache/cliphist/db")
@@ -70,9 +71,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t image --watch cliphist store")
 
     -- background services
-    hl.exec_cmd("uwsm app -s b -t service hypridle")
     hl.exec_cmd("uwsm app -s b -t service hyprpaper")
     hl.exec_cmd("uwsm app -s b -t service hyprsunset")
+    hl.exec_cmd("uwsm app -s b -t service hypridle")
     hl.exec_cmd("uwsm app -s b -t service waybar")
 
     -- hyprpolkitagent is a polkit authentication daemon. It is required for GUI
@@ -186,8 +187,8 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,
-        disable_hyprland_logo = false,
+        disable_hyprland_logo = true,
+        disable_splash_rendering = true,
         mouse_move_enables_dpms = true,
         key_press_enables_dpms = true,
         disable_autoreload = true,
@@ -273,7 +274,7 @@ hl.define_submap("resize", function()
 end)
 
 -- Special workspaces (scratchpads).
-hl.bind(mainMod .. " + L", hl.dsp.workspace.toggle_special("magic"))
+hl.bind(mainMod .. " + L", hl.dsp.workspace.toggle_special("cfg"))
 hl.bind(mainMod .. " + R", hl.dsp.workspace.toggle_special("db"))
 hl.bind(mainMod .. " + K", hl.dsp.workspace.toggle_special("terms"))
 
