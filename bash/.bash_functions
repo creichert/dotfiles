@@ -131,6 +131,7 @@ function lang() {
             if [[ -f stack.yaml ]]; then
                 printf '\n'
                 _lang_status "Project resolver: stack.yaml"
+                eval "$(stack --bash-completion-script stack)"
             fi
             ;;
         *)
