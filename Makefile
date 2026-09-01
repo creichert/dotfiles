@@ -80,6 +80,7 @@ elpa:
 # `pacman -Qe`
 #
 # - hyprshot: scripted in bin/
+#   - requires slurp, grim
 .PHONY: arch
 arch:
 	sudo pacman -S base-devel \
@@ -87,7 +88,7 @@ arch:
 		stow \
 		vim \
 		emacs-wayland \
-		uwsm \
+		uwsm uuctl \
 		hyprland \
 		kitty \
 		hyprpaper \
@@ -99,6 +100,7 @@ arch:
 		pass \
 		wl-clipboard \
 		cliphist \
+		slurp grim \
 		playerctl \
 		adw-gtk-theme \
 		ttf-hack-nerd \
