@@ -25,9 +25,6 @@ export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export MANROFFOPT="-P -c"
 
 
-# TODO doesn't work here, but .local/bin is not exported in bashrc
-# eval "$(stack --bash-completion-script stack)"
-
 if uwsm check may-start; then
     export HOSTNAME # export HOSTNAME to the hyprland session
     exec uwsm start hyprland.desktop
