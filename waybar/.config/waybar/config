@@ -20,6 +20,7 @@
         "hyprland/window"
     ],
     "modules-right": [
+        "idle_inhibitor",
         // "mpd",
         "pulseaudio",
         "network",
@@ -35,12 +36,11 @@
         //"battery#bat2",
         "clock",
         "tray",
-        "idle_inhibitor",
         "custom/power"
     ],
     // Modules configuration
     "hyprland/workspaces": {
-        "disable-scroll": true,
+        "disable-scroll": false,
         "all-outputs": true,
         "warp-on-scroll": false,
         "format": "{name}: {icon}",
@@ -50,17 +50,20 @@
             "1": "",
             "2": "",
             "3": "",
-            "5": "4",
-            "5": "",
+            "4": "",
+            "magic": "",
+            "terms": "",
+            "db": "",
             "urgent": "",
             "focused": "",
             "default": ""
         }
     },
     "hyprland/window": {
-        "format": "{}",   // <--- these is the default value
-        "max-length": 100
-        //"format": "<span font='9' rise='-4444'>{}</span>"
+        "icon": true,
+        "icon-size": 16,
+        "format": "<span font='9' rise='-4444'>{}</span>",
+        "max-length": 120
     },
 
     // "keyboard-state": {
@@ -250,7 +253,6 @@
         "format-icons": {
             "spotify": "",
             "default": "",
-            //"default": "🎜"
         },
         "escape": true,
         "exec": "playerctl metadata -F --format '{{xesam:artist}} - {{xesam:title}}' 2>/dev/null | stdbuf -o10 grep -v '^:'",
