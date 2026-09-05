@@ -150,13 +150,10 @@
   :custom
   (org-roam-directory "~/code/org/roam")
   (org-roam-completion-everywhere t)
-  ;; Capture a journal entry
-  ;;
-  ;; Note that for daily files to show up in the calendar, they have to be of
-  ;; format \"org-time-string.org\" which the below does not seem to be.
   (org-roam-dailies-capture-templates
       '(("d" "default" entry "* %?\n  <%<%Y-%m-%d %a %H:%M>>\n"
-         :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n#+category: journal\n\n"))))
+         :if-new (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n#+category: journal\n#+filetags: :journal:\n\n"))))
 
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n g" . org-roam-buffer-refresh)
