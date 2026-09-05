@@ -24,29 +24,35 @@ PanelWindow {
     }
 
     RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 0
-        anchors.rightMargin: root.config.barRightMargin
+        id: leftModules
+
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
         spacing: root.config.barSpacing
 
         Widgets.Workspaces {
             Layout.alignment: Qt.AlignVCenter
             config: root.config
         }
+    }
 
-        Item {
-            Layout.fillWidth: true
-        }
+    Widgets.WindowTitle {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        width: Math.max(0, Math.min(
+            root.config.titleMaximumWidth,
+            parent.width - 2 * Math.max(leftModules.width, rightModules.width + root.config.barRightMargin)
+        ))
+        config: root.config
+    }
 
-        Widgets.WindowTitle {
-            Layout.fillWidth: true
-            Layout.maximumWidth: root.config.titleMaximumWidth
-            config: root.config
-        }
+    RowLayout {
+        id: rightModules
 
-        Item {
-            Layout.fillWidth: true
-        }
+        anchors.right: parent.right
+        anchors.rightMargin: root.config.barRightMargin
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: root.config.barSpacing
 
         Widgets.IdleInhibitorButton {
             id: idleButton
