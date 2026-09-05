@@ -18,6 +18,9 @@ ALL_PACKAGES := \
 	vim \
 	hypr
 
+QMLLINT ?= /usr/lib/qt6/bin/qmllint
+QUICKSHELL_QML := $(shell git ls-files -- 'quickshell/**/*.qml')
+
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 
 # The location you want to install packages to
@@ -43,6 +46,13 @@ dotfiles: submodules
 .PHONY: clean
 clean:
 	@stow $(STOW_FLAGS) -D $(PACKAGES)
+
+.PHONY: quickshell-check
+quickshell-check:
+	@test -x "$(QMLLINT)" || { echo "qmllint not found: $(QMLLINT)"; exit 1; }
+	@test -n "$(QUICKSHELL_QML)" || { echo "no Quickshell QML files found"; exit 1; }
+	@$(QMLLINT) -I /usr/lib/qt6/qml $(QUICKSHELL_QML)
+	@qs --private-check-compat
 
 
 
@@ -91,12 +101,11 @@ arch:
 		uwsm uuctl \
 		hyprland \
 		kitty \
+		quickshell \
 		hyprpaper \
 		hyprsunset \
 		inotify-tools \
 		hyprpicker \
-		wofi \
-		mako \
 		pass \
 		wl-clipboard \
 		cliphist \
