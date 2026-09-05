@@ -3,6 +3,7 @@ import QtQuick
 Rectangle {
     id: root
 
+    required property var config
     required property var workspace
     property bool showSpecial: false
 
@@ -16,32 +17,25 @@ Rectangle {
 
     function icon() {
         if (workspace.urgent)
-            return ""
+            return config.workspaceIcons.urgent
 
-        switch (displayName) {
-        case "1": return ""
-        case "2": return ""
-        case "3": return ""
-        case "4": return ""
-        case "cfg":
-        case "terms":
-        case "db": return ""
-        default: return ""
-        }
+        return config.workspaceIcons[displayName] || config.workspaceIcons.default
     }
 
     visible: special === showSpecial && (!special || specialActive)
-    implicitWidth: workspaceLabel.implicitWidth + 10
-    implicitHeight: 30
-    color: workspace.urgent ? "#eb4d4b" : active ? "#64727d" : "transparent"
+    implicitWidth: workspaceLabel.implicitWidth + config.workspaceHorizontalPadding
+    implicitHeight: config.barHeight
+    color: workspace.urgent ? config.urgentBackgroundColor
+        : active ? config.activeBackgroundColor
+        : "transparent"
 
     Text {
         id: workspaceLabel
         anchors.centerIn: parent
         text: `${root.displayName}: ${root.icon()}`
-        color: "white"
-        font.family: "Hack Nerd Font Propo"
-        font.pixelSize: 14
+        color: root.config.textColor
+        font.family: root.config.fontFamily
+        font.pixelSize: root.config.fontPixelSize
     }
 
     MouseArea {

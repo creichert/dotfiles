@@ -1,11 +1,17 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
+import "bar"
 import "services"
 
 ShellRoot {
+    Config {
+        id: config
+    }
+
     Metrics {
         id: metricsService
+        config: config
     }
 
     Variants {
@@ -14,7 +20,8 @@ ShellRoot {
         Bar {
             required property var modelData
             screen: modelData
-            visible: modelData.name === "DP-1"
+            visible: modelData.name === config.primaryMonitor
+            config: config
             metrics: metricsService
         }
     }

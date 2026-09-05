@@ -1,8 +1,13 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
 
 RowLayout {
+    id: workspaceRow
+
+    required property var config
     spacing: 0
 
     Connections {
@@ -20,6 +25,7 @@ RowLayout {
         delegate: WorkspaceButton {
             required property var modelData
             workspace: modelData
+            config: workspaceRow.config
         }
     }
 
@@ -29,6 +35,7 @@ RowLayout {
         delegate: WorkspaceButton {
             required property var modelData
             workspace: modelData
+            config: workspaceRow.config
             showSpecial: true
         }
     }

@@ -6,7 +6,8 @@ import Quickshell.Widgets
 Item {
     id: root
 
-    implicitHeight: 30
+    required property var config
+    implicitHeight: config.barHeight
     implicitWidth: titleRow.implicitWidth
     clip: true
 
@@ -24,7 +25,7 @@ Item {
     Row {
         id: titleRow
         anchors.centerIn: parent
-        spacing: 6
+        spacing: root.config.titleSpacing
         property var currentToplevel: root.toplevel
         property string iconSource: root.iconSource.length > 0
             ? root.iconSource
@@ -40,8 +41,9 @@ Item {
             width: Math.min(800, implicitWidth)
             elide: Text.ElideRight
             text: titleRow.currentToplevel ? titleRow.currentToplevel.title : ""
-            color: "white"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
     }
 }

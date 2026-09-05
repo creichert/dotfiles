@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+temperature_hwmon_path=${1:?missing temperature hwmon path}
+interval_seconds=${2:?missing metrics interval}
+temperature_interval_samples=${3:?missing temperature interval samples}
+
 previous_total=0
 previous_idle=0
 sample_number=0
@@ -33,8 +37,8 @@ while true; do
     done < /proc/meminfo
     memory_percent=$((100 * (memory_total - memory_available) / memory_total))
 
-    if (( sample_number % 3 == 1 )); then
-        for temperature_file in /sys/bus/pci/drivers/k10temp/0000:00:18.3/hwmon/hwmon*/temp1_input; do
+    if (( sample_number % temperature_interval_samples == 1 )); then
+        for temperature_file in "$temperature_hwmon_path"/hwmon*/temp1_input; do
             if [[ -r "$temperature_file" ]]; then
                 temperature_millidegrees=$(< "$temperature_file")
                 temperature_c=$((temperature_millidegrees / 1000))
@@ -69,5 +73,5 @@ while true; do
     timestamp_ms=${timestamp_ms:0:13}
     printf '{"cpuPercent":%s,"memoryPercent":%s,"temperatureC":%s,"interfaceName":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
         "$cpu_percent" "$memory_percent" "$temperature_c" "$interface_name" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
-    sleep 2
+    sleep "$interval_seconds"
 done

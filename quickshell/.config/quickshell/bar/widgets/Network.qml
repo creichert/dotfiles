@@ -4,8 +4,9 @@ Item {
     id: root
 
     required property var metrics
-    implicitWidth: networkRow.implicitWidth + 16
-    implicitHeight: 30
+    required property var config
+    implicitWidth: networkRow.implicitWidth + config.moduleHorizontalPadding
+    implicitHeight: config.barHeight
 
     function rate(bytes) {
         const bits = bytes * 8
@@ -18,60 +19,60 @@ Item {
 
     TextMetrics {
         id: rateMetrics
-        text: "999.9 Mb/s"
-        font.family: "Hack Nerd Font Propo"
-        font.pixelSize: 14
+        text: root.config.networkRateWidthLabel
+        font.family: root.config.fontFamily
+        font.pixelSize: root.config.fontPixelSize
     }
 
     Row {
         id: networkRow
         anchors.centerIn: parent
-        spacing: 6
+        spacing: root.config.networkSpacing
 
         Text {
             text: root.metrics.interfaceName.length > 0 ? root.metrics.interfaceName : "Disconnected"
-            color: "white"
-            font.family: "Hack Nerd Font Propo"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
 
         Text {
             text: root.metrics.interfaceName.length > 0 ? "󰱔 |" : "⚠"
-            color: "white"
-            font.family: "Hack Nerd Font Propo"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
 
         Text {
             width: rateMetrics.width
             horizontalAlignment: Text.AlignRight
             text: root.metrics.interfaceName.length > 0 ? root.rate(root.metrics.transmitBytesPerSecond) : ""
-            color: "white"
-            font.family: "Hack Nerd Font Propo"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
 
         Text {
             text: ""
-            color: "white"
-            font.family: "Hack Nerd Font Propo"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
 
         Text {
             width: rateMetrics.width
             horizontalAlignment: Text.AlignRight
             text: root.metrics.interfaceName.length > 0 ? root.rate(root.metrics.receiveBytesPerSecond) : ""
-            color: "white"
-            font.family: "Hack Nerd Font Propo"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
 
         Text {
             text: ""
-            color: "white"
-            font.family: "Hack Nerd Font Propo"
-            font.pixelSize: 14
+            color: root.config.textColor
+            font.family: root.config.fontFamily
+            font.pixelSize: root.config.fontPixelSize
         }
     }
 }

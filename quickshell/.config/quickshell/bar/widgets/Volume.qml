@@ -4,8 +4,9 @@ import Quickshell.Services.Pipewire
 Item {
     id: root
 
-    implicitWidth: volumeText.implicitWidth + 16
-    implicitHeight: 30
+    required property var config
+    implicitWidth: volumeText.implicitWidth + config.moduleHorizontalPadding
+    implicitHeight: config.barHeight
 
     readonly property var sink: Pipewire.ready ? Pipewire.defaultAudioSink : null
     readonly property bool muted: sink && sink.audio ? sink.audio.muted : false
@@ -14,7 +15,7 @@ Item {
     function icon() {
         if (percent === 0)
             return ""
-        if (percent < 50)
+        if (percent < config.volumeMediumThreshold)
             return ""
         return ""
     }
@@ -27,9 +28,9 @@ Item {
         id: volumeText
         anchors.centerIn: parent
         text: !parent.sink ? "--% " : parent.muted ? "" : `${parent.percent}% ${parent.icon()}`
-        color: "white"
-        font.family: "Hack Nerd Font Propo"
-        font.pixelSize: 14
+        color: parent.config.textColor
+        font.family: parent.config.fontFamily
+        font.pixelSize: parent.config.fontPixelSize
     }
 
     MouseArea {

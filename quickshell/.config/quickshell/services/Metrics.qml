@@ -4,6 +4,7 @@ import Quickshell.Io
 QtObject {
     id: root
 
+    required property var config
     property real cpuPercent: 0
     property real memoryPercent: 0
     property real temperatureC: 0
@@ -38,7 +39,13 @@ QtObject {
 
     property Process metricsProcess: Process {
         running: true
-        command: ["bash", Qt.resolvedUrl("../scripts/metrics.sh").toString().replace("file://", "")]
+        command: [
+            "bash",
+            Qt.resolvedUrl("../scripts/metrics.sh").toString().replace("file://", ""),
+            root.config.cpuTemperatureHwmonPath,
+            root.config.metricsIntervalSeconds.toString(),
+            root.config.temperatureIntervalSamples.toString()
+        ]
         stdout: SplitParser {
             onRead: data => root.update(data)
         }
