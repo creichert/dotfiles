@@ -4,3 +4,5 @@
 *_rsa
 *_dsa
 *.gpg
+
+*.qmlls.ini
