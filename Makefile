@@ -12,6 +12,7 @@ ALL_PACKAGES := \
 	git \
 	bin \
 	waybar \
+	quickshell \
 	wofi \
 	mako \
 	kitty \

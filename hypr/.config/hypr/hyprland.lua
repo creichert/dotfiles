@@ -76,7 +76,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("uwsm app -s b -t service hyprpaper")
     hl.exec_cmd("uwsm app -s b -t service hyprsunset")
     hl.exec_cmd("uwsm app -s b -t service hypridle")
-    hl.exec_cmd("uwsm app -s b -t service waybar")
+    hl.exec_cmd("uwsm-app -s b -t service -- qs --no-duplicate")
 
     -- hyprpolkitagent is a polkit authentication daemon. It is required for GUI
     -- applications to be able to request elevated privileges.
