@@ -1,3 +1,4 @@
+// qmllint disable uncreatable-type
 import QtQuick
 import QtQuick.Layouts
 import Quickshell

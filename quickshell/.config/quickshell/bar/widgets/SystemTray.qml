@@ -9,6 +9,7 @@ Item {
     id: root
 
     required property var config
+    visible: SystemTray.items.values.length > 0
     implicitWidth: trayRow.implicitWidth
     implicitHeight: config.barHeight
 
