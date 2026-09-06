@@ -13,7 +13,6 @@ QtObject {
     property string inhibitedBackgroundColor: "#ecf0f1"
     property string inhibitedTextColor: "#2d3436"
     property int barSpacing: 4
-    property int barRightMargin: 4
     property int moduleHorizontalPadding: 16
     property int trayIconSize: 18
 

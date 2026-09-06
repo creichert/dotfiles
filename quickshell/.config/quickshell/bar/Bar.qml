@@ -12,6 +12,7 @@ PanelWindow {
     required property var config
     implicitHeight: config.barHeight
     color: config.barBackgroundColor
+    readonly property int rightMargin: systemTray.visible ? config.barSpacing : 0
 
     anchors {
         top: true
@@ -42,7 +43,7 @@ PanelWindow {
         anchors.verticalCenter: parent.verticalCenter
         width: Math.max(0, Math.min(
             root.config.titleMaximumWidth,
-            parent.width - 2 * Math.max(leftModules.width, rightModules.width + root.config.barRightMargin)
+            parent.width - 2 * Math.max(leftModules.width, rightModules.width + root.rightMargin)
         ))
         config: root.config
     }
@@ -51,7 +52,7 @@ PanelWindow {
         id: rightModules
 
         anchors.right: parent.right
-        anchors.rightMargin: root.config.barRightMargin
+        anchors.rightMargin: root.rightMargin
         anchors.verticalCenter: parent.verticalCenter
         spacing: root.config.barSpacing
 
@@ -89,6 +90,8 @@ PanelWindow {
         }
 
         Widgets.SystemTray {
+            id: systemTray
+
             config: root.config
         }
     }
