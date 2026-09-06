@@ -86,5 +86,9 @@ PanelWindow {
         Widgets.Clock {
             config: root.config
         }
+
+        Widgets.SystemTray {
+            config: root.config
+        }
     }
 }

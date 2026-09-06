@@ -15,6 +15,7 @@ QtObject {
     property int barSpacing: 4
     property int barRightMargin: 4
     property int moduleHorizontalPadding: 16
+    property int trayIconSize: 18
 
     // Workspace presentation
     property int workspaceHorizontalPadding: 10
