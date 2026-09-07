@@ -14,8 +14,8 @@ merging the `quickshell` branch.
 - Laptop-specific Waybar differences currently exist as local/stashed changes:
   - Backlight module.
   - Battery module.
-- Quickshell currently targets `DP-1` and is launched manually.
-- Waybar remains UWSM-managed by Hyprland.
+- Quickshell currently targets `DP-1` and is UWSM-managed by Hyprland.
+- Waybar is disabled in Hyprland startup.
 - Mako and Wofi remain active and unchanged.
 - Waybar, Mako, Wofi, and their packages remain installed until final cleanup.
 - Branch rollback is the recovery path until merge: switch to `master` and
@@ -48,19 +48,22 @@ merging the `quickshell` branch.
   - `a6b0816 Refactor Quickshell bar configuration`
   - `9541ee3 Center Quickshell window title`
 
-### 2. Desktop Workstation Integration
+### 2. Completed: Desktop Workstation Integration
 
-- Scope: desktop workstation only.
-- Add Quickshell to the default Stow package set.
-- Start Quickshell through an explicit UWSM/Hyprland path using the stowed
-  `~/.config/quickshell/shell.qml`.
-- Disable Waybar in the same activation change.
-- Add a minimal auto-hiding StatusNotifier tray host.
-- The tray must occupy no bar space when empty and only expand when an
-  application registers an item.
-- Validate through a fresh Hyprland session.
-- Do not automatically reload or apply the live desktop configuration.
-- Do not change Wofi or Mako in this milestone.
+- Scope was limited to the desktop workstation.
+- Quickshell is part of the default Stow package set and is launched through
+  UWSM using the stowed `~/.config/quickshell/shell.qml`.
+- Waybar is disabled in the same Hyprland activation path.
+- A minimal auto-hiding StatusNotifier tray host occupies no bar space when
+  empty and expands when an application registers an item.
+- Window icons use the active Hyprland toplevel's Wayland app ID.
+- Validated in both an existing and a fresh Hyprland session, including newly
+  created Kitty, Emacs, Chromium, primary-workspace, and scratchpad windows.
+- Wofi and Mako remain unchanged.
+- Commits:
+  - `4e92b8e Start Quickshell with UWSM`
+  - `2d36cf7 Start desktop services before applications`
+  - `f9a8a79 Use Wayland app IDs for window icons`
 
 ### 3. Notification System
 
