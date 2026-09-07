@@ -12,35 +12,27 @@ Item {
     clip: true
 
     readonly property var toplevel: Hyprland.activeToplevel
-    readonly property var hyprlandToplevel: Hyprland.toplevels.values.find(window => window.activated)
-    readonly property string appId: toplevel && toplevel.appId
-        ? toplevel.appId
-        : hyprlandToplevel && hyprlandToplevel.lastIpcObject
-            ? hyprlandToplevel.lastIpcObject.class || ""
-            : ""
+    readonly property var waylandToplevel: toplevel ? toplevel.wayland : null
+    readonly property string appId: waylandToplevel ? waylandToplevel.appId || "" : ""
     readonly property string iconSource: appId.length > 0
-        ? Quickshell.iconPath(appId, true)
-        : ""
+        ? Quickshell.iconPath(appId, "application-x-executable")
+        : Quickshell.iconPath("application-x-executable", true)
 
     Row {
         id: titleRow
         anchors.centerIn: parent
         spacing: root.config.titleSpacing
-        property var currentToplevel: root.toplevel
-        property string iconSource: root.iconSource.length > 0
-            ? root.iconSource
-            : root.toplevel ? Quickshell.iconPath("application-x-executable", true) : ""
 
         IconImage {
-            visible: titleRow.iconSource.length > 0
-            source: titleRow.iconSource
+            visible: root.iconSource.length > 0
+            source: root.iconSource
             implicitSize: 16
         }
 
         Text {
             width: Math.min(800, implicitWidth)
             elide: Text.ElideRight
-            text: titleRow.currentToplevel ? titleRow.currentToplevel.title : ""
+            text: root.toplevel ? root.toplevel.title : ""
             color: root.config.textColor
             font.family: root.config.fontFamily
             font.pixelSize: root.config.fontPixelSize
