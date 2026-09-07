@@ -17,7 +17,8 @@ merging the `quickshell` branch.
 - Quickshell currently targets `DP-1` and is UWSM-managed by Hyprland.
 - Waybar is disabled in Hyprland startup.
 - Mako and Wofi remain active and unchanged.
-- Waybar, Mako, Wofi, and their packages remain installed until final cleanup.
+- Waybar and Wofi remain installed until final cleanup. Mako remains installed
+  until the Milestone 3A live cutover.
 - Branch rollback is the recovery path until merge: switch to `master` and
   restart the Hyprland session.
 
@@ -64,21 +65,47 @@ merging the `quickshell` branch.
   - `4e92b8e Start Quickshell with UWSM`
   - `2d36cf7 Start desktop services before applications`
   - `f9a8a79 Use Wayland app IDs for window icons`
+  - `1fa05e7 Guard special workspace state`
 
 ### 3. Notification System
 
-- Design before implementation.
-- Scope:
-  - Notification toasts.
-  - Do Not Disturb.
-  - Persistent history.
-  - Clear and dismiss actions.
-  - Notification-center UI.
-  - Notification actions.
-- Replace Mako only when Quickshell is ready to exclusively own
-  `org.freedesktop.Notifications`.
-- Replace `makoctl` keybindings in the same activation change.
-- Implement and validate on the desktop workstation first.
+#### 3A. Toast Replacement
+
+- Replace Mako with a Quickshell `NotificationServer` as the exclusive owner
+  of `org.freedesktop.Notifications`.
+- Keep the Quickshell notification server disabled until the live cutover.
+  When the implementation is ready to validate, uninstall Mako to remove its
+  D-Bus activation file, stop any already-running Mako process, enable the
+  Quickshell server, and replace its `makoctl` bindings in one coordinated
+  change.
+- Scope is limited to `DP-1` desktop toasts:
+  - Top-right host with at most three visible regular notifications.
+  - Bounded FIFO overflow queue without application grouping.
+  - Controller-owned five-second normal timeout that ignores application
+    expiry requests.
+  - Critical notifications remain visible until dismissed.
+  - Session-only notification records survive Quickshell reloads but not a
+    Hyprland session restart.
+  - `Super+Escape` dismisses visible toasts.
+  - `Super+Ctrl+Escape` re-shows the most recently dismissed toast.
+  - Notification action buttons are supported; a toast click invokes an
+    explicit `default` action when present.
+  - Notification bodies support styled markup and user-clicked `http`/`https`
+    links. Strip body image tags before rendering.
+- Do not advertise or implement body images, action icons, inline replies, or
+  non-web URL schemes in this phase.
+- Use the current dark bar palette for normal notifications and
+  `urgentBackgroundColor` for critical notifications.
+- Validate with `notify-send`, Chromium/Slack notifications, and OpenCode
+  notification actions in an existing and fresh Hyprland session.
+
+#### 3B. Notification Management
+
+- Add Do Not Disturb: retain normal notifications for management while
+  suppressing their toasts; critical notifications bypass Do Not Disturb.
+- Add bar unread and Do Not Disturb state.
+- Add a notification-center popup with session history, read state, individual
+  dismissal, and clear actions.
 
 ### 4. New Quickshell-Native UX
 
@@ -127,7 +154,7 @@ merging the `quickshell` branch.
 ### 7. Final Cleanup
 
 - After both hosts are stable and the branch is ready to merge, remove unused
-  Waybar, Mako, Wofi, and related configuration/packages deliberately.
+  Waybar, Wofi, and related configuration/packages deliberately.
 - Remove this roadmap document before merge.
 - Do not mix cleanup with feature activation milestones.
 

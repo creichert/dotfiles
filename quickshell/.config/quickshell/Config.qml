@@ -16,6 +16,17 @@ QtObject {
     property int moduleHorizontalPadding: 16
     property int trayIconSize: 18
 
+    // Notifications remain disabled until Mako is removed for the live cutover.
+    property bool notificationServerEnabled: false
+    property int notificationToastTimeout: 5000
+    property int notificationMaximumVisible: 3
+    property int notificationMaximumQueued: 20
+    property int notificationHistoryLimit: 100
+    property int notificationWidth: 400
+    property int notificationSpacing: 8
+    property int notificationMargin: 12
+    property string notificationBackgroundColor: "#d92b303b"
+
     // Workspace presentation
     property int workspaceHorizontalPadding: 10
     property var workspaceIcons: ({

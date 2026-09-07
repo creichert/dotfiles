@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
 import Quickshell
 import "bar"
 import "services"
@@ -12,6 +13,14 @@ ShellRoot {
     Metrics {
         id: metricsService
         config: config
+    }
+
+    Loader {
+        active: config.notificationServerEnabled
+
+        sourceComponent: Notifications {
+            config: config
+        }
     }
 
     Variants {
