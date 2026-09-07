@@ -16,8 +16,8 @@ QtObject {
     property int moduleHorizontalPadding: 16
     property int trayIconSize: 18
 
-    // Notifications remain disabled until Mako is removed for the live cutover.
-    property bool notificationServerEnabled: false
+    // Quickshell is the session notification daemon.
+    property bool notificationServerEnabled: true
     property int notificationToastTimeout: 5000
     property int notificationMaximumVisible: 3
     property int notificationMaximumQueued: 20

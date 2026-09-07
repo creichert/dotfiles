@@ -8,7 +8,6 @@
 -- - hyprshot
 -- - hyprpicker
 -- - wofi
--- - mako
 -- - cliphist
 -- - playerctl
 
@@ -257,8 +256,8 @@ hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd("hyprctl reload"))
 -- hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exit())
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("uwsm stop"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("uwsm app " .. terminal))
-hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("makoctl dismiss -a"))
-hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("makoctl restore"))
+hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications dismissVisible"))
+hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications restoreLastDismissed"))
 
 -- Move windows around.
 hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))

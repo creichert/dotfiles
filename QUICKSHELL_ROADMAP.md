@@ -84,15 +84,13 @@ merging the `quickshell` branch.
 
 ### 3. Notification System
 
-#### 3A. Toast Replacement
+#### 3A. Completed: Toast Replacement
 
 - Replace Mako with a Quickshell `NotificationServer` as the exclusive owner
   of `org.freedesktop.Notifications`.
-- Keep the Quickshell notification server disabled until the live cutover.
-  When the implementation is ready to validate, uninstall Mako to remove its
-  D-Bus activation file, stop any already-running Mako process, enable the
-  Quickshell server, and replace its `makoctl` bindings in one coordinated
-  change.
+- Mako was uninstalled before a fresh Hyprland session. Quickshell now owns
+  `org.freedesktop.Notifications`; its `makoctl` bindings were replaced with
+  notification-controller IPC bindings.
 - Scope is limited to `DP-1` desktop toasts:
   - Top-right host with at most three visible regular notifications.
   - Bounded FIFO overflow queue without application grouping.
@@ -113,6 +111,9 @@ merging the `quickshell` branch.
   `urgentBackgroundColor` for critical notifications.
 - Validate with `notify-send`, Chromium/Slack notifications, and OpenCode
   notification actions in an existing and fresh Hyprland session.
+- Initial `notify-send` validation passed: normal and critical notifications,
+  FIFO promotion, markup and links, controller bindings, and action buttons.
+  Application icon and full client validation continue through normal use.
 
 #### 3B. Notification Management
 
@@ -121,6 +122,10 @@ merging the `quickshell` branch.
 - Add bar unread and Do Not Disturb state.
 - Add a notification-center popup with session history, read state, individual
   dismissal, and clear actions.
+- Preserve action-capable notifications only for the current Quickshell
+  process lifetime; actions are not guaranteed after a reload.
+- Keep card-click behavior without a `default` action and critical-toast
+  click behavior unchanged until real application use establishes a need.
 
 ### 4. New Quickshell-Native UX
 
