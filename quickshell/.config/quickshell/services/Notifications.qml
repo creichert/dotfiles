@@ -14,6 +14,9 @@ Item {
     property alias queuedNotifications: state.queuedNotifications
     property alias lastDismissed: state.lastDismissed
     property alias history: state.history
+    property alias doNotDisturb: state.doNotDisturb
+    property var liveNotifications: []
+    property var actionNotifications: []
 
     PersistentProperties {
         id: state
@@ -23,6 +26,7 @@ Item {
         property var queuedNotifications: []
         property var lastDismissed: null
         property var history: []
+        property bool doNotDisturb: false
     }
 
     function indexOfNotification(notifications, notification) {
@@ -59,6 +63,7 @@ Item {
     function removeNotification(notification) {
         visibleNotifications = removeFrom(visibleNotifications, notification)
         queuedNotifications = removeFrom(queuedNotifications, notification)
+        liveNotifications = removeFrom(liveNotifications, notification)
 
         if (lastDismissed && lastDismissed.id === notification.id)
             lastDismissed = null
@@ -74,7 +79,9 @@ Item {
             summary: notification.summary,
             body: notification.body,
             urgency: notification.urgency,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            unread: true,
+            hasActions: notification.actions.length > 0
         }
         const index = history.findIndex(existing => existing.id === notification.id)
         const next = history.slice()
@@ -84,10 +91,111 @@ Item {
         else
             next[index] = record
 
-        if (next.length > config.notificationHistoryLimit)
-            next.splice(0, next.length - config.notificationHistoryLimit)
+        if (next.length > config.notificationHistoryLimit) {
+            const removed = next.splice(0, next.length - config.notificationHistoryLimit)
+
+            for (const previous of removed)
+                releaseActions(previous.id)
+        }
 
         history = next
+    }
+
+    function notificationById(notifications, id) {
+        for (const notification of notifications) {
+            if (notification.id === id)
+                return notification
+        }
+
+        return null
+    }
+
+    function actionNotification(id) {
+        return notificationById(actionNotifications, id)
+    }
+
+    function retainActions(notification) {
+        if (notification.actions.length === 0)
+            return
+
+        actionNotifications = removeFrom(actionNotifications, notification).concat(notification)
+    }
+
+    function releaseActions(id) {
+        const notification = actionNotification(id)
+
+        if (notification)
+            actionNotifications = removeFrom(actionNotifications, notification)
+    }
+
+    function historyRecord(id) {
+        for (const record of history) {
+            if (record.id === id)
+                return record
+        }
+
+        return null
+    }
+
+    function updateHistory(id, update) {
+        const index = history.findIndex(record => record.id === id)
+
+        if (index === -1)
+            return
+
+        const next = history.slice()
+        next[index] = Object.assign({}, next[index], update)
+        history = next
+    }
+
+    function setRead(id, unread) {
+        updateHistory(id, { unread: unread })
+    }
+
+    function dismissHistoryRecord(id) {
+        const notification = notificationById(liveNotifications, id)
+
+        if (notification)
+            notification.dismiss()
+
+        history = history.filter(record => record.id !== id)
+        releaseActions(id)
+    }
+
+    function clearHistory() {
+        const notifications = liveNotifications.slice()
+
+        visibleNotifications = []
+        queuedNotifications = []
+        liveNotifications = []
+        actionNotifications = []
+        lastDismissed = null
+        history = []
+
+        for (const notification of notifications)
+            notification.dismiss()
+    }
+
+    function actionsFor(id) {
+        const notification = actionNotification(id)
+            || notificationById(liveNotifications, id)
+
+        return notification ? notification.actions : []
+    }
+
+    function invokeAction(id, identifier) {
+        for (const action of actionsFor(id)) {
+            if (action.identifier === identifier) {
+                action.invoke()
+                setRead(id, false)
+                releaseActions(id)
+                return
+            }
+        }
+    }
+
+    function invokeDefaultAction(id) {
+        invokeAction(id, "default")
     }
 
     function showNotification(notification) {
@@ -114,7 +222,10 @@ Item {
 
     function trackNotification(notification) {
         notification.tracked = true
+        liveNotifications = removeFrom(liveNotifications, notification).concat(notification)
         recordNotification(notification)
+        releaseActions(notification.id)
+        retainActions(notification)
 
         // Replacement notifications reuse an ID and keep their current slot.
         const wasVisible = indexOfNotification(visibleNotifications, notification) !== -1
@@ -123,7 +234,7 @@ Item {
 
         if (wasVisible)
             visibleNotifications = visibleNotifications.concat(notification)
-        else
+        else if (!doNotDisturb || notification.urgency === NotificationUrgency.Critical)
             showNotification(notification)
     }
 
@@ -158,6 +269,10 @@ Item {
 
         function restoreLastDismissed(): void {
             root.restoreLastDismissed()
+        }
+
+        function toggleDoNotDisturb(): void {
+            root.doNotDisturb = !root.doNotDisturb
         }
     }
 
@@ -199,6 +314,17 @@ Item {
                 running: tracker.modelData.urgency !== NotificationUrgency.Critical
                 onTriggered: tracker.modelData.expire()
             }
+        }
+    }
+
+    Instantiator {
+        model: root.actionNotifications
+
+        delegate: RetainableLock {
+            required property var modelData
+
+            object: modelData
+            locked: true
         }
     }
 

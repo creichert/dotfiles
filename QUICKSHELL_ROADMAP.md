@@ -122,6 +122,21 @@ merging the `quickshell` branch.
 - Add bar unread and Do Not Disturb state.
 - Add a notification-center popup with session history, read state, individual
   dismissal, and clear actions.
+- Place a bell/count control before the clock. Its left click opens an anchored
+  popup; Do Not Disturb remains a popup-header control rather than a second bar
+  button.
+- Keep all notifications in the center from arrival, including currently
+  visible and queued toasts. New records are unread and require explicit
+  individual read/unread toggling.
+- When Do Not Disturb is enabled, leave existing normal toasts alone; retain
+  subsequent normal notifications in history only and never replay them on
+  disable. Critical notifications continue to toast.
+- Clear All removes history and dismisses every live or queued notification.
+  Individual removal dismisses a live notification when it still exists.
+- Use a `PopupWindow` with outside-click and Escape dismissal. It must not
+  become a Hyprland-decorated focused window.
+- Show 24-hour timestamps as time today, date plus time earlier this year, and
+  date plus year and time in prior years.
 - Preserve action-capable notifications only for the current Quickshell
   process lifetime; actions are not guaranteed after a reload.
 - Keep card-click behavior without a `default` action and critical-toast

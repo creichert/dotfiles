@@ -23,6 +23,7 @@ QtObject {
     property int notificationMaximumQueued: 20
     property int notificationHistoryLimit: 100
     property int notificationWidth: 400
+    property int notificationCenterHeight: 600
     property int notificationSpacing: 8
     property int notificationMargin: 12
     property string notificationBackgroundColor: "#d92b303b"

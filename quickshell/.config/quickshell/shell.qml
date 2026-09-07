@@ -16,6 +16,8 @@ ShellRoot {
     }
 
     Loader {
+        id: notificationLoader
+
         active: config.notificationServerEnabled
 
         sourceComponent: Notifications {
@@ -32,6 +34,7 @@ ShellRoot {
             visible: modelData.name === config.primaryMonitor
             config: config
             metrics: metricsService
+            notifications: notificationLoader.item
         }
     }
 }

@@ -4,12 +4,14 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import "widgets" as Widgets
+import "../notifications" as Notifications
 
 PanelWindow {
     id: root
 
     required property var metrics
     required property var config
+    property var notifications: null
     implicitHeight: config.barHeight
     color: config.barBackgroundColor
     readonly property int rightMargin: systemTray.visible ? config.barSpacing : 0
@@ -85,6 +87,13 @@ PanelWindow {
             config: root.config
         }
 
+        Widgets.NotificationCenterButton {
+            id: notificationButton
+
+            controller: root.notifications
+            config: root.config
+        }
+
         Widgets.Clock {
             config: root.config
         }
@@ -94,5 +103,14 @@ PanelWindow {
 
             config: root.config
         }
+    }
+
+    Notifications.NotificationCenter {
+        anchorItem: notificationButton
+        bar: root
+        config: root.config
+        controller: root.notifications
+        open: notificationButton.centerVisible
+        onDismissed: notificationButton.centerVisible = false
     }
 }
