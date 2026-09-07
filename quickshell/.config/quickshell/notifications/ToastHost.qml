@@ -1,5 +1,7 @@
 pragma ComponentBehavior: Bound
 
+// qmllint disable uncreatable-type
+
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
@@ -20,10 +22,12 @@ PanelWindow {
         right: true
     }
 
-    margins {
-        top: config.barHeight + config.notificationMargin
-        right: config.notificationMargin
-    }
+    // qmllint disable unqualified
+    // qmllint disable unresolved-type
+    margins.top: config.barHeight + config.notificationMargin
+    margins.right: config.notificationMargin
+    // qmllint enable unresolved-type
+    // qmllint enable unqualified
 
     Column {
         id: toastColumn

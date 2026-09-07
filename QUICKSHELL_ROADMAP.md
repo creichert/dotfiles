@@ -36,6 +36,21 @@ merging the `quickshell` branch.
 - GPU monitoring remains optional and outside the MVP.
 - Portal and RTKit installation are external system work, not a dotfiles change.
 
+## DPMS Freeze Diagnostic
+
+- On 2026-09-07, one desktop freeze occurred after `hypridle` powered displays
+  off and input woke them. A controlled retry with a 20-second timeout did not
+  reproduce it; retain the normal five-minute timeout unless it recurs.
+- The observed DPMS transition included AMDGPU display-controller `REG_WAIT`
+  timeouts and Aquamarine output reconfiguration. Causality is unconfirmed.
+- If it recurs, switch to a TTY and run `capture-hyprland-freeze.sh` from the
+  repository root before terminating Hyprland.
+- The script writes `~/.local/state/hyprland-freeze-<timestamp>.log` with
+  Hyprland thread states and GDB backtraces plus recent kernel and user
+  journals.
+- The prior core dump was captured after forced shutdown began, so it cannot
+  diagnose the live freeze. Capture before recovery is required.
+
 ## Milestones
 
 ### 1. Completed: Bar Foundation

@@ -6,7 +6,7 @@ import Quickshell.Io
 import Quickshell.Services.Notifications
 import "../notifications" as Notifications
 
-QtObject {
+Item {
     id: root
 
     required property var config
@@ -180,7 +180,7 @@ QtObject {
     Repeater {
         model: server.trackedNotifications
 
-        delegate: QtObject {
+        delegate: Item {
             id: tracker
 
             required property var modelData
