@@ -106,7 +106,6 @@ PanelWindow {
     }
 
     Notifications.NotificationCenter {
-        anchorItem: notificationButton
         bar: root
         config: root.config
         controller: root.notifications

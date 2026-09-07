@@ -290,6 +290,10 @@ Item {
         function toggleDoNotDisturb(): void {
             root.doNotDisturb = !root.doNotDisturb
         }
+
+        function clearHistory(): void {
+            root.clearHistory()
+        }
     }
 
     NotificationServer {

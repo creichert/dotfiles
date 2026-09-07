@@ -27,7 +27,7 @@ QtObject {
     property int notificationCenterHeight: 600
     property int notificationSpacing: 8
     property int notificationMargin: 12
-    property string notificationBackgroundColor: "#d92b303b"
+    property string notificationBackgroundColor: "#e62b303b"
 
     // Workspace presentation
     property int workspaceHorizontalPadding: 10

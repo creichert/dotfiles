@@ -12,7 +12,7 @@ Rectangle {
     required property var record
     implicitHeight: content.implicitHeight + 20
     radius: 6
-    color: record.urgency === 2 ? config.urgentBackgroundColor : config.barBackgroundColor
+    color: record.urgency === 2 ? config.urgentBackgroundColor : config.notificationBackgroundColor
     border.width: 1
     border.color: config.accentColor
 

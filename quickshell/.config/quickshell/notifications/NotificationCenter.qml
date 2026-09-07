@@ -8,7 +8,6 @@ import Quickshell
 PopupWindow {
     id: root
 
-    required property var anchorItem
     required property var bar
     required property var config
     property var controller: null
@@ -21,11 +20,8 @@ PopupWindow {
     color: "transparent"
 
     anchor.window: bar
-    anchor.item: anchorItem
-    // qmllint disable missing-type
-    anchor.edges: Edges.Bottom
-    anchor.gravity: Edges.Bottom | Edges.Right
-    // qmllint enable missing-type
+    anchor.rect.x: bar.width - width - config.notificationMargin
+    anchor.rect.y: bar.height + config.notificationMargin
 
     onVisibleChanged: {
         if (!visible)
@@ -52,7 +48,9 @@ PopupWindow {
         Rectangle {
             anchors.fill: parent
             radius: 6
-            color: root.config.barBackgroundColor
+            color: root.config.notificationBackgroundColor
+            border.width: 1
+            border.color: root.config.accentColor
 
             Column {
                 anchors {

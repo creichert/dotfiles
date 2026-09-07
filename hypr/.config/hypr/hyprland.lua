@@ -258,6 +258,8 @@ hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("uwsm stop"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("uwsm app " .. terminal))
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications dismissVisible"))
 hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications restoreLastDismissed"))
+hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd("qs ipc call notifications toggleDoNotDisturb"))
+hl.bind(mainMod .. " + SHIFT + escape", hl.dsp.exec_cmd("qs ipc call notifications clearHistory"))
 
 -- Move windows around.
 hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))

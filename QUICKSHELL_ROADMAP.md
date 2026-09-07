@@ -144,6 +144,9 @@ merging the `quickshell` branch.
 - Use the existing Hyprland accent border color on toast and center cards.
   Keep the center and normal cards on the dark bar background until a unified
   component styling pass.
+- Place the center 12 pixels below the bar and from the display's right edge.
+  `Super+Ctrl+N` toggles Do Not Disturb; `Super+Shift+Escape` clears history,
+  visible toasts, and queued notifications.
 - Defer merging identical fresh notifications until real-client usage defines
   a safe deduplication window and toast behavior.
 - Preserve action-capable notifications only for the current Quickshell
