@@ -16,6 +16,8 @@ Rectangle {
     color: notification.urgency === NotificationUrgency.Critical
         ? config.urgentBackgroundColor
         : config.notificationBackgroundColor
+    border.width: 1
+    border.color: config.accentColor
 
     function bodyText(body) {
         // StyledText can load body images, which are intentionally unsupported.
@@ -30,26 +32,14 @@ Rectangle {
 
         const scheme = match[1].toLowerCase()
 
-        if (scheme === "http" || scheme === "https")
+        if (scheme === "http" || scheme === "https") {
             Qt.openUrlExternally(link)
-    }
-
-    function defaultAction() {
-        for (const action of notification.actions) {
-            if (action.identifier === "default")
-                return action
+            root.controller.notificationInteracted()
         }
-
-        return null
     }
 
     TapHandler {
-        onTapped: {
-            const action = root.defaultAction()
-
-            if (action)
-                action.invoke()
-        }
+        onTapped: root.controller.invokeDefaultAction(root.notification.id)
     }
 
     Column {
@@ -136,7 +126,7 @@ Rectangle {
             spacing: 6
 
             Repeater {
-                model: root.notification.actions
+                model: root.controller.nonDefaultActionsFor(root.notification.id)
 
                 delegate: Rectangle {
                     id: actionButton
@@ -158,7 +148,7 @@ Rectangle {
                     }
 
                     TapHandler {
-                        onTapped: actionButton.modelData.invoke()
+                        onTapped: root.controller.invokeAction(root.notification.id, actionButton.modelData.identifier)
                     }
                 }
             }

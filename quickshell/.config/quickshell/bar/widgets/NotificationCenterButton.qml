@@ -25,7 +25,7 @@ Rectangle {
     implicitHeight: config.barHeight
     color: controller && controller.doNotDisturb
         ? config.inhibitedBackgroundColor
-        : unreadCount > 0 ? config.activeBackgroundColor : "transparent"
+        : "transparent"
 
     Text {
         anchors.centerIn: parent

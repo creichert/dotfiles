@@ -12,7 +12,9 @@ Rectangle {
     required property var record
     implicitHeight: content.implicitHeight + 20
     radius: 6
-    color: record.urgency === 2 ? config.urgentBackgroundColor : config.notificationBackgroundColor
+    color: record.urgency === 2 ? config.urgentBackgroundColor : config.barBackgroundColor
+    border.width: 1
+    border.color: config.accentColor
 
     function bodyText(body) {
         return body.replace(/<img\b[^>]*>/gi, "")
@@ -21,8 +23,12 @@ Rectangle {
     function openLink(link) {
         const match = link.match(/^([a-z][a-z0-9+.-]*):/i)
 
-        if (match && (match[1].toLowerCase() === "http" || match[1].toLowerCase() === "https"))
+        if (match && (match[1].toLowerCase() === "http" || match[1].toLowerCase() === "https")) {
             Qt.openUrlExternally(link)
+            return true
+        }
+
+        return false
     }
 
     function timestamp() {
@@ -141,7 +147,10 @@ Rectangle {
             color: root.config.textColor
             font.family: root.config.fontFamily
             font.pixelSize: root.config.fontPixelSize - 1
-            onLinkActivated: link => root.openLink(link)
+            onLinkActivated: link => {
+                if (root.openLink(link))
+                    root.controller.notificationInteracted()
+            }
         }
 
         Flow {
@@ -149,7 +158,7 @@ Rectangle {
             spacing: 6
 
             Repeater {
-                model: root.controller.actionsFor(root.record.id)
+                model: root.controller.nonDefaultActionsFor(root.record.id)
 
                 delegate: Rectangle {
                     id: actionButton

@@ -137,6 +137,15 @@ merging the `quickshell` branch.
   become a Hyprland-decorated focused window.
 - Show 24-hour timestamps as time today, date plus time earlier this year, and
   date plus year and time in prior years.
+- Treat the `default` notification action as card-only; do not render it as an
+  empty action button. Invoking a card or action button removes its history
+  record and closes an open center. User-clicked web links close the center but
+  retain their record.
+- Use the existing Hyprland accent border color on toast and center cards.
+  Keep the center and normal cards on the dark bar background until a unified
+  component styling pass.
+- Defer merging identical fresh notifications until real-client usage defines
+  a safe deduplication window and toast behavior.
 - Preserve action-capable notifications only for the current Quickshell
   process lifetime; actions are not guaranteed after a reload.
 - Keep card-click behavior without a `default` action and critical-toast

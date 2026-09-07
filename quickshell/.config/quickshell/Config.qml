@@ -9,6 +9,7 @@ QtObject {
     property string textColor: "white"
     property string barBackgroundColor: "#802b303b"
     property string activeBackgroundColor: "#64727d"
+    property string accentColor: "#32ccffe6"
     property string urgentBackgroundColor: "#eb4d4b"
     property string inhibitedBackgroundColor: "#ecf0f1"
     property string inhibitedTextColor: "#2d3436"

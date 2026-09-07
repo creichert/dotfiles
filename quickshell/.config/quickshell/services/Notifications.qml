@@ -10,6 +10,7 @@ Item {
     id: root
 
     required property var config
+    signal interacted()
     property alias visibleNotifications: state.visibleNotifications
     property alias queuedNotifications: state.queuedNotifications
     property alias lastDismissed: state.lastDismissed
@@ -158,6 +159,10 @@ Item {
         if (notification)
             notification.dismiss()
 
+        removeHistoryRecord(id)
+    }
+
+    function removeHistoryRecord(id) {
         history = history.filter(record => record.id !== id)
         releaseActions(id)
     }
@@ -183,19 +188,29 @@ Item {
         return notification ? notification.actions : []
     }
 
+    function nonDefaultActionsFor(id) {
+        return actionsFor(id).filter(action => action.identifier !== "default")
+    }
+
     function invokeAction(id, identifier) {
         for (const action of actionsFor(id)) {
             if (action.identifier === identifier) {
                 action.invoke()
-                setRead(id, false)
-                releaseActions(id)
-                return
+                removeHistoryRecord(id)
+                interacted()
+                return true
             }
         }
+
+        return false
     }
 
     function invokeDefaultAction(id) {
-        invokeAction(id, "default")
+        return invokeAction(id, "default")
+    }
+
+    function notificationInteracted() {
+        interacted()
     }
 
     function showNotification(notification) {
@@ -258,6 +273,7 @@ Item {
 
     function dismissNotification(notification) {
         notification.dismiss()
+        removeHistoryRecord(notification.id)
     }
 
     IpcHandler {

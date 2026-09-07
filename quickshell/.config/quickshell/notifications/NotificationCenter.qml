@@ -18,6 +18,7 @@ PopupWindow {
     implicitHeight: config.notificationCenterHeight
     visible: open && controller !== null
     grabFocus: true
+    color: "transparent"
 
     anchor.window: bar
     anchor.item: anchorItem
@@ -29,6 +30,14 @@ PopupWindow {
     onVisibleChanged: {
         if (!visible)
             dismissed()
+    }
+
+    Connections {
+        target: root.controller
+
+        function onInteracted() {
+            root.dismissed()
+        }
     }
 
     FocusScope {
@@ -43,7 +52,7 @@ PopupWindow {
         Rectangle {
             anchors.fill: parent
             radius: 6
-            color: root.config.notificationBackgroundColor
+            color: root.config.barBackgroundColor
 
             Column {
                 anchors {
