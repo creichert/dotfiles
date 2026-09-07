@@ -61,27 +61,28 @@ local menu = "pkill wofi || wofi --show drun --term=kitty --define=drun-print_de
 
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
-    hl.exec_cmd("uwsm app -- chromium --restore-last-session", { workspace = "1" })
-
-    -- open editor and term for cfg editing
-    hl.exec_cmd("uwsm app emacs", { workspace = "special:cfg silent" })
-    hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:cfg silent" })
-
     -- clipboard
     os.remove(os.getenv("HOME") .. "/.cache/cliphist/db")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t text --watch cliphist store")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t image --watch cliphist store")
 
     -- background services
+    hl.exec_cmd("uwsm-app -s b -t service -- qs --no-duplicate")
     hl.exec_cmd("uwsm app -s b -t service hyprpaper")
     hl.exec_cmd("uwsm app -s b -t service hyprsunset")
     hl.exec_cmd("uwsm app -s b -t service hypridle")
-    hl.exec_cmd("uwsm-app -s b -t service -- qs --no-duplicate")
 
     -- hyprpolkitagent is a polkit authentication daemon. It is required for GUI
     -- applications to be able to request elevated privileges.
     --
     -- hl.exec_cmd("systemctl --user start hyprpolkitagent")()
+
+    hl.exec_cmd("uwsm app -- chromium --restore-last-session", { workspace = "1" })
+
+    -- open editor and term for cfg editing
+    hl.exec_cmd("uwsm app emacs", { workspace = "special:cfg silent" })
+    hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:cfg silent" })
+
 end)
 
 
