@@ -9,9 +9,9 @@ Rectangle {
 
     readonly property bool special: workspace.name.indexOf("special:") === 0
     readonly property var monitorState: workspace.monitor ? workspace.monitor.lastIpcObject : null
-    readonly property bool specialActive: special && monitorState
+    readonly property bool specialActive: Boolean(special && monitorState
         && monitorState.specialWorkspace
-        && monitorState.specialWorkspace.name === workspace.name
+        && monitorState.specialWorkspace.name === workspace.name)
     readonly property bool active: workspace.focused || specialActive
     readonly property string displayName: workspace.name.replace("special:", "")
 
