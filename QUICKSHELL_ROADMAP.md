@@ -16,9 +16,13 @@ merging the `quickshell` branch.
   - Battery module.
 - Quickshell currently targets `DP-1` and is UWSM-managed by Hyprland.
 - Waybar is disabled in Hyprland startup.
-- Mako and Wofi remain active and unchanged.
-- Waybar and Wofi remain installed until final cleanup. Mako remains installed
-  until the Milestone 3A live cutover.
+- Quickshell owns `org.freedesktop.Notifications`; Mako is retired and no
+  longer installed or launched.
+- Wofi remains active for `uuctl` service management and the separate
+  `cliphist` picker.
+- Waybar and Wofi remain installed until final cleanup. The retired Mako Stow
+  package remains tracked until then, but is no longer part of the default
+  package set.
 - Branch rollback is the recovery path until merge: switch to `master` and
   restart the Hyprland session.
 
@@ -35,21 +39,6 @@ merging the `quickshell` branch.
 - Defer visual redesign until functional behavior is stable.
 - GPU monitoring remains optional and outside the MVP.
 - Portal and RTKit installation are external system work, not a dotfiles change.
-
-## DPMS Freeze Diagnostic
-
-- On 2026-09-07, one desktop freeze occurred after `hypridle` powered displays
-  off and input woke them. A controlled retry with a 20-second timeout did not
-  reproduce it; retain the normal five-minute timeout unless it recurs.
-- The observed DPMS transition included AMDGPU display-controller `REG_WAIT`
-  timeouts and Aquamarine output reconfiguration. Causality is unconfirmed.
-- If it recurs, switch to a TTY and run `capture-hyprland-freeze.sh` from the
-  repository root before terminating Hyprland.
-- The script writes `~/.local/state/hyprland-freeze-<timestamp>.log` with
-  Hyprland thread states and GDB backtraces plus recent kernel and user
-  journals.
-- The prior core dump was captured after forced shutdown began, so it cannot
-  diagnose the live freeze. Capture before recovery is required.
 
 ## Milestones
 
@@ -75,7 +64,8 @@ merging the `quickshell` branch.
 - Window icons use the active Hyprland toplevel's Wayland app ID.
 - Validated in both an existing and a fresh Hyprland session, including newly
   created Kitty, Emacs, Chromium, primary-workspace, and scratchpad windows.
-- Wofi and Mako remain unchanged.
+- Wofi remains unchanged for its remaining service-management and clipboard
+  uses. Mako has been retired.
 - Commits:
   - `4e92b8e Start Quickshell with UWSM`
   - `2d36cf7 Start desktop services before applications`
@@ -115,7 +105,7 @@ merging the `quickshell` branch.
   FIFO promotion, markup and links, controller bindings, and action buttons.
   Application icon and full client validation continue through normal use.
 
-#### 3B. Notification Management
+#### 3B. Completed: Notification Management
 
 - Add Do Not Disturb: retain normal notifications for management while
   suppressing their toasts; critical notifications bypass Do Not Disturb.
@@ -158,14 +148,33 @@ merging the `quickshell` branch.
 
 - Design native Quickshell surfaces instead of copying basic Waybar
   tooltips/popups.
-- Scope:
-  - Application launcher.
-  - Power controls.
-  - Media display and controls.
-  - Richer interactions where they provide real value.
-- Decide whether clipboard selection moves with the launcher or remains
-  Wofi-based temporarily.
+- Minor notification styling and interaction refinements are deferred to the
+  final polish milestone.
 - Keep GPU monitoring out of scope unless a clear use case appears.
+
+#### 4A. Application Launcher
+
+- Replace only the `Super+P` Wofi `drun` binding with a native Quickshell
+  launcher.
+- Keep keyboard focus captured until launch or explicit dismissal.
+- Preserve Vim-style movement with `Ctrl+J` and `Ctrl+K` alongside arrow keys.
+- Index visible XDG desktop entries, search their metadata, and support standard
+  desktop actions such as Chromium's New Window and New Incognito Window.
+- Preserve UWSM desktop-entry launching rather than reimplementing launch
+  environment handling.
+- Keep `Super+Shift+P` for `uuctl wofi` service management.
+- Keep `Super+Shift+V` for the Wofi-backed `cliphist` picker.
+
+#### 4B. Power Controls
+
+- Replace the Waybar power menu with a native Quickshell surface.
+- Require explicit confirmation for suspend, reboot, and shutdown.
+
+#### 4C. Media Controls
+
+- Add a native MPRIS media display and basic playback controls.
+- Restore the currently absent Waybar media functionality without making media
+  controls a prerequisite for the launcher.
 
 ### 5. Laptop Integration
 
@@ -190,13 +199,14 @@ merging the `quickshell` branch.
 - Enterprise Wi-Fi, VPN configuration, captive portals, and unusual
   authentication remain fallback cases until needed.
 
-### 6. Visual Redesign
+### 6. Final Polish
 
-- Choose a cohesive visual direction after functional behavior is stable on
-  both hosts.
+- Address minor notification usability issues and styling consistency after
+  functional behavior is stable on both hosts.
+- Choose a cohesive visual direction as part of that deliberate final pass.
 - Preserve the current restrained bar appearance as the baseline until then.
 - Revisit accents, state styling, and module-specific presentation only as
-  part of this deliberate redesign.
+  part of this deliberate polish pass.
 
 ### 7. Final Cleanup
 

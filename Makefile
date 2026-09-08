@@ -14,7 +14,6 @@ ALL_PACKAGES := \
 	waybar \
 	quickshell \
 	wofi \
-	mako \
 	kitty \
 	vim \
 	hypr
