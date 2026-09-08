@@ -139,7 +139,7 @@ PopupWindow {
                             width: parent.width
                             text: "No notifications"
                             color: root.config.textColor
-                            opacity: 0.7
+                            opacity: 0.8
                             horizontalAlignment: Text.AlignHCenter
                             font.family: root.config.fontFamily
                             font.pixelSize: root.config.fontPixelSize

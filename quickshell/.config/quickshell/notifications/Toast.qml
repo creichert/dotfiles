@@ -84,7 +84,7 @@ Rectangle {
                     elide: Text.ElideRight
                     text: root.notification.appName
                     color: root.config.textColor
-                    opacity: 0.7
+                    opacity: 0.8
                     font.family: root.config.fontFamily
                     font.pixelSize: root.config.fontPixelSize - 2
                 }
