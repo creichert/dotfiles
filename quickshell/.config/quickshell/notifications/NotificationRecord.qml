@@ -24,8 +24,7 @@ Rectangle {
         const match = link.match(/^([a-z][a-z0-9+.-]*):/i)
 
         if (match && (match[1].toLowerCase() === "http" || match[1].toLowerCase() === "https")) {
-            Qt.openUrlExternally(link)
-            return true
+            return Qt.openUrlExternally(link)
         }
 
         return false
@@ -51,9 +50,48 @@ Rectangle {
         return false
     }
 
-    TapHandler {
+    function iconSource() {
+        const appIcon = record.appIcon || ""
+
+        if (appIcon.startsWith("file:"))
+            return appIcon
+        if (appIcon.startsWith("/"))
+            return "file://" + appIcon
+        if (appIcon.length > 0)
+            return Quickshell.iconPath(appIcon, "application-x-executable")
+        return fallbackIconSource()
+    }
+
+    function fallbackIconSource() {
+        const desktopEntry = record.desktopEntry || ""
+
+        if (desktopEntry.length > 0)
+            return Quickshell.iconPath(desktopEntry, "application-x-executable")
+        return Quickshell.iconPath("application-x-executable", true)
+    }
+
+    property bool actionButtonsExpired: false
+    property bool appIconFailed: false
+    readonly property string appIconSource: iconSource()
+    readonly property real actionButtonsExpireAt: record.actionButtonsExpireAt || 0
+    readonly property bool actionButtonsAvailable: actionButtonsExpireAt === 0
+        || (!actionButtonsExpired && Date.now() < actionButtonsExpireAt)
+
+    onAppIconSourceChanged: appIconFailed = false
+
+    Timer {
+        interval: Math.max(1, root.actionButtonsExpireAt - Date.now())
+        repeat: false
+        running: root.actionButtonsExpireAt > Date.now()
+        onTriggered: root.actionButtonsExpired = true
+    }
+
+    // This sits behind explicit controls, so a button or link cannot also
+    // invoke the notification's default action.
+    MouseArea {
+        anchors.fill: parent
         enabled: root.hasDefaultAction()
-        onTapped: root.controller.invokeDefaultAction(root.record.id)
+        onClicked: root.controller.invokeDefaultAction(root.record.id)
     }
 
     Column {
@@ -72,10 +110,12 @@ Rectangle {
             IconImage {
                 id: appIcon
 
-                source: root.record.appIcon.length > 0
-                    ? Quickshell.iconPath(root.record.appIcon, "application-x-executable")
-                    : Quickshell.iconPath("application-x-executable", true)
+                source: root.appIconFailed ? root.fallbackIconSource() : root.appIconSource
                 implicitSize: 20
+                onStatusChanged: {
+                    if (status === Image.Error && !root.appIconFailed)
+                        root.appIconFailed = true
+                }
             }
 
             Column {
@@ -137,6 +177,8 @@ Rectangle {
         }
 
         Text {
+            id: body
+
             width: parent.width
             visible: text.length > 0
             wrapMode: Text.Wrap
@@ -147,9 +189,23 @@ Rectangle {
             color: root.config.textColor
             font.family: root.config.fontFamily
             font.pixelSize: root.config.fontPixelSize - 1
-            onLinkActivated: link => {
-                if (root.openLink(link))
-                    root.controller.notificationInteracted()
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: parent.linkAt(mouseX, mouseY).length > 0
+                    ? Qt.PointingHandCursor : Qt.ArrowCursor
+                onClicked: mouse => {
+                    const link = parent.linkAt(mouse.x, mouse.y)
+
+                    if (link.length > 0) {
+                        if (root.openLink(link))
+                            Qt.callLater(() => root.controller.notificationInteracted())
+                        return
+                    }
+
+                    root.controller.invokeDefaultAction(root.record.id)
+                }
             }
         }
 
@@ -158,7 +214,9 @@ Rectangle {
             spacing: 6
 
             Repeater {
-                model: root.controller.nonDefaultActionsFor(root.record.id)
+                model: root.actionButtonsAvailable
+                    ? root.controller.nonDefaultActionsFor(root.record.id)
+                    : []
 
                 delegate: Rectangle {
                     id: actionButton

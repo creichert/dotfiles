@@ -84,8 +84,8 @@ merging the `quickshell` branch.
 - Scope is limited to `DP-1` desktop toasts:
   - Top-right host with at most three visible regular notifications.
   - Bounded FIFO overflow queue without application grouping.
-  - Controller-owned five-second normal timeout that ignores application
-    expiry requests.
+  - Controller-owned five-second normal toast visibility timeout. Notifications
+    remain actionable in session history after their toast hides.
   - Critical notifications remain visible until dismissed.
   - Session-only notification records survive Quickshell reloads but not a
     Hyprland session restart.
@@ -139,8 +139,10 @@ merging the `quickshell` branch.
   visible toasts, and queued notifications.
 - Defer merging identical fresh notifications until real-client usage defines
   a safe deduplication window and toast behavior.
-- Preserve action-capable notifications only for the current Quickshell
-  process lifetime; actions are not guaranteed after a reload.
+- Keep a retained notification's default action available in session history
+  until it is dismissed, replaced, evicted, or closed by its sender. Hide
+  non-default action buttons after an application-provided expiry when present.
+- Actions are not guaranteed after a Quickshell reload.
 - Keep card-click behavior without a `default` action and critical-toast
   click behavior unchanged until real application use establishes a need.
 

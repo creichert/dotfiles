@@ -65,6 +65,7 @@ Item {
         visibleNotifications = removeFrom(visibleNotifications, notification)
         queuedNotifications = removeFrom(queuedNotifications, notification)
         liveNotifications = removeFrom(liveNotifications, notification)
+        releaseActions(notification.id)
 
         if (lastDismissed && lastDismissed.id === notification.id)
             lastDismissed = null
@@ -77,12 +78,16 @@ Item {
             id: notification.id,
             appName: notification.appName,
             appIcon: notification.appIcon,
+            desktopEntry: notification.desktopEntry,
             summary: notification.summary,
             body: notification.body,
             urgency: notification.urgency,
             timestamp: Date.now(),
             unread: true,
-            hasActions: notification.actions.length > 0
+            hasActions: notification.actions.length > 0,
+            actionButtonsExpireAt: notification.expireTimeout > 0
+                ? Date.now() + notification.expireTimeout * 1000
+                : 0
         }
         const index = history.findIndex(existing => existing.id === notification.id)
         const next = history.slice()
@@ -95,8 +100,13 @@ Item {
         if (next.length > config.notificationHistoryLimit) {
             const removed = next.splice(0, next.length - config.notificationHistoryLimit)
 
-            for (const previous of removed)
+            for (const previous of removed) {
+                const notification = notificationById(liveNotifications, previous.id)
+
+                if (notification)
+                    notification.dismiss()
                 releaseActions(previous.id)
+            }
         }
 
         history = next
@@ -262,6 +272,12 @@ Item {
         showQueuedNotifications()
     }
 
+    function hideNotification(notification) {
+        visibleNotifications = removeFrom(visibleNotifications, notification)
+        queuedNotifications = removeFrom(queuedNotifications, notification)
+        showQueuedNotifications()
+    }
+
     function restoreLastDismissed() {
         if (!lastDismissed)
             return
@@ -332,7 +348,8 @@ Item {
                 interval: root.config.notificationToastTimeout
                 repeat: false
                 running: tracker.modelData.urgency !== NotificationUrgency.Critical
-                onTriggered: tracker.modelData.expire()
+                // Keep history actions valid after the toast leaves the screen.
+                onTriggered: root.hideNotification(tracker.modelData)
             }
         }
     }

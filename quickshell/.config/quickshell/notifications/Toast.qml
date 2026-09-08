@@ -38,8 +38,48 @@ Rectangle {
         }
     }
 
-    TapHandler {
-        onTapped: root.controller.invokeDefaultAction(root.notification.id)
+    function iconSource() {
+        if (notification.appIcon.startsWith("file:"))
+            return notification.appIcon
+        if (notification.appIcon.startsWith("/"))
+            return "file://" + notification.appIcon
+        if (notification.appIcon.length > 0)
+            return Quickshell.iconPath(notification.appIcon, "application-x-executable")
+        return fallbackIconSource()
+    }
+
+    function fallbackIconSource() {
+        if (notification.desktopEntry.length > 0)
+            return Quickshell.iconPath(notification.desktopEntry, "application-x-executable")
+        return Quickshell.iconPath("application-x-executable", true)
+    }
+
+    property real actionButtonsExpireAt: {
+        const record = controller.historyRecord(notification.id)
+        return record && record.actionButtonsExpireAt ? record.actionButtonsExpireAt : 0
+    }
+    property bool actionButtonsExpired: false
+    property bool appIconFailed: false
+    readonly property string appIconSource: iconSource()
+    readonly property bool actionButtonsAvailable: actionButtonsExpireAt === 0
+        || (!actionButtonsExpired && Date.now() < actionButtonsExpireAt)
+
+    onActionButtonsExpireAtChanged: actionButtonsExpired = false
+    onAppIconSourceChanged: appIconFailed = false
+
+    Timer {
+        interval: Math.max(1, root.actionButtonsExpireAt - Date.now())
+        repeat: false
+        running: root.actionButtonsExpireAt > Date.now()
+        onTriggered: root.actionButtonsExpired = true
+    }
+
+    // This sits behind explicit controls, so a button or link cannot also
+    // invoke the notification's default action.
+    MouseArea {
+        anchors.fill: parent
+        enabled: root.controller.actionsFor(root.notification.id).some(action => action.identifier === "default")
+        onClicked: root.controller.invokeDefaultAction(root.notification.id)
     }
 
     Column {
@@ -59,10 +99,12 @@ Rectangle {
                 id: appIcon
 
                 visible: source.toString().length > 0
-                source: root.notification.appIcon.length > 0
-                    ? Quickshell.iconPath(root.notification.appIcon, "application-x-executable")
-                    : Quickshell.iconPath("application-x-executable", true)
+                source: root.appIconFailed ? root.fallbackIconSource() : root.appIconSource
                 implicitSize: 24
+                onStatusChanged: {
+                    if (status === Image.Error && !root.appIconFailed)
+                        root.appIconFailed = true
+                }
             }
 
             Column {
@@ -101,13 +143,16 @@ Rectangle {
                 font.family: root.config.fontFamily
                 font.pixelSize: root.config.fontPixelSize
 
-                TapHandler {
-                    onTapped: root.controller.dismissNotification(root.notification)
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.controller.dismissNotification(root.notification)
                 }
             }
         }
 
         Text {
+            id: body
+
             width: parent.width
             visible: text.length > 0
             wrapMode: Text.Wrap
@@ -118,7 +163,23 @@ Rectangle {
             color: root.config.textColor
             font.family: root.config.fontFamily
             font.pixelSize: root.config.fontPixelSize
-            onLinkActivated: link => root.openLink(link)
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: parent.linkAt(mouseX, mouseY).length > 0
+                    ? Qt.PointingHandCursor : Qt.ArrowCursor
+                onClicked: mouse => {
+                    const link = parent.linkAt(mouse.x, mouse.y)
+
+                    if (link.length > 0) {
+                        root.openLink(link)
+                        return
+                    }
+
+                    root.controller.invokeDefaultAction(root.notification.id)
+                }
+            }
         }
 
         Flow {
@@ -126,7 +187,9 @@ Rectangle {
             spacing: 6
 
             Repeater {
-                model: root.controller.nonDefaultActionsFor(root.notification.id)
+                model: root.actionButtonsAvailable
+                    ? root.controller.nonDefaultActionsFor(root.notification.id)
+                    : []
 
                 delegate: Rectangle {
                     id: actionButton
@@ -147,8 +210,9 @@ Rectangle {
                         font.pixelSize: root.config.fontPixelSize - 1
                     }
 
-                    TapHandler {
-                        onTapped: root.controller.invokeAction(root.notification.id, actionButton.modelData.identifier)
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: root.controller.invokeAction(root.notification.id, actionButton.modelData.identifier)
                     }
                 }
             }
