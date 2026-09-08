@@ -110,6 +110,6 @@ PanelWindow {
         config: root.config
         controller: root.notifications
         open: notificationButton.centerVisible
-        onDismissed: notificationButton.centerVisible = false
+        onDismissed: root.notifications.notificationCenterVisible = false
     }
 }

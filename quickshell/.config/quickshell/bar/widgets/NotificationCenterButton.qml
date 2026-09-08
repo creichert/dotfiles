@@ -5,7 +5,7 @@ Rectangle {
 
     required property var config
     property var controller: null
-    property bool centerVisible: false
+    readonly property bool centerVisible: controller && controller.notificationCenterVisible
     readonly property int unreadCount: {
         if (!controller)
             return 0
@@ -60,6 +60,9 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: root.centerVisible = !root.centerVisible
+        onClicked: {
+            if (root.controller)
+                root.controller.notificationCenterVisible = !root.controller.notificationCenterVisible
+        }
     }
 }

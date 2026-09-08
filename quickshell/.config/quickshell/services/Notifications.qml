@@ -16,6 +16,7 @@ Item {
     property alias lastDismissed: state.lastDismissed
     property alias history: state.history
     property alias doNotDisturb: state.doNotDisturb
+    property bool notificationCenterVisible: false
     property var liveNotifications: []
     property var actionNotifications: []
 
@@ -305,6 +306,10 @@ Item {
 
         function toggleDoNotDisturb(): void {
             root.doNotDisturb = !root.doNotDisturb
+        }
+
+        function toggleNotificationCenter(): void {
+            root.notificationCenterVisible = !root.notificationCenterVisible
         }
 
         function clearHistory(): void {
