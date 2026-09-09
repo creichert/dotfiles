@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import "bar"
+import "launcher" as LauncherUi
 import "services"
 
 ShellRoot {
@@ -13,6 +14,20 @@ ShellRoot {
     Metrics {
         id: metricsService
         config: config
+    }
+
+    Launcher {
+        id: launcher
+        config: config
+    }
+
+    Loader {
+        active: launcher.launcherVisible
+
+        sourceComponent: LauncherUi.Launcher {
+            config: config
+            controller: launcher
+        }
     }
 
     Loader {

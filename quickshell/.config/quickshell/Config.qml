@@ -29,6 +29,22 @@ QtObject {
     property int notificationMargin: 12
     property string notificationBackgroundColor: "#e92b303b"
 
+    // Application launcher
+    // Null launches parsed Exec commands directly. Those inherit Quickshell's
+    // service cgroup and do not currently honor Terminal=true. A nonempty
+    // prefix receives a .desktop[:action] reference and can provide that policy.
+    property var launcherCommandPrefix: ["uwsm", "app", "-s", "a", "--"]
+    property var launcherExcludedEntries: ["Emacs (Client)", "Avahi", "Hardware Locality","Qt"]
+    property bool launcherDesktopActionsEnabled: true
+    property real launcherWidthRatio: 0.5
+    property real launcherHeightRatio: 0.4
+    property int launcherMaximumWidth: 900
+    property int launcherMaximumHeight: 560
+    property int launcherTitleFontPixelSize: 18
+    property int launcherSubtitleFontPixelSize: 14
+    property int launcherRowHeight: 48
+    property int launcherActionRowHeight: 44
+
     // Workspace presentation
     property int workspaceHorizontalPadding: 10
     property var workspaceIcons: ({

@@ -162,8 +162,8 @@ merging the `quickshell` branch.
 - Preserve Vim-style movement with `Ctrl+J` and `Ctrl+K` alongside arrow keys.
 - Index visible XDG desktop entries, search their metadata, and support standard
   desktop actions such as Chromium's New Window and New Incognito Window.
-- Preserve UWSM desktop-entry launching rather than reimplementing launch
-  environment handling.
+- Allow an optional desktop-entry launch wrapper. Keep UWSM as the default
+  while allowing direct Quickshell execution when no wrapper is configured.
 - Keep `Super+Shift+P` for `uuctl wofi` service management.
 - Keep `Super+Shift+V` for the Wofi-backed `cliphist` picker.
 
