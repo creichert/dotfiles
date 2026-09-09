@@ -138,22 +138,38 @@ PanelWindow {
                     Row {
                         anchors {
                             fill: parent
-                            leftMargin: resultRow.modelData.kind === "action" ? 32 : 10
+                            leftMargin: resultRow.modelData.kind === "action" ? 46 : 10
                             rightMargin: 10
                         }
                         spacing: 10
 
                         IconImage {
-                            visible: resultRow.modelData.kind === "application"
-                                && resultRow.modelData.entry.iconSource.length > 0
+                            visible: (resultRow.modelData.kind === "application"
+                                    && resultRow.modelData.entry.iconSource.length > 0)
+                                || (resultRow.modelData.kind === "action"
+                                    && root.controller.resolvedIcon(resultRow.modelData.action.icon).length > 0)
                             source: resultRow.modelData.kind === "application"
-                                ? resultRow.modelData.entry.iconSource : ""
-                            implicitSize: 24
+                                ? resultRow.modelData.entry.iconSource
+                                : root.controller.resolvedIcon(resultRow.modelData.action.icon)
+                            implicitSize: resultRow.modelData.kind === "action" ? 16 : 24
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            visible: resultRow.modelData.kind === "action"
+                                && root.controller.resolvedIcon(resultRow.modelData.action.icon).length === 0
+                            width: 16
+                            text: "↳"
+                            color: root.config.accentColor
+                            font.family: root.config.fontFamily
+                            font.pixelSize: root.config.launcherSubtitleFontPixelSize
+                            horizontalAlignment: Text.AlignHCenter
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
                         Column {
-                            width: parent.width - (resultRow.modelData.kind === "application" ? 34 : 0)
+                            width: parent.width - (resultRow.modelData.kind === "application"
+                                ? (resultRow.modelData.entry.actions.length > 0 ? 64 : 34) : 26)
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 1
 
@@ -181,6 +197,19 @@ PanelWindow {
                                 font.family: root.config.fontFamily
                                 font.pixelSize: root.config.launcherSubtitleFontPixelSize
                             }
+                        }
+
+                        Text {
+                            visible: resultRow.modelData.kind === "application"
+                                && resultRow.modelData.entry.actions.length > 0
+                            width: 20
+                            text: root.controller.expandedEntryId === resultRow.modelData.entry.id ? "-" : "+"
+                            color: root.config.textColor
+                            opacity: 0.8
+                            font.family: root.config.fontFamily
+                            font.pixelSize: root.config.launcherTitleFontPixelSize
+                            horizontalAlignment: Text.AlignHCenter
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 

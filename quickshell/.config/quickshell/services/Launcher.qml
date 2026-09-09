@@ -28,6 +28,12 @@ Item {
         return entry.genericName.length > 0 ? entry.genericName : entry.comment
     }
 
+    function resolvedIcon(icon) {
+        return icon.length > 0
+            ? Quickshell.iconPath(icon, "application-x-executable")
+            : Quickshell.iconPath("application-x-executable", true)
+    }
+
     function entryActions(entry) {
         const actions = []
 
@@ -52,7 +58,7 @@ Item {
             id: entry.id,
             title: title,
             subtitle: subtitle,
-            iconSource: entry.icon.length > 0 ? Quickshell.iconPath(entry.icon, true) : "",
+            iconSource: resolvedIcon(entry.icon),
             searchText: normalize([
                 title,
                 entry.genericName,
