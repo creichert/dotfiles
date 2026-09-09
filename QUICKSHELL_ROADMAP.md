@@ -163,22 +163,32 @@ merging the `quickshell` branch.
   focused-monitor placement, and keyboard navigation are implemented.
 - The launch wrapper defaults to UWSM. UWSM's `kitty-open.desktop` terminal
   selection bug is separate from the launcher and remains external work.
+- Center the launcher on the focused monitor and follow monitor focus while it
+  is open. Use monitor-relative dimensions with absolute caps rather than
+  output-specific sizing.
 - Keep keyboard focus captured until launch or explicit dismissal.
 - Preserve Vim-style movement with `Ctrl+J` and `Ctrl+K` alongside arrow keys.
-- Index visible XDG desktop entries, search their metadata, and support standard
-  desktop actions such as Chromium's New Window and New Incognito Window.
+- Index visible XDG desktop entries in memory, search tokenized metadata, and
+  support inline expansion of standard desktop actions such as Chromium's New
+  Window and New Incognito Window.
 - Indicate expandable application rows and visually nest their action rows.
 - Allow an optional desktop-entry launch wrapper. Keep UWSM as the default
   while allowing direct Quickshell execution when no wrapper is configured.
-- Keep `Super+Shift+P` for `uuctl wofi` service management.
-- Keep `Super+Shift+V` for the Wofi-backed `cliphist` picker.
+- Retire Wofi after replacing its remaining uses.
 
-#### 4B. Power Controls
+#### 4B. Wofi Retirement
+
+- Retire `Super+Shift+P` `uuctl wofi` service management unless a concrete
+  native replacement is needed.
+- Keep `cliphist` as the history backend and replace the Wofi picker on
+  `Super+Shift+V` with a native Quickshell surface.
+
+#### 4C. Power Controls
 
 - Replace the Waybar power menu with a native Quickshell surface.
 - Require explicit confirmation for suspend, reboot, and shutdown.
 
-#### 4C. Media Controls
+#### 4D. Media Controls
 
 - Add a native MPRIS media display and basic playback controls.
 - Restore the currently absent Waybar media functionality without making media
