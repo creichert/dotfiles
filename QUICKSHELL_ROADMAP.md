@@ -20,6 +20,7 @@ merging the `quickshell` branch.
   longer installed or launched.
 - Wofi remains active for `uuctl` service management and the separate
   `cliphist` picker.
+- `Super+P` opens the native Quickshell application launcher.
 - Waybar and Wofi remain installed until final cleanup. The retired Mako Stow
   package remains tracked until then, but is no longer part of the default
   package set.
@@ -154,10 +155,14 @@ merging the `quickshell` branch.
   final polish milestone.
 - Keep GPU monitoring out of scope unless a clear use case appears.
 
-#### 4A. Application Launcher
+#### 4A. Implemented: Application Launcher
 
 - Replace only the `Super+P` Wofi `drun` binding with a native Quickshell
   launcher.
+- Desktop-entry filtering, session-only popularity ranking, inline actions,
+  focused-monitor placement, and keyboard navigation are implemented.
+- The launch wrapper defaults to UWSM. UWSM's `kitty-open.desktop` terminal
+  selection bug is separate from the launcher and remains external work.
 - Keep keyboard focus captured until launch or explicit dismissal.
 - Preserve Vim-style movement with `Ctrl+J` and `Ctrl+K` alongside arrow keys.
 - Index visible XDG desktop entries, search their metadata, and support standard
