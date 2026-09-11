@@ -24,6 +24,7 @@
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 hl.env("HYPRSHOT_DIR", "~/downloads/screenshots")
 hl.env("GTK_THEME", "adw-gtk3-dark")
+hl.env("QS_NO_RELOAD_POPUP", "1")
 
 
 ----------------
@@ -38,8 +39,10 @@ if isLaptop then
 else
     hl.monitor({ output = "DP-1", mode = "3440x1440@144", position = "0x0", scale = 1 })
     hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@144", position = "3440x0", scale = 1, transform = 3 })
+
     -- improves display but much harder on igpu. leave for testing
     -- hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60", position = "3440x0", scale = 2, transform = 3 })
+
     hl.workspace_rule({ workspace = "1", monitor = "DP-1", default = true })
     hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
 end
@@ -51,7 +54,6 @@ end
 
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/
 local terminal = "kitty"
-local menu = "pkill wofi || wofi --show drun --term=kitty --define=drun-print_desktop_file=true"
 
 
 -------------------
@@ -66,7 +68,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t image --watch cliphist store")
 
     -- background services
-    hl.exec_cmd("uwsm-app -s b -t service -- qs --no-duplicate")
+    hl.exec_cmd("uwsm app -s b -t service -- qs --no-duplicate")
     hl.exec_cmd("uwsm app -s b -t service hyprpaper")
     hl.exec_cmd("uwsm app -s b -t service hyprsunset")
     hl.exec_cmd("uwsm app -s b -t service hypridle")
@@ -75,13 +77,6 @@ hl.on("hyprland.start", function()
     -- applications to be able to request elevated privileges.
     --
     -- hl.exec_cmd("systemctl --user start hyprpolkitagent")()
-
-    hl.exec_cmd("uwsm app -- chromium --restore-last-session", { workspace = "1" })
-
-    -- open editor and term for cfg editing
-    hl.exec_cmd("uwsm app emacs", { workspace = "special:cfg silent" })
-    hl.exec_cmd("uwsm app " .. terminal, { workspace = "special:cfg silent" })
-
 end)
 
 
@@ -119,7 +114,7 @@ hl.config({
     cursor = {
         inactive_timeout = 5,
         default_monitor = 1,
-        no_hardware_cursors = true,
+        no_hardware_cursors = false,
         -- If true, will not warp the cursor in many cases (focusing, keybinds, etc).
         -- no_warps = false,
     },
@@ -128,13 +123,14 @@ hl.config({
         rounding = 10,
         rounding_power = 2,
         -- Change transparency of focused and unfocused windows.
-        active_opacity = 0.95,
-        inactive_opacity = 0.9,
+        active_opacity = 0.9,
+        inactive_opacity = 0.8,
         shadow = {
             enabled = not isLaptop,
-            range = 4,
-            render_power = 3,
-            color = "rgba(1a1a1aee)",
+            range = 30,
+            render_power = 4,
+            color = "rgba(000000ee)",
+            color_inactive = "rgba(00000099)",
         },
         blur = {
             enabled = true,
@@ -151,6 +147,15 @@ hl.config({
     animations = {
         enabled = true,
     },
+})
+
+
+hl.workspace_rule({
+    workspace = "special:terms",
+    layout = "scrolling",
+    layout_opts = {
+        direction = "left",
+    }
 })
 
 -- Default animations, see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/ for more.
@@ -202,7 +207,7 @@ hl.config({
     },
 
     xwayland = {
-        enabled = true,
+        enabled = false,
     },
 })
 
@@ -244,22 +249,21 @@ hl.device({
 
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier.
 
+if not isLaptop then
+    hl.bind(mainMod .. " + W", hl.dsp.focus({ monitor = "DP-1" }))
+    hl.bind(mainMod .. " + E", hl.dsp.focus({ monitor = "HDMI-A-1" }))
+end
+
 -- Launch apps, manipulate session.
-hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("uwsm app -- $(" .. menu .. ")"))
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"))
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("killall wofi || uuctl wofi"))
 hl.bind(mainMod .. " + Tab", hl.dsp.window.cycle_next())
 hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("uwsm app emacs"))
-hl.bind(mainMod .. " + W", hl.dsp.focus({ monitor = "DP-1" }))
-hl.bind(mainMod .. " + E", hl.dsp.focus({ monitor = "HDMI-A-1" }))
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd("hyprctl reload"))
 -- hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exit())
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("uwsm stop"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("uwsm app " .. terminal))
-hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications dismissVisible"))
-hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications restoreLastDismissed"))
-hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd("qs ipc call notifications toggleDoNotDisturb"))
-hl.bind(mainMod .. " + SHIFT + escape", hl.dsp.exec_cmd("qs ipc call notifications clearHistory"))
 
 -- Move windows around.
 hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))
@@ -352,6 +356,14 @@ hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 -- hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+
+
+-- Quickshell IPC handlers
+hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications toggleNotificationCenter"))
+hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications clearHistory"))
+hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("qs ipc call notifications dismissVisible"))
+hl.bind(mainMod .. " + SHIFT + grave", hl.dsp.exec_cmd("qs ipc call notifications restoreLastDismissed"))
+hl.bind(mainMod .. " + SHIFT + CTRL + grave", hl.dsp.exec_cmd("qs ipc call notifications toggleDoNotDisturb"))
 
 
 --------------------------------
