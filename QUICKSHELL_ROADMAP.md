@@ -24,6 +24,23 @@ merging the `quickshell` branch.
   an application-specific workaround.
 - Keep portal and RTKit installation outside this dotfiles work.
 
+## Theme And UX Contract
+
+- Use warm charcoal surfaces, cream primary text, muted secondary text, and
+  terracotta urgent states. Exact palette values remain open to live testing.
+- Reserve forest green for active, focused, or attention-worthy states. It is
+  a signal, not general decoration.
+- Use a lighter-to-deeper forest-green active-border gradient in Hyprland.
+  Use solid, quieter green indicators inside Quickshell surfaces.
+- Prefer thin borders and separators, minimal visual noise, and subtle 3-5px
+  rounding over pronounced cards, gradients, or shadows.
+- Make Quickshell surfaces keyboard-first: visible selection, `Escape` to
+  dismiss or go back, `Enter` to confirm, and arrow or Vim-style movement where
+  appropriate. Mouse interaction is a convenience, not the only control path.
+- Keep Hyprland and Quickshell theme definitions independent for now. Defer
+  shared theme generation and global Qt/GTK configuration until their value is
+  clear.
+
 ## Completed Foundations
 
 - Desktop bar, StatusNotifier tray, notifications, notification management,
