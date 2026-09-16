@@ -1,16 +1,5 @@
 -- https://wiki.hypr.land/Configuring/
 
--- Required packages:
--- - uwsm
--- - kitty
--- - hyprpaper
--- - hyprsunset
--- - hyprshot
--- - hyprpicker
--- - wofi
--- - cliphist
--- - playerctl
-
 -- Force gpu to onboard graphics / igpu.
 -- UWSM supplies AQ_DRM_DEVICES=/dev/dri/card1 from
 -- ~/.config/uwsm/env-hyprland.
@@ -23,7 +12,6 @@
 -- Force apps to use wayland.
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 hl.env("HYPRSHOT_DIR", "~/downloads/screenshots")
-hl.env("GTK_THEME", "adw-gtk3-dark")
 hl.env("QS_NO_RELOAD_POPUP", "1")
 
 

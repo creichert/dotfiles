@@ -22,7 +22,8 @@ merging the `quickshell` branch.
   on the Ethernet-connected desktop.
 - Treat global Qt and GTK theme integration as deliberate desktop policy, not
   an application-specific workaround.
-- Keep portal and RTKit installation outside this dotfiles work.
+- Include required portal packages in the Arch bootstrap; keep optional RTKit
+  installation separate until a feature needs it.
 
 ## Theme And UX Contract
 
