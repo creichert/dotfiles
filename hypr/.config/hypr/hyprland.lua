@@ -101,8 +101,8 @@ hl.config({
         border_size = 2,
         -- See the variable types documentation for color syntax.
         col = {
-            active_border = { colors = { "rgba(32ccffee)", "rgba(00ff99ee)" }, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border = { colors = { "rgba(b5e78fff)", "rgba(36a65cff)" }, angle = 45 },
+            inactive_border = "rgba(58665baa)",
         },
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps.
         resize_on_border = false,
@@ -120,8 +120,8 @@ hl.config({
     },
 
     decoration = {
-        rounding = 10,
-        rounding_power = 2,
+        rounding = 6,
+        rounding_power = 4,
         -- Change transparency of focused and unfocused windows.
         active_opacity = 0.9,
         inactive_opacity = 0.8,
@@ -376,7 +376,7 @@ hl.bind(mainMod .. " + SHIFT + CTRL + grave", hl.dsp.exec_cmd("qs ipc call notif
 hl.window_rule({
     name = "maximized-red-border",
     match = { fullscreen = true },
-    border_color = "rgba(FF0050FF)",
+    border_color = "rgba(d64a42ff)",
 })
 
 -- hl.window_rule({

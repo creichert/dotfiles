@@ -42,7 +42,7 @@ PanelWindow {
 
     Rectangle {
         anchors.fill: parent
-        radius: 10
+        radius: root.config.surfaceRadius
         color: root.config.notificationBackgroundColor
         border.width: 2
         border.color: root.config.accentColor
@@ -57,7 +57,7 @@ PanelWindow {
             Rectangle {
                 width: parent.width
                 height: root.config.launcherRowHeight
-                radius: 7
+                radius: root.config.controlRadius
                 color: root.config.activeBackgroundColor
 
                 TextInput {
@@ -131,7 +131,7 @@ PanelWindow {
                     width: resultList.width
                     height: modelData.kind === "action"
                         ? root.config.launcherActionRowHeight : root.config.launcherRowHeight
-                    radius: 7
+                    radius: root.config.controlRadius
                     color: resultRow.index === root.controller.currentIndex
                         ? root.config.activeBackgroundColor : "transparent"
 

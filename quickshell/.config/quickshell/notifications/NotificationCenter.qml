@@ -47,7 +47,7 @@ PopupWindow {
 
         Rectangle {
             anchors.fill: parent
-            radius: 6
+            radius: root.config.surfaceRadius
             color: root.config.notificationBackgroundColor
             border.width: 1
             border.color: root.config.accentColor

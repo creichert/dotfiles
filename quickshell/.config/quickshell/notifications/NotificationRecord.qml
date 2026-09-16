@@ -11,7 +11,7 @@ Rectangle {
     required property var controller
     required property var record
     implicitHeight: content.implicitHeight + 20
-    radius: 6
+    radius: config.surfaceRadius
     color: record.urgency === 2 ? config.urgentBackgroundColor : config.notificationBackgroundColor
     border.width: 1
     border.color: config.accentColor
@@ -224,7 +224,7 @@ Rectangle {
                     required property var modelData
                     implicitWidth: actionLabel.implicitWidth + 16
                     implicitHeight: actionLabel.implicitHeight + 8
-                    radius: 4
+                    radius: root.config.controlRadius
                     color: Qt.rgba(1, 1, 1, 0.12)
 
                     Text {

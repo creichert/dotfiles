@@ -6,13 +6,29 @@ QtObject {
     property int barHeight: 30
     property int fontPixelSize: 14
     property string fontFamily: "Hack Nerd Font Propo"
-    property string textColor: "white"
-    property string barBackgroundColor: "#802b303b"
-    property string activeBackgroundColor: "#64727d"
-    property string accentColor: "#32ccffe6"
-    property string urgentBackgroundColor: "#eb4d4b"
-    property string inhibitedBackgroundColor: "#ecf0f1"
-    property string inhibitedTextColor: "#2d3436"
+
+    // Theme and UX contract
+    property string surfaceBaseColor: "#272a2c"
+    property string surfaceRaisedColor: "#323638"
+    property string surfaceSelectedColor: "#424847"
+    property string textPrimaryColor: "#e8dfc8"
+    property string textMutedColor: "#b6ac93"
+    property string accentActiveColor: "#b5e78f"
+    property string accentActiveDeepColor: "#36a65c"
+    property string borderColor: "#58665b"
+    property string separatorColor: "#3d4741"
+    property string urgentColor: "#d64a42"
+    property int surfaceRadius: 4
+    property int controlRadius: 3
+
+    // Existing component defaults
+    property string textColor: textPrimaryColor
+    property string barBackgroundColor: surfaceBaseColor
+    property string activeBackgroundColor: surfaceSelectedColor
+    property string accentColor: accentActiveColor
+    property string urgentBackgroundColor: urgentColor
+    property string inhibitedBackgroundColor: surfaceSelectedColor
+    property string inhibitedTextColor: textPrimaryColor
     property int barSpacing: 4
     property int moduleHorizontalPadding: 16
     property int trayIconSize: 18
@@ -27,7 +43,7 @@ QtObject {
     property int notificationCenterHeight: 600
     property int notificationSpacing: 8
     property int notificationMargin: 12
-    property string notificationBackgroundColor: "#e92b303b"
+    property string notificationBackgroundColor: surfaceRaisedColor
 
     // Application launcher
     // Null launches parsed Exec commands directly. Those inherit Quickshell's

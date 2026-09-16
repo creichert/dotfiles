@@ -12,7 +12,7 @@ Rectangle {
     required property var controller
     required property var notification
     implicitHeight: content.implicitHeight + 24
-    radius: 6
+    radius: config.surfaceRadius
     color: notification.urgency === NotificationUrgency.Critical
         ? config.urgentBackgroundColor
         : config.notificationBackgroundColor
@@ -197,7 +197,7 @@ Rectangle {
                     required property var modelData
                     implicitWidth: actionLabel.implicitWidth + 16
                     implicitHeight: actionLabel.implicitHeight + 8
-                    radius: 4
+                    radius: root.config.controlRadius
                     color: Qt.rgba(1, 1, 1, 0.12)
 
                     Text {
