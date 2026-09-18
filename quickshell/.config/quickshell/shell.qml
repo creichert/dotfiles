@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import "bar"
+import "clipboard" as ClipboardUi
 import "launcher" as LauncherUi
 import "services"
 
@@ -49,12 +50,44 @@ ShellRoot {
         config: config
     }
 
+    ClipboardHistory {
+        id: clipboardHistory
+        config: config
+    }
+
+    Connections {
+        target: launcher
+
+        function onLauncherVisibleChanged() {
+            if (launcher.launcherVisible)
+                clipboardHistory.close()
+        }
+    }
+
+    Connections {
+        target: clipboardHistory
+
+        function onPickerVisibleChanged() {
+            if (clipboardHistory.pickerVisible)
+                launcher.close()
+        }
+    }
+
     Loader {
         active: launcher.launcherVisible
 
         sourceComponent: LauncherUi.Launcher {
             config: config
             controller: launcher
+        }
+    }
+
+    Loader {
+        active: clipboardHistory.pickerVisible
+
+        sourceComponent: ClipboardUi.ClipboardPicker {
+            config: config
+            controller: clipboardHistory
         }
     }
 

@@ -51,7 +51,8 @@ local terminal = "kitty"
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
     -- clipboard
-    os.remove(os.getenv("HOME") .. "/.cache/cliphist/db")
+    local cacheHome = os.getenv("XDG_CACHE_HOME") or os.getenv("HOME") .. "/.cache"
+    os.remove(cacheHome .. "/cliphist/db")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t text --watch cliphist store")
     hl.exec_cmd("uwsm app -s b -t service -- wl-paste -t image --watch cliphist store")
 
@@ -289,7 +290,7 @@ hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
 
 -- Clipboard manual selection.
-hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("pkill wofi || cliphist list | wofi --show dmenu | cliphist decode | wl-copy"))
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
 
 -- Screenshots.
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -s -m region -o ~/downloads/screenshots/"))

@@ -12,7 +12,8 @@ and remove this document.
 - Quickshell runs on the desktop through UWSM; Waybar is disabled there.
 - Quickshell owns `org.freedesktop.Notifications`; Mako is retired.
 - `Super+P` opens the native Quickshell application launcher.
-- Wofi remains only for `uuctl` service management and the `cliphist` picker.
+- `Super+Shift+V` opens the native Quickshell `cliphist` picker.
+- Wofi remains only for `uuctl` service management.
 - The XDG portal broker and Hyprland/GTK backends are installed. The packaged
   Hyprland policy already routes through `hyprland;gtk`; no user override is
   needed.
@@ -71,6 +72,10 @@ and remove this document.
   default wrapper; direct Quickshell execution is supported when no wrapper is
   configured. The UWSM `kitty-open.desktop` terminal-selection issue is
   external to the launcher.
+- The clipboard picker provides newest-first search, keyboard navigation,
+  bounded multiline text previews, selected-image previews, and exact
+  restoration through `cliphist`. Unknown list and binary preview formats fail
+  visibly instead of being interpreted as text.
 - GTK integration no longer relies on a `GTK_THEME` environment override.
   GTK3 theme and portal color-scheme settings must be changed together if a
   future theme picker or scheduler is implemented.
@@ -95,15 +100,13 @@ and remove this document.
 
 - Retire the `Super+Shift+P` `uuctl wofi` service-management binding without a
   replacement.
-- Keep `cliphist` as the history backend and replace the Wofi picker on
-  `Super+Shift+V` with a native Quickshell surface.
-- Remove Wofi only after the clipboard picker is verified and no remaining
+- Remove Wofi after the service-management binding is retired and no remaining
   desktop workflow uses it.
 
 ### Final Cleanup
 
-- Run final static checks and desktop runtime validation after the clipboard
-  picker and Wofi retirement are complete.
+- Run final static checks and desktop runtime validation after Wofi retirement
+  is complete.
 - Audit Waybar, Mako, Wofi, `uuctl`, and related package/configuration references.
   Remove only items that are no longer needed by a supported host.
 - Complete a final cohesive visual polish pass.

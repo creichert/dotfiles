@@ -60,6 +60,15 @@ QtObject {
     property int launcherRowHeight: 48
     property int launcherActionRowHeight: 44
 
+    // Clipboard history picker
+    property real clipboardWidthRatio: 0.65
+    property real clipboardHeightRatio: 0.55
+    property int clipboardMaximumWidth: 1100
+    property int clipboardMaximumHeight: 700
+    property real clipboardListWidthRatio: 0.42
+    property int clipboardRowHeight: 58
+    property int clipboardPreviewMaximumCharacters: 8000
+
     // Workspace presentation
     property int workspaceHorizontalPadding: 10
     property var workspaceIcons: ({

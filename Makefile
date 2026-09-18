@@ -112,6 +112,7 @@ ARCH_HYPRLAND_PACKAGES := \
 	hyprpicker \
 	inotify-tools \
 	cliphist \
+	xdg-utils \
 	slurp \
 	grim \
 	playerctl \
