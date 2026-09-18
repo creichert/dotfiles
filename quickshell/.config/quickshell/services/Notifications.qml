@@ -288,13 +288,13 @@ Item {
         releaseActions(notification.id)
         retainActions(notification)
 
-        // Replacement notifications reuse an ID and keep their current slot.
-        const wasVisible = indexOfNotification(visibleNotifications, notification) !== -1
-        visibleNotifications = removeFrom(visibleNotifications, notification)
+        const visibleIndex = indexOfNotification(visibleNotifications, notification)
 
-        if (wasVisible)
-            visibleNotifications = visibleNotifications.concat(notification)
-        else if (!notification.lastGeneration
+        if (visibleIndex !== -1) {
+            const next = visibleNotifications.slice()
+            next[visibleIndex] = notification
+            visibleNotifications = next
+        } else if (!notification.lastGeneration
                 && (!doNotDisturb || notification.urgency === NotificationUrgency.Critical))
             showNotification(notification)
 
