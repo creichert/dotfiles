@@ -12,6 +12,7 @@ Item {
     required property var config
     property var primaryScreen: null
     signal interacted()
+    signal notificationUpdated(var notification)
     property alias visibleNotifications: state.visibleNotifications
     property alias lastDismissed: state.lastDismissed
     property alias history: state.history
@@ -81,9 +82,8 @@ Item {
             urgency: notification.urgency,
             timestamp: Date.now(),
             unread: true,
-            hasActions: notification.actions.length > 0,
             actionButtonsExpireAt: notification.expireTimeout > 0
-                ? Date.now() + notification.expireTimeout * 1000
+                ? Date.now() + notification.expireTimeout
                 : 0
         }
         const index = history.findIndex(existing => existing.id === notification.id)
@@ -156,8 +156,8 @@ Item {
         history = next
     }
 
-    function setRead(id, unread) {
-        updateHistory(id, { unread: unread })
+    function setRead(id, isUnread) {
+        updateHistory(id, { unread: isUnread })
     }
 
     function dismissHistoryRecord(id) {
@@ -249,10 +249,32 @@ Item {
         visibleNotifications = next
     }
 
+    function refreshNotification(notification) {
+        if (indexOfNotification(liveNotifications, notification) === -1)
+            return
+
+        recordNotification(notification)
+        releaseActions(notification.id)
+        retainActions(notification)
+
+        visibleNotifications = removeFrom(visibleNotifications, notification)
+
+        if (!doNotDisturb || notification.urgency === NotificationUrgency.Critical)
+            showNotification(notification)
+
+        if (lastDismissed && lastDismissed.id === notification.id)
+            lastDismissed = null
+
+        notificationUpdated(notification)
+    }
+
     function trackNotification(notification) {
         notification.tracked = true
         liveNotifications = removeFrom(liveNotifications, notification).concat(notification)
-        recordNotification(notification)
+
+        if (!notification.lastGeneration)
+            recordNotification(notification)
+
         releaseActions(notification.id)
         retainActions(notification)
 
@@ -262,8 +284,12 @@ Item {
 
         if (wasVisible)
             visibleNotifications = visibleNotifications.concat(notification)
-        else if (!doNotDisturb || notification.urgency === NotificationUrgency.Critical)
+        else if (!notification.lastGeneration
+                && (!doNotDisturb || notification.urgency === NotificationUrgency.Critical))
             showNotification(notification)
+
+        if (lastDismissed && lastDismissed.id === notification.id)
+            lastDismissed = notification
     }
 
     function hideVisibleNotifications() {
@@ -339,12 +365,58 @@ Item {
             id: tracker
 
             required property var modelData
+            property bool refreshPending: false
+
+            function scheduleRefresh() {
+                if (refreshPending)
+                    return
+
+                refreshPending = true
+                Qt.callLater(() => {
+                    refreshPending = false
+
+                    if (tracker.modelData && tracker.modelData.tracked)
+                        root.refreshNotification(tracker.modelData)
+                })
+            }
 
             Connections {
                 target: tracker.modelData
 
                 function onClosed(reason) {
                     root.removeNotification(tracker.modelData)
+                }
+
+                function onExpireTimeoutChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onAppNameChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onAppIconChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onSummaryChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onBodyChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onUrgencyChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onActionsChanged() {
+                    tracker.scheduleRefresh()
+                }
+
+                function onDesktopEntryChanged() {
+                    tracker.scheduleRefresh()
                 }
             }
         }
