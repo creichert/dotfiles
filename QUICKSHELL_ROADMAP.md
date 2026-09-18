@@ -53,6 +53,15 @@ merging the `quickshell` branch.
   and application launcher are implemented.
 - Notification state is session-only. Keep the existing action and history
   policy unless real client behavior establishes a need to change it.
+- The notification center uses a focused layer-shell panel so bar and IPC
+  toggles work without an `xdg_popup` input serial. Actions run after the panel
+  releases focus so clients can activate workspaces and scratchpads.
+- Regular notification popups keep only the newest three visible. Exact
+  duplicate content replaces the older popup, while every notification and
+  its distinct actions remain available in history. Critical popups remain
+  pinned until dismissed.
+- The bar, notification center, and toast host are created only on the selected
+  primary screen. Single-screen hosts do not require an explicit monitor name.
 - The launcher supports metadata search, configurable exclusions, session-only
   popularity ranking, keyboard navigation, focused-monitor placement, and
   optional desktop actions.
@@ -66,22 +75,11 @@ merging the `quickshell` branch.
 
 ## Upcoming Work
 
-### Notification Center Reliability
+### Runtime Diagnostics
 
-- Fix notification-center IPC opening before adding more native components.
-  The IPC handler correctly toggles state, but `PopupWindow` with
-  `grabFocus: true` requires a recent Wayland input serial and cannot be opened
-  reliably from IPC. A bar click still works.
-- This is an `xdg_popup` input-grab limitation, not an XDG desktop portal
-  routing problem. Keep the portal configuration unchanged.
-- Replace only the notification center's popup shell with a focused
-  layer-shell `PanelWindow`, using the launcher as the reference architecture.
-- Preserve its current top-right placement, content, controller, history,
-  styling, bar-button toggle, IPC toggle, `Escape` dismissal, and outside-click
-  dismissal. Do not fold full notification-list keyboard navigation into this
-  surface-role fix.
-- Investigate any other warnings and errors in the quickshell journal logs. Test
-  quickshell restarts to surface any other issues.
+- Runtime-test newest-three popup replacement, duplicate suppression,
+  replacement notifications, reload preservation, and metrics recovery.
+- Investigate any other warnings and errors in the Quickshell journal logs.
   ```
   WARN qt.qpa.services: Failed to register with host portal QDBusError("org.freedesktop.portal.Error.Failed", "Could not register app ID: Connection already associated with an application ID")
   ```
