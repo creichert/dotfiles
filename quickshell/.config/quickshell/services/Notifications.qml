@@ -13,7 +13,6 @@ Item {
     property var primaryScreen: null
     signal interacted()
     property alias visibleNotifications: state.visibleNotifications
-    property alias queuedNotifications: state.queuedNotifications
     property alias lastDismissed: state.lastDismissed
     property alias history: state.history
     property alias doNotDisturb: state.doNotDisturb
@@ -26,7 +25,6 @@ Item {
 
         reloadableId: "notificationController"
         property var visibleNotifications: []
-        property var queuedNotifications: []
         property var lastDismissed: null
         property var history: []
         property bool doNotDisturb: false
@@ -65,14 +63,11 @@ Item {
 
     function removeNotification(notification) {
         visibleNotifications = removeFrom(visibleNotifications, notification)
-        queuedNotifications = removeFrom(queuedNotifications, notification)
         liveNotifications = removeFrom(liveNotifications, notification)
         releaseActions(notification.id)
 
         if (lastDismissed && lastDismissed.id === notification.id)
             lastDismissed = null
-
-        showQueuedNotifications()
     }
 
     function recordNotification(notification) {
@@ -183,7 +178,6 @@ Item {
         const notifications = liveNotifications.slice()
 
         visibleNotifications = []
-        queuedNotifications = []
         liveNotifications = []
         actionNotifications = []
         lastDismissed = null
@@ -233,22 +227,26 @@ Item {
         if (indexOfNotification(visibleNotifications, notification) !== -1)
             return
 
-        if (notification.urgency === NotificationUrgency.Critical
-                || regularVisibleCount() < config.notificationMaximumVisible) {
+        if (notification.urgency === NotificationUrgency.Critical) {
             visibleNotifications = visibleNotifications.concat(notification)
-        } else if (indexOfNotification(queuedNotifications, notification) === -1
-                && queuedNotifications.length < config.notificationMaximumQueued) {
-            queuedNotifications = queuedNotifications.concat(notification)
+            return
         }
-    }
 
-    function showQueuedNotifications() {
-        while (queuedNotifications.length > 0
-                && regularVisibleCount() < config.notificationMaximumVisible) {
-            const next = queuedNotifications[0]
-            queuedNotifications = queuedNotifications.slice(1)
-            visibleNotifications = visibleNotifications.concat(next)
+        if (config.notificationMaximumVisible <= 0)
+            return
+
+        const next = visibleNotifications.slice()
+
+        if (regularVisibleCount() >= config.notificationMaximumVisible) {
+            const oldestRegular = next.findIndex(existing =>
+                existing.urgency !== NotificationUrgency.Critical)
+
+            if (oldestRegular !== -1)
+                next.splice(oldestRegular, 1)
         }
+
+        next.push(notification)
+        visibleNotifications = next
     }
 
     function trackNotification(notification) {
@@ -261,7 +259,6 @@ Item {
         // Replacement notifications reuse an ID and keep their current slot.
         const wasVisible = indexOfNotification(visibleNotifications, notification) !== -1
         visibleNotifications = removeFrom(visibleNotifications, notification)
-        queuedNotifications = removeFrom(queuedNotifications, notification)
 
         if (wasVisible)
             visibleNotifications = visibleNotifications.concat(notification)
@@ -275,13 +272,10 @@ Item {
 
         lastDismissed = visibleNotifications[visibleNotifications.length - 1]
         visibleNotifications = []
-        showQueuedNotifications()
     }
 
     function hideNotification(notification) {
         visibleNotifications = removeFrom(visibleNotifications, notification)
-        queuedNotifications = removeFrom(queuedNotifications, notification)
-        showQueuedNotifications()
     }
 
     function restoreLastDismissed() {
@@ -352,14 +346,6 @@ Item {
                 function onClosed(reason) {
                     root.removeNotification(tracker.modelData)
                 }
-            }
-
-            Timer {
-                interval: root.config.notificationToastTimeout
-                repeat: false
-                running: tracker.modelData.urgency !== NotificationUrgency.Critical
-                // Keep history actions valid after the toast leaves the screen.
-                onTriggered: root.hideNotification(tracker.modelData)
             }
         }
     }

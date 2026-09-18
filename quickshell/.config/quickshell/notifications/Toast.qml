@@ -68,6 +68,14 @@ Rectangle {
     onAppIconSourceChanged: appIconFailed = false
 
     Timer {
+        interval: root.config.notificationToastTimeout
+        repeat: false
+        running: root.notification.urgency !== NotificationUrgency.Critical
+        // Hiding a toast does not remove its notification-center record.
+        onTriggered: root.controller.hideNotification(root.notification)
+    }
+
+    Timer {
         interval: Math.max(1, root.actionButtonsExpireAt - Date.now())
         repeat: false
         running: root.actionButtonsExpireAt > Date.now()

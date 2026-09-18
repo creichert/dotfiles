@@ -37,7 +37,6 @@ QtObject {
     property bool notificationServerEnabled: true
     property int notificationToastTimeout: 5000
     property int notificationMaximumVisible: 3
-    property int notificationMaximumQueued: 20
     property int notificationHistoryLimit: 100
     property int notificationWidth: 400
     property int notificationCenterHeight: 600
