@@ -4,8 +4,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 
-PopupWindow {
+PanelWindow {
     id: root
 
     required property var bar
@@ -13,18 +14,26 @@ PopupWindow {
     property var controller: null
     property bool open: false
     signal dismissed()
-    implicitWidth: config.notificationWidth
-    implicitHeight: config.notificationCenterHeight
+    screen: bar.screen
     visible: open && controller !== null
-    grabFocus: true
     color: "transparent"
+    exclusionMode: ExclusionMode.Ignore
+    focusable: true
 
-    anchor.window: bar
-    anchor.rect.x: bar.width - width - config.notificationMargin
-    anchor.rect.y: bar.height + config.notificationMargin
+    anchors {
+        top: true
+        bottom: true
+        left: true
+        right: true
+    }
+
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
     onVisibleChanged: {
-        if (!visible)
+        if (visible)
+            Qt.callLater(() => centerFocus.forceActiveFocus())
+        else
             dismissed()
     }
 
@@ -36,21 +45,44 @@ PopupWindow {
         }
     }
 
-    FocusScope {
+    // Match native popup dismissal without relying on an input-grabbing
+    // xdg_popup, which cannot be opened from IPC.
+    MouseArea {
         anchors.fill: parent
-        focus: true
+        onClicked: root.dismissed()
+    }
 
-        Keys.onEscapePressed: event => {
-            root.dismissed()
-            event.accepted = true
+    Rectangle {
+        id: center
+
+        width: root.config.notificationWidth
+        height: root.config.notificationCenterHeight
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: root.bar.height + root.config.notificationMargin
+            rightMargin: root.config.notificationMargin
+        }
+        radius: root.config.surfaceRadius
+        color: root.config.notificationBackgroundColor
+        border.width: 1
+        border.color: root.config.accentColor
+
+        // Consume clicks on inactive card space so only outside clicks dismiss.
+        MouseArea {
+            anchors.fill: parent
         }
 
-        Rectangle {
+        FocusScope {
+            id: centerFocus
+
             anchors.fill: parent
-            radius: root.config.surfaceRadius
-            color: root.config.notificationBackgroundColor
-            border.width: 1
-            border.color: root.config.accentColor
+            focus: true
+
+            Keys.onEscapePressed: event => {
+                root.dismissed()
+                event.accepted = true
+            }
 
             Column {
                 anchors {

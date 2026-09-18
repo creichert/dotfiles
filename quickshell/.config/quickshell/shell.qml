@@ -9,6 +9,21 @@ import "launcher" as LauncherUi
 import "services"
 
 ShellRoot {
+    id: root
+
+    // A single display does not need an explicit primary-monitor override.
+    readonly property var primaryScreen: {
+        if (Quickshell.screens.length === 1)
+            return Quickshell.screens[0]
+
+        for (const screen of Quickshell.screens) {
+            if (screen.name === config.primaryMonitor)
+                return screen
+        }
+
+        return null
+    }
+
     Config {
         id: config
     }
@@ -39,16 +54,16 @@ ShellRoot {
 
         sourceComponent: Notifications {
             config: config
+            primaryScreen: root.primaryScreen
         }
     }
 
     Variants {
-        model: Quickshell.screens
+        model: root.primaryScreen ? [root.primaryScreen] : []
 
         Bar {
             required property var modelData
             screen: modelData
-            visible: modelData.name === config.primaryMonitor
             config: config
             metrics: metricsService
             notifications: notificationLoader.item

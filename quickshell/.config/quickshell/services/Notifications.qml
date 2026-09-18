@@ -10,6 +10,7 @@ Item {
     id: root
 
     required property var config
+    property var primaryScreen: null
     signal interacted()
     property alias visibleNotifications: state.visibleNotifications
     property alias queuedNotifications: state.queuedNotifications
@@ -206,9 +207,13 @@ Item {
     function invokeAction(id, identifier) {
         for (const action of actionsFor(id)) {
             if (action.identifier === identifier) {
-                action.invoke()
-                removeHistoryRecord(id)
+                // Release layer-shell focus before asking the client to activate
+                // a window or workspace for its notification action.
                 interacted()
+                Qt.callLater(() => {
+                    action.invoke()
+                    removeHistoryRecord(id)
+                })
                 return true
             }
         }
@@ -371,12 +376,11 @@ Item {
     }
 
     Variants {
-        model: Quickshell.screens
+        model: root.primaryScreen ? [root.primaryScreen] : []
 
         Notifications.ToastHost {
             required property var modelData
             screen: modelData
-            visible: modelData.name === root.config.primaryMonitor
             config: root.config
             controller: root
         }
