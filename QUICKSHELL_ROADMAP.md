@@ -1,8 +1,9 @@
 # Quickshell Roadmap
 
-This temporary document records current constraints and future decisions for
-the Quickshell migration. Review it after each milestone and remove it before
-merging the `quickshell` branch.
+This temporary document records the remaining desktop work and deferred
+follow-ups for the Quickshell migration. Review it after each milestone. Before
+merging the `quickshell` branch, transfer post-merge work to durable tracking
+and remove this document.
 
 ## Current State
 
@@ -20,7 +21,8 @@ merging the `quickshell` branch.
 
 ## Principles
 
-- Complete and polish the desktop experience before laptop integration.
+- Complete and polish the desktop experience without expanding this branch
+  into full laptop feature parity.
 - Prefer native Quickshell surfaces while keeping reliability ahead of native
   integration.
 - Keep desktop and laptop differences explicit. Do not require NetworkManager
@@ -73,16 +75,7 @@ merging the `quickshell` branch.
   GTK3 theme and portal color-scheme settings must be changed together if a
   future theme picker or scheduler is implemented.
 
-## Upcoming Work
-
-### Runtime Diagnostics
-
-- Runtime-test newest-three popup replacement, duplicate suppression,
-  replacement notifications, reload preservation, and metrics recovery.
-- Investigate any other warnings and errors in the Quickshell journal logs.
-  ```
-  WARN qt.qpa.services: Failed to register with host portal QDBusError("org.freedesktop.portal.Error.Failed", "Could not register app ID: Connection already associated with an application ID")
-  ```
+## Remaining Desktop Work
 
 ### Theming And Icon Integration
 
@@ -100,40 +93,37 @@ merging the `quickshell` branch.
 
 ### Wofi Retirement
 
-- Retire `Super+Shift+P` `uuctl wofi` service management unless a concrete
-  native replacement is needed.
+- Retire the `Super+Shift+P` `uuctl wofi` service-management binding without a
+  replacement.
 - Keep `cliphist` as the history backend and replace the Wofi picker on
   `Super+Shift+V` with a native Quickshell surface.
-- Remove Wofi only after those remaining workflows are covered or deliberately
-  retired.
+- Remove Wofi only after the clipboard picker is verified and no remaining
+  desktop workflow uses it.
 
-### Power Controls
+### Final Cleanup
 
-- Replace the Waybar power menu with a native Quickshell surface.
-- Require explicit confirmation for suspend, reboot, and shutdown.
+- Run final static checks and desktop runtime validation after the clipboard
+  picker and Wofi retirement are complete.
+- Audit Waybar, Mako, Wofi, `uuctl`, and related package/configuration references.
+  Remove only items that are no longer needed by a supported host.
+- Complete a final cohesive visual polish pass.
+
+## Post-Merge Work
 
 ### Media Controls
 
-- Add native MPRIS display and basic playback controls.
+- Add native MPRIS display and basic playback controls in a focused follow-up.
 
 ### Laptop Integration
 
-- Add explicit host configuration, laptop-sized density, battery, and backlight
-  support.
+- Start with the smallest host-aware changes needed to run the current
+  Quickshell surfaces on the laptop; avoid coupling initial compatibility to
+  full laptop feature parity.
+- Add explicit host configuration and laptop-sized density.
+- Add battery and backlight support.
 - Build NetworkManager Wi-Fi controls for scan, known-network connection,
   WPA-PSK entry, disconnect, and forget.
 - Keep enterprise Wi-Fi, VPN, captive portals, and unusual authentication as
   fallback cases until needed.
-- Remove laptop `nm-applet` only after the native replacement is verified.
-
-### Final Cleanup
-
-- Complete a cohesive visual polish pass after functional behavior is stable.
-- Remove unused Waybar, Wofi, and related configuration deliberately.
-
-## Open Decisions
-
-- Determine the durable Quickshell host-selection mechanism.
-- Define desktop-network behavior if future features need a shared network
-  surface without NetworkManager.
-- Revisit tray presentation only if real StatusNotifier consumers require it.
+- Remove laptop Waybar, Wofi, Mako, and `nm-applet` only after their Quickshell
+  replacements are verified.
