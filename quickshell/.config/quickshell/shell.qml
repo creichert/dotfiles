@@ -23,6 +23,17 @@ ShellRoot {
 
         return null
     }
+    readonly property bool primaryMonitorMissing: Quickshell.screens.length > 1
+        && primaryScreen === null
+
+    function warnMissingPrimaryMonitor() {
+        if (primaryMonitorMissing) {
+            console.warn(`Primary monitor "${config.primaryMonitor}" not found; bar and notifications are disabled`)
+        }
+    }
+
+    Component.onCompleted: warnMissingPrimaryMonitor()
+    onPrimaryMonitorMissingChanged: warnMissingPrimaryMonitor()
 
     Config {
         id: config
