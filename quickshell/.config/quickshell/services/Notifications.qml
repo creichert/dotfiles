@@ -40,15 +40,23 @@ Item {
         return -1
     }
 
-    function regularVisibleCount() {
+    function regularVisibleCount(notifications) {
         let count = 0
 
-        for (const notification of visibleNotifications) {
+        for (const notification of notifications) {
             if (notification.urgency !== NotificationUrgency.Critical)
                 count++
         }
 
         return count
+    }
+
+    function sameToastContent(first, second) {
+        return first.desktopEntry === second.desktopEntry
+            && first.appName === second.appName
+            && first.summary === second.summary
+            && first.body === second.body
+            && first.urgency === second.urgency
     }
 
     function removeFrom(notifications, notification) {
@@ -235,9 +243,11 @@ Item {
         if (config.notificationMaximumVisible <= 0)
             return
 
-        const next = visibleNotifications.slice()
+        const next = visibleNotifications.filter(existing =>
+            existing.urgency === NotificationUrgency.Critical
+                || !sameToastContent(existing, notification))
 
-        if (regularVisibleCount() >= config.notificationMaximumVisible) {
+        if (regularVisibleCount(next) >= config.notificationMaximumVisible) {
             const oldestRegular = next.findIndex(existing =>
                 existing.urgency !== NotificationUrgency.Critical)
 
