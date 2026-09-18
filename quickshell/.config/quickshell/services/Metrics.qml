@@ -16,7 +16,15 @@ QtObject {
     property real previousTimestamp: 0
 
     function update(line) {
-        const sample = JSON.parse(line)
+        let sample
+
+        try {
+            sample = JSON.parse(line)
+        } catch (error) {
+            console.warn("Ignoring invalid metrics sample:", error)
+            return
+        }
+
         const elapsedSeconds = previousTimestamp > 0
             ? (sample.timestamp - previousTimestamp) / 1000
             : 0
@@ -37,6 +45,12 @@ QtObject {
         previousTimestamp = sample.timestamp
     }
 
+    property Timer restartTimer: Timer {
+        interval: 1000
+        repeat: false
+        onTriggered: root.metricsProcess.running = true
+    }
+
     property Process metricsProcess: Process {
         running: true
         command: [
@@ -48,6 +62,10 @@ QtObject {
         ]
         stdout: SplitParser {
             onRead: data => root.update(data)
+        }
+        onRunningChanged: {
+            if (!running)
+                root.restartTimer.restart()
         }
     }
 }
