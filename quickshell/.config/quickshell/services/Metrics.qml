@@ -8,6 +8,9 @@ QtObject {
     property real cpuPercent: 0
     property real memoryPercent: 0
     property real temperatureC: 0
+    property var batteryPercent: null
+    property var batteryStatus: null
+    property var brightnessPercent: null
     property string interfaceName: ""
     property real receiveBytesPerSecond: 0
     property real transmitBytesPerSecond: 0
@@ -33,6 +36,9 @@ QtObject {
         cpuPercent = sample.cpuPercent
         memoryPercent = sample.memoryPercent
         temperatureC = sample.temperatureC
+        batteryPercent = sample.batteryPercent
+        batteryStatus = sample.batteryStatus
+        brightnessPercent = sample.brightnessPercent
         interfaceName = sample.interfaceName
 
         if (elapsedSeconds > 0 && sameInterface) {

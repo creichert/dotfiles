@@ -38,6 +38,18 @@ PanelWindow {
             Layout.alignment: Qt.AlignVCenter
             config: root.config
         }
+
+        Widgets.Battery {
+            Layout.alignment: Qt.AlignVCenter
+            metrics: root.metrics
+            config: root.config
+        }
+
+        Widgets.Brightness {
+            Layout.alignment: Qt.AlignVCenter
+            metrics: root.metrics
+            config: root.config
+        }
     }
 
     Widgets.WindowTitle {

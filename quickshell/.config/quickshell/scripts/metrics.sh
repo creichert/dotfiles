@@ -10,6 +10,35 @@ previous_total=0
 previous_idle=0
 sample_number=0
 temperature_c=0
+battery_capacity_file=""
+battery_status_file=""
+brightness_file=""
+brightness_max_file=""
+
+discover_power_devices() {
+    for power_supply in /sys/class/power_supply/*; do
+        [[ -d "$power_supply" ]] || continue
+        [[ -r "$power_supply/type" ]] || continue
+        [[ "$(<"$power_supply/type")" == "Battery" ]] || continue
+
+        if [[ -r "$power_supply/capacity" && -r "$power_supply/status" ]]; then
+            battery_capacity_file="$power_supply/capacity"
+            battery_status_file="$power_supply/status"
+            break
+        fi
+    done
+
+    for backlight in /sys/class/backlight/*; do
+        [[ -r "$backlight/brightness" && -r "$backlight/max_brightness" ]] || continue
+        brightness_file="$backlight/brightness"
+        brightness_max_file="$backlight/max_brightness"
+        break
+    done
+}
+
+# Device names under /sys/class are sufficient for the lifetime of this
+# sampler. Discovering them once avoids filesystem scans on every sample.
+discover_power_devices
 
 while true; do
     read -r _ user nice system idle iowait irq softirq steal _ < /proc/stat
@@ -47,6 +76,35 @@ while true; do
         done
     fi
 
+    battery_percent_json=null
+    battery_status_json=null
+    if [[ -n "$battery_capacity_file" ]]; then
+        battery_percent=$(< "$battery_capacity_file")
+        if [[ "$battery_percent" =~ ^[0-9]+$ ]] && (( battery_percent <= 100 )); then
+            battery_percent_json=$battery_percent
+        fi
+
+        battery_status=$(< "$battery_status_file")
+        case "$battery_status" in
+            Charging|Discharging|Full|Unknown)
+                battery_status_json="\"$battery_status\""
+                ;;
+            "Not charging")
+                battery_status_json='"Not charging"'
+                ;;
+        esac
+    fi
+
+    brightness_percent_json=null
+    if [[ -n "$brightness_file" ]]; then
+        brightness=$(< "$brightness_file")
+        brightness_max=$(< "$brightness_max_file")
+        if [[ "$brightness" =~ ^[0-9]+$ && "$brightness_max" =~ ^[0-9]+$ ]] \
+            && (( brightness_max > 0 )); then
+            brightness_percent_json=$((100 * brightness / brightness_max))
+        fi
+    fi
+
     interface_name=""
     while read -r interface destination _ _ _ _ _ _; do
         if [[ "$destination" == "00000000" ]]; then
@@ -71,7 +129,7 @@ while true; do
 
     timestamp_ms=${EPOCHREALTIME/./}
     timestamp_ms=${timestamp_ms:0:13}
-    printf '{"cpuPercent":%s,"memoryPercent":%s,"temperatureC":%s,"interfaceName":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
-        "$cpu_percent" "$memory_percent" "$temperature_c" "$interface_name" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
+    printf '{"cpuPercent":%s,"memoryPercent":%s,"temperatureC":%s,"batteryPercent":%s,"batteryStatus":%s,"brightnessPercent":%s,"interfaceName":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
+        "$cpu_percent" "$memory_percent" "$temperature_c" "$battery_percent_json" "$battery_status_json" "$brightness_percent_json" "$interface_name" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
     sleep "$interval_seconds"
 done

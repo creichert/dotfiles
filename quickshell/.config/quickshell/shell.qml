@@ -12,15 +12,16 @@ import "services"
 ShellRoot {
     id: root
 
-    // A single display does not need an explicit primary-monitor override.
+    // Prefer the configured monitor. The single-screen fallback is only for
+    // accidental configuration mismatches.
     readonly property var primaryScreen: {
-        if (Quickshell.screens.length === 1)
-            return Quickshell.screens[0]
-
         for (const screen of Quickshell.screens) {
             if (screen.name === config.primaryMonitor)
                 return screen
         }
+
+        if (Quickshell.screens.length === 1)
+            return Quickshell.screens[0]
 
         return null
     }

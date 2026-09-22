@@ -1,10 +1,13 @@
 import QtQml
+import Quickshell
 
 QtObject {
-    // Display and appearance
-    property string primaryMonitor: "DP-1"
-    property int barHeight: 30
-    property int fontPixelSize: 14
+    // Host-specific display and density settings
+    readonly property bool isLaptop: Quickshell.env("HOSTNAME") === "laptop"
+
+    property string primaryMonitor: isLaptop ? "eDP-1" : "DP-1"
+    property int barHeight: isLaptop ? 25 : 30
+    property int fontPixelSize: isLaptop ? 12 : 14
     property string fontFamily: "Hack Nerd Font Propo"
 
     // Theme and UX contract
@@ -30,7 +33,8 @@ QtObject {
     property string inhibitedBackgroundColor: surfaceSelectedColor
     property string inhibitedTextColor: textPrimaryColor
     property int barSpacing: 4
-    property int moduleHorizontalPadding: 16
+    // 10px total is equivalent to 5px on each side.
+    property int moduleHorizontalPadding: isLaptop ? 10 : 16
     property int trayIconSize: 18
 
     // Quickshell is the session notification daemon.
@@ -85,17 +89,20 @@ QtObject {
 
     // Module behavior
     property string clockFormat: "MM/dd/yyyy HH:mm"
-    property int titleMaximumWidth: 900
+    property int titleMaximumWidth: isLaptop ? 500 : 900
     property int titleSpacing: 6
     property int networkSpacing: 6
     property string networkRateWidthLabel: "999.9 Mb/s"
     property int volumeMediumThreshold: 50
+    property int batteryCriticalThreshold: 15
     property int temperatureCoolThreshold: 50
     property int temperatureWarmThreshold: 70
     property int temperatureCriticalThreshold: 85
 
     // Host metrics
-    property string cpuTemperatureHwmonPath: "/sys/bus/pci/drivers/k10temp/0000:00:18.3/hwmon"
+    property string cpuTemperatureHwmonPath: isLaptop
+        ? "/sys/devices/platform/coretemp.0/hwmon"
+        : "/sys/bus/pci/drivers/k10temp/0000:00:18.3/hwmon"
     property real metricsIntervalSeconds: 2
     property int temperatureIntervalSamples: 3
 }
