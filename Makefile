@@ -98,7 +98,6 @@ ARCH_CORE_PACKAGES := \
 
 ARCH_DESKTOP_PACKAGES := \
 	uwsm \
-	uuctl \
 	hyprland \
 	kitty \
 	quickshell \
