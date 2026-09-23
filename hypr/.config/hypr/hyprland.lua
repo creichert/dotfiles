@@ -245,7 +245,6 @@ end
 
 -- Launch apps, manipulate session.
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"))
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("killall wofi || uuctl wofi"))
 hl.bind(mainMod .. " + Tab", hl.dsp.window.cycle_next())
 hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("uwsm app emacs"))

@@ -11,9 +11,7 @@ ALL_PACKAGES := \
 	postgresql \
 	git \
 	bin \
-	waybar \
 	quickshell \
-	wofi \
 	kitty \
 	vim \
 	hypr
@@ -101,7 +99,6 @@ ARCH_DESKTOP_PACKAGES := \
 	hyprland \
 	kitty \
 	quickshell \
-	wofi \
 	emacs-wayland
 
 ARCH_HYPRLAND_PACKAGES := \
