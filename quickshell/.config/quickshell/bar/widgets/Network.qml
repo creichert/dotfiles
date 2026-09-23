@@ -5,6 +5,7 @@ Item {
 
     required property var metrics
     required property var config
+    visible: config.networkModuleEnabled
     implicitWidth: networkRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 

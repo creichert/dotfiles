@@ -9,6 +9,9 @@ QtObject {
     property int barHeight: isLaptop ? 25 : 30
     property int fontPixelSize: isLaptop ? 12 : 14
     property string fontFamily: "Hack Nerd Font Propo"
+    property bool networkModuleEnabled: !isLaptop
+    property bool batteryModuleEnabled: isLaptop
+    property bool brightnessModuleEnabled: isLaptop
 
     // Theme and UX contract
     property string surfaceBaseColor: "#272a2c"

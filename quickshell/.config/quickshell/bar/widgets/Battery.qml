@@ -10,7 +10,7 @@ Item {
         && metrics.batteryStatus === "Discharging"
         && metrics.batteryPercent <= config.batteryCriticalThreshold
 
-    visible: config.isLaptop
+    visible: config.batteryModuleEnabled
     implicitWidth: batteryText.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 

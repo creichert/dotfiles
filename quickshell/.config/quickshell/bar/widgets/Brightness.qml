@@ -8,7 +8,7 @@ Item {
     readonly property bool available: metrics.brightnessPercent !== null
     readonly property var icons: ["", "", "", "", "", "", "", "", ""]
 
-    visible: config.isLaptop
+    visible: config.brightnessModuleEnabled
     implicitWidth: brightnessText.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
