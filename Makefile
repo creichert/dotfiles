@@ -137,3 +137,8 @@ arch:
 		$(ARCH_HYPRLAND_PACKAGES) \
 		$(ARCH_PORTAL_PACKAGES) \
 		$(ARCH_THEME_PACKAGES)
+
+.PHONY: gtk-theme
+gtk-theme:
+	gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
