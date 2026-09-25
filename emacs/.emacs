@@ -554,10 +554,6 @@
 
     "u"       'browse-url
     "U"       'browse-url-chromium
-    ;;"G"       'google-this ;; TODO Fix
-
-    "x"       'gptel-menu
-    "X"       'gptel
     ))
 
 

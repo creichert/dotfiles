@@ -135,7 +135,13 @@ arch:
 		$(ARCH_PORTAL_PACKAGES) \
 		$(ARCH_THEME_PACKAGES)
 
-.PHONY: gtk-theme
-gtk-theme:
+.PHONY: theme
+theme:
 	gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
 	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+	gsettings set org.gnome.desktop.interface icon-theme 'Adwaita'
+	@if grep -q '^export QT_QPA_PLATFORMTHEME=' hypr/.config/uwsm/env-hyprland; then \
+		sed -i 's/^export QT_QPA_PLATFORMTHEME=.*/export QT_QPA_PLATFORMTHEME=gtk3/' hypr/.config/uwsm/env-hyprland; \
+	else \
+		printf '\nexport QT_QPA_PLATFORMTHEME=gtk3\n' >> hypr/.config/uwsm/env-hyprland; \
+	fi

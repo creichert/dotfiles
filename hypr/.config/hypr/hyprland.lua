@@ -243,8 +243,6 @@ if not isLaptop then
     hl.bind(mainMod .. " + E", hl.dsp.focus({ monitor = "HDMI-A-1" }))
 end
 
--- Launch apps, manipulate session.
-hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"))
 hl.bind(mainMod .. " + Tab", hl.dsp.window.cycle_next())
 hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("uwsm app emacs"))
@@ -287,9 +285,6 @@ hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
-
--- Clipboard manual selection.
-hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
 
 -- Screenshots.
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -s -m region -o ~/downloads/screenshots/"))
@@ -346,12 +341,22 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 
--- Quickshell IPC handlers
+--------------------------------
+---- quickshell keybindings ----
+--------------------------------
+
+-- Notification center
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications toggleNotificationCenter"))
 hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications clearHistory"))
 hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("qs ipc call notifications dismissVisible"))
 hl.bind(mainMod .. " + SHIFT + grave", hl.dsp.exec_cmd("qs ipc call notifications restoreLastDismissed"))
 hl.bind(mainMod .. " + SHIFT + CTRL + grave", hl.dsp.exec_cmd("qs ipc call notifications toggleDoNotDisturb"))
+
+-- App launcher
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"))
+
+--- Clipboard
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
 
 
 --------------------------------
