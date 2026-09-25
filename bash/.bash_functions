@@ -43,10 +43,11 @@ function lang() {
             ;;
         nodejs)
             _lang_heading "Node.js (fnm)"
-            _lang_command 'fnm list                              # list installed Node versions'
+            _lang_command 'fnm list                             # list installed Node versions'
             _lang_command 'fnm install <version> && fnm use <version>'
-            _lang_command 'npm install && npm run <script>       # work on this project'
+            _lang_command 'npm install && npm run <script>      # work on this project'
             _lang_command 'eval "$(fnm env)"                    # initialize fnm in this shell'
+            _lang_command 'fnm use                              # use project .node-version/.nvmrc'
             _lang_command 'eval "$(fnm env --use-on-cd)"        # opt in to automatic version switching'
 
             if command -v fnm > /dev/null 2>&1; then
