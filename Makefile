@@ -11,12 +11,13 @@ ALL_PACKAGES := \
 	postgresql \
 	git \
 	bin \
-	waybar \
-	wofi \
-	mako \
+	quickshell \
 	kitty \
 	vim \
 	hypr
+
+QMLLINT ?= /usr/lib/qt6/bin/qmllint
+QUICKSHELL_QML := $(shell git ls-files -- 'quickshell/**/*.qml')
 
 PACKAGES	:= $(or $(pkg),$(ALL_PACKAGES))
 
@@ -43,6 +44,13 @@ dotfiles: submodules
 .PHONY: clean
 clean:
 	@stow $(STOW_FLAGS) -D $(PACKAGES)
+
+.PHONY: quickshell-check
+quickshell-check:
+	@test -x "$(QMLLINT)" || { echo "qmllint not found: $(QMLLINT)"; exit 1; }
+	@test -n "$(QUICKSHELL_QML)" || { echo "no Quickshell QML files found"; exit 1; }
+	@$(QMLLINT) -I /usr/lib/qt6/qml $(QUICKSHELL_QML)
+	@qs --private-check-compat
 
 
 
@@ -78,30 +86,56 @@ elpa:
 # base install: https://gist.github.com/mjkstra/96ce7a5689d753e7a6bdd92cdc169bae
 #
 # `pacman -Qe`
-#
-# - hyprshot: scripted in bin/
-#   - requires slurp, grim
+
+ARCH_CORE_PACKAGES := \
+	base-devel \
+	git \
+	stow \
+	vim \
+	pass
+
+ARCH_DESKTOP_PACKAGES := \
+	uwsm \
+	hyprland \
+	kitty \
+	quickshell \
+	emacs-wayland
+
+ARCH_HYPRLAND_PACKAGES := \
+	hypridle \
+	hyprpaper \
+	hyprsunset \
+	hyprpicker \
+	inotify-tools \
+	cliphist \
+	xdg-utils \
+	slurp \
+	grim \
+	playerctl \
+	wl-clipboard
+
+ARCH_PORTAL_PACKAGES := \
+	xdg-desktop-portal \
+	xdg-desktop-portal-hyprland \
+	xdg-desktop-portal-gtk
+
+ARCH_THEME_PACKAGES := \
+	adw-gtk-theme \
+	ttf-hack-nerd \
+	noto-fonts-emoji
+
+# hyprshot is a repository-provided script in bin/; grim and slurp are its
+# screenshot dependencies above.
 .PHONY: arch
 arch:
-	sudo pacman -S base-devel \
-		git \
-		stow \
-		vim \
-		emacs-wayland \
-		uwsm uuctl \
-		hyprland \
-		kitty \
-		hyprpaper \
-		hyprsunset \
-		inotify-tools \
-		hyprpicker \
-		wofi \
-		mako \
-		pass \
-		wl-clipboard \
-		cliphist \
-		slurp grim \
-		playerctl \
-		adw-gtk-theme \
-		ttf-hack-nerd \
-		noto-fonts-emoji
+	sudo pacman -S \
+		$(ARCH_CORE_PACKAGES) \
+		$(ARCH_DESKTOP_PACKAGES) \
+		$(ARCH_HYPRLAND_PACKAGES) \
+		$(ARCH_PORTAL_PACKAGES) \
+		$(ARCH_THEME_PACKAGES)
+
+.PHONY: gtk-theme
+gtk-theme:
+	gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
