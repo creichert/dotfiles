@@ -84,19 +84,25 @@
   :custom
 
   ;; clipboard
-  ;;
-  ;; share clipboard across the entire system
-  (yank-pop-change-selection t)
+  (interprogram-cut-function nil)
+  (yank-pop-change-selection nil)
   (save-interprogram-paste-before-kill t)
   (kill-do-not-save-duplicates t)
+
   :config
+
+  ;; Keep destructive kills out of the system clipboard, but allow
+  ;; explicit copies (`kill-ring-save', normally M-w) to update it.
+  (defun my-kill-ring-save-with-clipboard (orig-fun &rest args)
+    (let ((interprogram-cut-function #'gui-select-text))
+      (apply orig-fun args)))
+
+  (advice-add 'kill-ring-save :around
+              #'my-kill-ring-save-with-clipboard)
+
   ;;(transient-mark-mode 1)
   (size-indication-mode)
-  (column-number-mode)
-  :init
-  (setq
-   mail-user-agent  'gnus-user-agent
-   read-mail-command 'gnus))
+  (column-number-mode))
 
 
 (use-package savehist
@@ -465,6 +471,20 @@
     (global-evil-leader-mode 1))
   (evil-mode 1)
   :config
+
+  ;; Keep destructive Evil operations (d, x, etc.) out of the system
+  ;; clipboard while allowing explicit yanks (y) to update it.
+  ;; `evil-delete' internally calls `evil-yank' with
+  ;; `evil-was-yanked-without-register' nil, which lets us distinguish
+  ;; deletes from explicit yanks.
+  (defun my-evil-yank-with-clipboard (orig-fun &rest args)
+    (let ((interprogram-cut-function
+           (when evil-was-yanked-without-register
+             #'gui-select-text)))
+      (apply orig-fun args)))
+  (advice-add 'evil-yank :around
+              #'my-evil-yank-with-clipboard)
+
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
   ;; exit insert mode if I lean on 'j' button
@@ -545,14 +565,23 @@
   :init
   (global-flycheck-mode)
   :config
-  (setq flycheck-standard-error-navigation nil)
-  (setq flycheck-global-modes '(not lisp-interaction-mode)))
-
-
-; (use-package flyspell
-;   :requires (flycheck)
-;   :hook ((markdown-mode . turn-on-flyspell))
-;         ((prog-mode     . flyspell-prog-mode)))
+  (setq flycheck-standard-error-navigation nil
+        flycheck-global-modes '(not lisp-interaction-mode)
+        ;; Don't check buffers we merely pass through.
+        flycheck-buffer-switch-check-intermediate-buffers nil)
+  :hook
+  (haskell-mode . (lambda ()
+                    ;; Haskell checks are expensive; don't check continuously
+                    ;; while editing.
+                    (setq-local flycheck-check-syntax-automatically
+                                '(save idle-buffer-switch mode-enabled))
+                    (setq-local flycheck-idle-buffer-switch-delay 1.0)))
+  (flycheck-mode . (lambda ()
+                     ;; Don't check Haskell buffers merely because they were
+                     ;; reverted (e.g. after changing Git branches).
+                     (when (derived-mode-p 'haskell-mode)
+                       (remove-hook 'after-revert-hook
+                                    #'flycheck-handle-revert t)))))
 
 
 (use-package sql
