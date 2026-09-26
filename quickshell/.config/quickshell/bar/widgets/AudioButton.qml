@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell.Services.Pipewire
 import "../../components" as Components
 
 Item {
@@ -7,12 +6,13 @@ Item {
 
     required property var config
     required property var theme
+    required property var audio
     implicitWidth: volumeRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
-    readonly property var sink: Pipewire.ready ? Pipewire.defaultAudioSink : null
-    readonly property bool muted: sink && sink.audio ? sink.audio.muted : false
-    readonly property int percent: sink && sink.audio ? Math.round(sink.audio.volume * 100) : 0
+    readonly property var sink: audio.sink
+    readonly property bool muted: audio.sinkMuted
+    readonly property int percent: Math.round(audio.sinkVolume * 100)
 
     function icon() {
         if (percent === 0)
@@ -20,10 +20,6 @@ Item {
         if (percent < config.volumeMediumThreshold)
             return "volumeLow"
         return "volumeHigh"
-    }
-
-    PwObjectTracker {
-        objects: [root.sink]
     }
 
     Row {
@@ -47,13 +43,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: {
-            if (parent.sink && parent.sink.audio)
-                parent.sink.audio.muted = !parent.sink.audio.muted
-        }
-        onWheel: wheel => {
-            if (parent.sink && parent.sink.audio)
-                parent.sink.audio.volume = Math.max(0, Math.min(1, parent.sink.audio.volume + (wheel.angleDelta.y > 0 ? 0.03 : -0.03)))
-        }
+        onClicked: root.audio.toggleSinkMuted()
+        onWheel: wheel => root.audio.adjustSinkVolume(wheel.angleDelta.y > 0 ? 0.03 : -0.03)
     }
 }

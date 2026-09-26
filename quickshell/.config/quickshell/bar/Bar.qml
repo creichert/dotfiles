@@ -10,6 +10,7 @@ PanelWindow {
     id: root
 
     required property var metrics
+    required property var audio
     required property var config
     required property var theme
     property var notifications: null
@@ -81,7 +82,8 @@ PanelWindow {
             theme: root.theme
         }
 
-        Widgets.Volume {
+        Widgets.AudioButton {
+            audio: root.audio
             config: root.config
             theme: root.theme
         }

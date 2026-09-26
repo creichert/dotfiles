@@ -52,6 +52,10 @@ ShellRoot {
         config: config
     }
 
+    Audio {
+        id: audioService
+    }
+
     Launcher {
         id: launcher
         config: config
@@ -118,6 +122,7 @@ ShellRoot {
             config: config
             theme: theme
             metrics: metricsService
+            audio: audioService
             notifications: notificationLoader.item
         }
     }
