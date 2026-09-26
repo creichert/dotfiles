@@ -3,18 +3,19 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Widgets
+import "../components" as Components
 
 Rectangle {
     id: root
 
-    required property var config
+    required property var theme
     required property var controller
     required property var record
     implicitHeight: content.implicitHeight + 20
-    radius: config.surfaceRadius
-    color: record.urgency === 2 ? config.urgentBackgroundColor : config.notificationBackgroundColor
+    radius: theme.surfaceRadius
+    color: record.urgency === 2 ? theme.urgent : theme.raisedSurface
     border.width: 1
-    border.color: config.accentColor
+    border.color: theme.activeAccent
 
     function bodyText(body) {
         return body.replace(/<img\b[^>]*>/gi, "")
@@ -105,7 +106,7 @@ Rectangle {
 
         Row {
             width: parent.width
-            spacing: 8
+            spacing: root.theme.spacingMedium
 
             IconImage {
                 id: appIcon
@@ -126,9 +127,9 @@ Rectangle {
                     width: parent.width
                     elide: Text.ElideRight
                     text: root.record.summary
-                    color: root.config.textColor
-                    font.family: root.config.fontFamily
-                    font.pixelSize: root.config.fontPixelSize
+                    color: root.theme.primaryText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.fontPixelSize
                     font.bold: root.record.unread
                 }
 
@@ -136,10 +137,10 @@ Rectangle {
                     width: parent.width
                     elide: Text.ElideRight
                     text: root.record.appName + " - " + root.timestamp()
-                    color: root.config.textColor
+                    color: root.theme.primaryText
                     opacity: 0.7
-                    font.family: root.config.fontFamily
-                    font.pixelSize: root.config.fontPixelSize - 3
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.fontPixelSize - 3
                 }
             }
 
@@ -151,9 +152,9 @@ Rectangle {
                 Text {
                     width: 12
                     text: root.record.unread ? "●" : "○"
-                    color: root.config.textColor
-                    font.family: root.config.fontFamily
-                    font.pixelSize: root.config.fontPixelSize - 3
+                    color: root.theme.primaryText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.fontPixelSize - 3
 
                     MouseArea {
                         anchors.fill: parent
@@ -164,9 +165,9 @@ Rectangle {
                 Text {
                     width: 12
                     text: "x"
-                    color: root.config.textColor
-                    font.family: root.config.fontFamily
-                    font.pixelSize: root.config.fontPixelSize - 2
+                    color: root.theme.primaryText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.fontPixelSize - 2
 
                     MouseArea {
                         anchors.fill: parent
@@ -186,9 +187,9 @@ Rectangle {
             elide: Text.ElideRight
             text: root.bodyText(root.record.body)
             textFormat: Text.StyledText
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize - 1
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize - 1
 
             MouseArea {
                 anchors.fill: parent
@@ -218,29 +219,13 @@ Rectangle {
                     ? root.controller.nonDefaultActionsFor(root.record.id)
                     : []
 
-                delegate: Rectangle {
+                delegate: Components.Button {
                     id: actionButton
 
                     required property var modelData
-                    implicitWidth: actionLabel.implicitWidth + 16
-                    implicitHeight: actionLabel.implicitHeight + 8
-                    radius: root.config.controlRadius
-                    color: Qt.rgba(1, 1, 1, 0.12)
-
-                    Text {
-                        id: actionLabel
-
-                        anchors.centerIn: parent
-                        text: actionButton.modelData.text
-                        color: root.config.textColor
-                        font.family: root.config.fontFamily
-                        font.pixelSize: root.config.fontPixelSize - 2
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: root.controller.invokeAction(root.record.id, actionButton.modelData.identifier)
-                    }
+                    theme: root.theme
+                    text: actionButton.modelData.text
+                    onClicked: root.controller.invokeAction(root.record.id, actionButton.modelData.identifier)
                 }
             }
         }

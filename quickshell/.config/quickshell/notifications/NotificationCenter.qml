@@ -194,7 +194,7 @@ PanelWindow {
                                 required property var modelData
 
                                 width: records.width
-                                config: root.config
+                                theme: root.theme
                                 controller: root.controller
                                 record: modelData
                             }
