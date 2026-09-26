@@ -134,6 +134,7 @@ PanelWindow {
     Notifications.NotificationCenter {
         bar: root
         config: root.config
+        theme: root.theme
         controller: root.notifications
         open: notificationButton.centerVisible
         onDismissed: root.notifications.notificationCenterVisible = false

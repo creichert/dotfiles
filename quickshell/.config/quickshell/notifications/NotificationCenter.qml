@@ -3,14 +3,17 @@ pragma ComponentBehavior: Bound
 // qmllint disable uncreatable-type
 
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import "../components" as Components
 
 PanelWindow {
     id: root
 
     required property var bar
     required property var config
+    required property var theme
     property var controller: null
     property bool open: false
     signal dismissed()
@@ -31,10 +34,15 @@ PanelWindow {
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
     onVisibleChanged: {
-        if (visible)
-            Qt.callLater(() => centerFocus.forceActiveFocus())
-        else
+        if (visible) {
+            dndSwitch.focus = false
+            Qt.callLater(() => {
+                if (root.visible)
+                    centerFocus.forceActiveFocus()
+            })
+        } else {
             dismissed()
+        }
     }
 
     Connections {
@@ -103,24 +111,52 @@ PanelWindow {
                         font.bold: true
                     }
 
-                    Row {
+                    RowLayout {
                         id: controls
 
                         spacing: 10
 
-                        Text {
-                            text: root.controller && root.controller.doNotDisturb ? "DND on" : "DND off"
-                            color: root.config.textColor
-                            font.family: root.config.fontFamily
-                            font.pixelSize: root.config.fontPixelSize - 2
+                        Item {
+                            Layout.alignment: Qt.AlignVCenter
+                            implicitWidth: dndContent.implicitWidth + root.theme.spacingMedium * 2
+                            implicitHeight: dndContent.implicitHeight + root.theme.spacingSmall * 2
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: root.controller.doNotDisturb = !root.controller.doNotDisturb
+                                onClicked: dndSwitch.click()
+                            }
+
+                            RowLayout {
+                                id: dndContent
+
+                                anchors.centerIn: parent
+                                spacing: root.theme.spacingMedium
+
+                                Text {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    text: "Do Not Disturb"
+                                    color: root.theme.primaryText
+                                    font.family: root.theme.fontFamily
+                                    font.pixelSize: root.theme.fontPixelSize - 2
+                                }
+
+                                Components.Switch {
+                                    id: dndSwitch
+
+                                    Layout.alignment: Qt.AlignVCenter
+                                    theme: root.theme
+                                    text: "Do Not Disturb"
+                                    checked: root.controller ? root.controller.doNotDisturb : false
+                                    onToggled: {
+                                        if (root.controller)
+                                            root.controller.doNotDisturb = checked
+                                    }
+                                }
                             }
                         }
 
                         Text {
+                            Layout.alignment: Qt.AlignVCenter
                             text: "Clear"
                             color: root.config.textColor
                             font.family: root.config.fontFamily
