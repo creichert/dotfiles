@@ -36,6 +36,7 @@ PanelWindow {
     onVisibleChanged: {
         if (visible) {
             dndSwitch.focus = false
+            clearButton.focus = false
             Qt.callLater(() => {
                 if (root.visible)
                     centerFocus.forceActiveFocus()
@@ -155,17 +156,14 @@ PanelWindow {
                             }
                         }
 
-                        Text {
+                        Components.Button {
+                            id: clearButton
+
                             Layout.alignment: Qt.AlignVCenter
                             text: "Clear"
-                            color: root.config.textColor
-                            font.family: root.config.fontFamily
-                            font.pixelSize: root.config.fontPixelSize - 2
-
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: root.controller.clearHistory()
-                            }
+                            theme: root.theme
+                            enabled: root.controller && root.controller.history.length > 0
+                            onClicked: root.controller.clearHistory()
                         }
                     }
                 }
