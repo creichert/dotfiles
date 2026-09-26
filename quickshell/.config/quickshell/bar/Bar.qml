@@ -132,7 +132,7 @@ PanelWindow {
     }
 
     Notifications.NotificationCenter {
-        bar: root
+        trigger: notificationButton
         config: root.config
         theme: root.theme
         controller: root.notifications

@@ -5,33 +5,33 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 import "../components" as Components
 
-PanelWindow {
+PopupWindow {
     id: root
 
-    required property var bar
+    required property Item trigger
     required property var config
     required property var theme
     property var controller: null
     property bool open: false
     signal dismissed()
-    screen: bar.screen
     visible: open && controller !== null
+    implicitWidth: config.notificationWidth
+    implicitHeight: config.notificationCenterHeight
     color: "transparent"
-    exclusionMode: ExclusionMode.Ignore
-    focusable: true
+    grabFocus: true
 
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
+    // Quickshell's generated qmltypes omit these anchor flag types.
+    // qmllint disable missing-type
+    anchor {
+        item: root.trigger
+        edges: Edges.Bottom
+        gravity: Edges.Bottom
+        margins.bottom: root.config.notificationMargin
+        adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
     }
-
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    // qmllint enable missing-type
 
     onVisibleChanged: {
         if (visible) {
@@ -59,24 +59,10 @@ PanelWindow {
         }
     }
 
-    // Match native popup dismissal without relying on an input-grabbing
-    // xdg_popup, which cannot be opened from IPC.
-    MouseArea {
-        anchors.fill: parent
-        onClicked: root.dismissed()
-    }
-
     Rectangle {
         id: center
 
-        width: root.config.notificationWidth
-        height: root.config.notificationCenterHeight
-        anchors {
-            top: parent.top
-            right: parent.right
-            topMargin: root.bar.height + root.config.notificationMargin
-            rightMargin: root.config.notificationMargin
-        }
+        anchors.fill: parent
         radius: root.config.surfaceRadius
         color: root.config.notificationBackgroundColor
         border.width: 1
