@@ -37,6 +37,11 @@ PanelWindow {
         if (visible) {
             dndSwitch.focus = false
             clearButton.focus = false
+            for (let index = 0; index < recordRepeater.count; index++) {
+                const item = recordRepeater.itemAt(index) as NotificationRecord
+                if (item)
+                    item.clearReadFocus()
+            }
             Qt.callLater(() => {
                 if (root.visible)
                     centerFocus.forceActiveFocus()
@@ -188,6 +193,8 @@ PanelWindow {
                         spacing: root.config.notificationSpacing
 
                         Repeater {
+                            id: recordRepeater
+
                             model: root.controller ? root.controller.history.slice().reverse() : []
 
                             delegate: NotificationRecord {

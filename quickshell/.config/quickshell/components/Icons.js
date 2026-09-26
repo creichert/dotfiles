@@ -30,6 +30,8 @@ const glyphs = {
     eyeClosed: "",
     bell: "",
     bellMuted: "",
+    markRead: "",
+    markUnread: "",
     networkConnected: "󰱔",
     networkDisconnected: "⚠",
     upload: "",

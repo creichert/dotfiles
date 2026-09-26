@@ -78,6 +78,10 @@ Rectangle {
     readonly property bool actionButtonsAvailable: actionButtonsExpireAt === 0
         || (!actionButtonsExpired && Date.now() < actionButtonsExpireAt)
 
+    function clearReadFocus() {
+        readButton.focus = false
+    }
+
     onAppIconSourceChanged: appIconFailed = false
 
     Timer {
@@ -147,32 +151,13 @@ Rectangle {
             Row {
                 id: controls
 
-                spacing: 6
+                Components.IconButton {
+                    id: readButton
 
-                Text {
-                    width: 12
-                    text: root.record.unread ? "●" : "○"
-                    color: root.theme.primaryText
-                    font.family: root.theme.fontFamily
-                    font.pixelSize: root.theme.fontPixelSize - 3
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: root.controller.setRead(root.record.id, !root.record.unread)
-                    }
-                }
-
-                Text {
-                    width: 12
-                    text: "x"
-                    color: root.theme.primaryText
-                    font.family: root.theme.fontFamily
-                    font.pixelSize: root.theme.fontPixelSize - 2
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: root.controller.dismissHistoryRecord(root.record.id)
-                    }
+                    theme: root.theme
+                    iconName: root.record.unread ? "markRead" : "markUnread"
+                    text: root.record.unread ? "Mark read" : "Mark unread"
+                    onClicked: root.controller.setRead(root.record.id, !root.record.unread)
                 }
             }
         }
