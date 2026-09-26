@@ -1,16 +1,12 @@
 pragma ComponentBehavior: Bound
 
-// qmllint disable uncreatable-type
-
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import "../components" as Components
 
-PopupWindow {
+Components.AnchoredPanel {
     id: root
 
-    required property Item trigger
     required property var config
     required property var theme
     property var controller: null
@@ -19,19 +15,7 @@ PopupWindow {
     visible: open && controller !== null
     implicitWidth: config.notificationWidth
     implicitHeight: config.notificationCenterHeight
-    color: "transparent"
-    grabFocus: true
-
-    // Quickshell's generated qmltypes omit these anchor flag types.
-    // qmllint disable missing-type
-    anchor {
-        item: root.trigger
-        edges: Edges.Bottom
-        gravity: Edges.Bottom
-        margins.bottom: root.config.notificationMargin
-        adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
-    }
-    // qmllint enable missing-type
+    gap: config.notificationMargin
 
     onVisibleChanged: {
         if (visible) {
