@@ -1,17 +1,30 @@
 import QtQuick
+import "../../components" as Components
 
 Item {
-    required property var metrics
+    id: root
+
     required property var config
-    implicitWidth: memoryText.implicitWidth + config.moduleHorizontalPadding
+    required property var metrics
+    required property var theme
+    implicitWidth: memoryRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
-    Text {
-        id: memoryText
+    Row {
+        id: memoryRow
         anchors.centerIn: parent
-        text: `${parent.metrics.memoryPercent}% `
-        color: parent.config.textColor
-        font.family: parent.config.fontFamily
-        font.pixelSize: parent.config.fontPixelSize
+        spacing: 0
+
+        Text {
+            text: `${root.metrics.memoryPercent}% `
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            name: "memory"
+            theme: root.theme
+        }
     }
 }

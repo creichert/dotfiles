@@ -1,15 +1,21 @@
 import QtQuick
+import "../../components" as Components
 
 Item {
     id: root
 
     required property var metrics
     required property var config
+    required property var theme
     readonly property bool available: metrics.brightnessPercent !== null
-    readonly property var icons: ["", "", "", "", "", "", "", "", ""]
+    readonly property var icons: [
+        "brightnessMinimum", "brightnessLow", "brightnessLowerMiddle",
+        "brightnessMiddle", "brightnessUpperMiddle", "brightnessHigh",
+        "brightnessHigher", "brightnessNearMaximum", "brightnessMaximum"
+    ]
 
     visible: config.brightnessModuleEnabled
-    implicitWidth: brightnessText.implicitWidth + config.moduleHorizontalPadding
+    implicitWidth: brightnessRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
     function icon() {
@@ -23,14 +29,22 @@ Item {
         return root.icons[index]
     }
 
-    Text {
-        id: brightnessText
+    Row {
+        id: brightnessRow
         anchors.centerIn: parent
-        text: root.available
-            ? `${Math.round(root.metrics.brightnessPercent)}% ${root.icon()}`
-            : "--"
-        color: root.config.textColor
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+        spacing: 0
+
+        Text {
+            text: root.available ? `${Math.round(root.metrics.brightnessPercent)}% ` : "--"
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            visible: root.available
+            name: root.icon()
+            theme: root.theme
+        }
     }
 }

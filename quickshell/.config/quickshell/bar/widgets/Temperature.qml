@@ -1,31 +1,43 @@
 import QtQuick
+import "../../components" as Components
 
 Item {
     id: root
 
     required property var metrics
     required property var config
-    implicitWidth: temperatureText.implicitWidth + config.moduleHorizontalPadding
+    required property var theme
+    implicitWidth: temperatureRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
     function icon() {
         if (metrics.temperatureC >= config.temperatureCriticalThreshold)
-            return ""
+            return "temperatureCritical"
         if (metrics.temperatureC < config.temperatureCoolThreshold)
-            return ""
+            return "temperatureCool"
         if (metrics.temperatureC < config.temperatureWarmThreshold)
-            return ""
-        return ""
+            return "temperatureWarm"
+        return "temperatureHot"
     }
 
-    Text {
-        id: temperatureText
+    Row {
+        id: temperatureRow
         anchors.centerIn: parent
-        text: `${parent.metrics.temperatureC}°C ${parent.icon()}`
-        color: parent.metrics.temperatureC >= parent.config.temperatureCriticalThreshold
-            ? parent.config.urgentBackgroundColor
-            : parent.config.textColor
-        font.family: parent.config.fontFamily
-        font.pixelSize: parent.config.fontPixelSize
+        spacing: 0
+
+        Text {
+            text: `${root.metrics.temperatureC}°C `
+            color: root.metrics.temperatureC >= root.config.temperatureCriticalThreshold
+                ? root.theme.urgent : root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            name: root.icon()
+            theme: root.theme
+            color: root.metrics.temperatureC >= root.config.temperatureCriticalThreshold
+                ? root.theme.urgent : root.theme.primaryText
+        }
     }
 }

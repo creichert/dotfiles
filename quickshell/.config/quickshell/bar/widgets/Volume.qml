@@ -1,11 +1,13 @@
 import QtQuick
 import Quickshell.Services.Pipewire
+import "../../components" as Components
 
 Item {
     id: root
 
     required property var config
-    implicitWidth: volumeText.implicitWidth + config.moduleHorizontalPadding
+    required property var theme
+    implicitWidth: volumeRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
     readonly property var sink: Pipewire.ready ? Pipewire.defaultAudioSink : null
@@ -14,23 +16,33 @@ Item {
 
     function icon() {
         if (percent === 0)
-            return ""
+            return "volumeOff"
         if (percent < config.volumeMediumThreshold)
-            return ""
-        return ""
+            return "volumeLow"
+        return "volumeHigh"
     }
 
     PwObjectTracker {
         objects: [root.sink]
     }
 
-    Text {
-        id: volumeText
+    Row {
+        id: volumeRow
         anchors.centerIn: parent
-        text: !parent.sink ? "--% " : parent.muted ? "" : `${parent.percent}% ${parent.icon()}`
-        color: parent.config.textColor
-        font.family: parent.config.fontFamily
-        font.pixelSize: parent.config.fontPixelSize
+        spacing: 0
+
+        Text {
+            visible: !root.muted || !root.sink
+            text: !root.sink ? "--% " : `${root.percent}% `
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            name: !root.sink ? "volumeHigh" : root.muted ? "volumeMuted" : root.icon()
+            theme: root.theme
+        }
     }
 
     MouseArea {

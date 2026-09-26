@@ -1,10 +1,12 @@
 import QtQuick
+import "../../components" as Components
 
 Item {
     id: root
 
     required property var metrics
     required property var config
+    required property var theme
     visible: config.networkModuleEnabled
     implicitWidth: networkRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
@@ -21,8 +23,8 @@ Item {
     TextMetrics {
         id: rateMetrics
         text: root.config.networkRateWidthLabel
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+        font.family: root.theme.fontFamily
+        font.pixelSize: root.theme.fontPixelSize
     }
 
     Row {
@@ -32,48 +34,55 @@ Item {
 
         Text {
             text: root.metrics.interfaceName.length > 0 ? root.metrics.interfaceName : "Disconnected"
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
         }
 
-        Text {
-            text: root.metrics.interfaceName.length > 0 ? "󰱔 |" : "⚠"
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+        Row {
+            spacing: 0
+
+            Components.Icon {
+                name: root.metrics.interfaceName.length > 0
+                    ? "networkConnected" : "networkDisconnected"
+                theme: root.theme
+            }
+
+            Text {
+                visible: root.metrics.interfaceName.length > 0
+                text: " |"
+                color: root.theme.primaryText
+                font.family: root.theme.fontFamily
+                font.pixelSize: root.theme.fontPixelSize
+            }
         }
 
         Text {
             width: rateMetrics.width
             horizontalAlignment: Text.AlignRight
             text: root.metrics.interfaceName.length > 0 ? root.rate(root.metrics.transmitBytesPerSecond) : ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
         }
 
-        Text {
-            text: ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+        Components.Icon {
+            name: "upload"
+            theme: root.theme
         }
 
         Text {
             width: rateMetrics.width
             horizontalAlignment: Text.AlignRight
             text: root.metrics.interfaceName.length > 0 ? root.rate(root.metrics.receiveBytesPerSecond) : ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
         }
 
-        Text {
-            text: ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+        Components.Icon {
+            name: "download"
+            theme: root.theme
         }
     }
 }

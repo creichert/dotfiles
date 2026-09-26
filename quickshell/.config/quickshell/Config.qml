@@ -36,6 +36,7 @@ QtObject {
     property string inhibitedBackgroundColor: surfaceSelectedColor
     property string inhibitedTextColor: textPrimaryColor
     property int barSpacing: 4
+    property int barIconButtonWidth: 32
     // 10px total is equivalent to 5px on each side.
     property int moduleHorizontalPadding: isLaptop ? 10 : 16
     property int trayIconSize: 18
@@ -79,15 +80,15 @@ QtObject {
     // Workspace presentation
     property int workspaceHorizontalPadding: 10
     property var workspaceIcons: ({
-        "1": "",
-        "2": "",
-        "3": "",
-        "4": "",
-        "cfg": "",
-        "terms": "",
-        "db": "",
-        "default": "",
-        "urgent": ""
+        "1": "browser",
+        "2": "terminal",
+        "3": "code",
+        "4": "music",
+        "cfg": "window",
+        "terms": "window",
+        "db": "window",
+        "default": "workspaceDefault",
+        "urgent": "warning"
     })
 
     // Module behavior

@@ -1,9 +1,11 @@
 import QtQuick
+import "../../components" as Components
 
 Rectangle {
     id: root
 
     required property var config
+    required property var theme
     required property var workspace
     property bool showSpecial: false
 
@@ -23,19 +25,28 @@ Rectangle {
     }
 
     visible: special === showSpecial && (!special || specialActive)
-    implicitWidth: workspaceLabel.implicitWidth + config.workspaceHorizontalPadding
+    implicitWidth: workspaceRow.implicitWidth + config.workspaceHorizontalPadding
     implicitHeight: config.barHeight
-    color: workspace.urgent ? config.urgentBackgroundColor
-        : active ? config.activeBackgroundColor
+    color: workspace.urgent ? theme.urgent
+        : active ? theme.selectedSurface
         : "transparent"
 
-    Text {
-        id: workspaceLabel
+    Row {
+        id: workspaceRow
         anchors.centerIn: parent
-        text: `${root.displayName}: ${root.icon()}`
-        color: root.config.textColor
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+        spacing: 0
+
+        Text {
+            text: `${root.displayName}: `
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            name: root.icon()
+            theme: root.theme
+        }
     }
 
     MouseArea {

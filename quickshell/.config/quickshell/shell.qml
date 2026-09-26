@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import "bar"
+import "theme"
 import "clipboard" as ClipboardUi
 import "launcher" as LauncherUi
 import "services"
@@ -39,6 +40,11 @@ ShellRoot {
 
     Config {
         id: config
+    }
+
+    Theme {
+        id: theme
+        config: config
     }
 
     Metrics {
@@ -110,6 +116,7 @@ ShellRoot {
             required property var modelData
             screen: modelData
             config: config
+            theme: theme
             metrics: metricsService
             notifications: notificationLoader.item
         }

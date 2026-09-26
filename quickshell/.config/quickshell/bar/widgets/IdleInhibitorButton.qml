@@ -1,20 +1,20 @@
 import QtQuick
+import "../../components" as Components
 
 Rectangle {
     id: root
 
     required property var config
+    required property var theme
     property bool inhibited: false
-    implicitWidth: 32
+    implicitWidth: config.barIconButtonWidth
     implicitHeight: config.barHeight
-    color: inhibited ? config.inhibitedBackgroundColor : "transparent"
+    color: inhibited ? theme.selectedSurface : "transparent"
 
-    Text {
+    Components.Icon {
         anchors.centerIn: parent
-        text: root.inhibited ? "" : ""
-        color: root.inhibited ? root.config.inhibitedTextColor : root.config.textColor
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+        name: root.inhibited ? "eyeOpen" : "eyeClosed"
+        theme: root.theme
     }
 
     MouseArea {

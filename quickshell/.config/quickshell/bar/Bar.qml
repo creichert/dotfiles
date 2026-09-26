@@ -11,9 +11,10 @@ PanelWindow {
 
     required property var metrics
     required property var config
+    required property var theme
     property var notifications: null
     implicitHeight: config.barHeight
-    color: config.barBackgroundColor
+    color: theme.surface
     readonly property int rightMargin: systemTray.visible ? config.barSpacing : 0
 
     anchors {
@@ -37,18 +38,21 @@ PanelWindow {
         Widgets.Workspaces {
             Layout.alignment: Qt.AlignVCenter
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Battery {
             Layout.alignment: Qt.AlignVCenter
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Brightness {
             Layout.alignment: Qt.AlignVCenter
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
     }
 
@@ -60,6 +64,7 @@ PanelWindow {
             parent.width - 2 * Math.max(leftModules.width, rightModules.width + root.rightMargin)
         ))
         config: root.config
+        theme: root.theme
     }
 
     RowLayout {
@@ -73,30 +78,36 @@ PanelWindow {
         Widgets.IdleInhibitorButton {
             id: idleButton
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Volume {
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Network {
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Cpu {
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Memory {
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Temperature {
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.NotificationCenterButton {
@@ -104,16 +115,19 @@ PanelWindow {
 
             controller: root.notifications
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Clock {
             config: root.config
+            theme: root.theme
         }
 
         Widgets.SystemTray {
             id: systemTray
 
             config: root.config
+            theme: root.theme
         }
     }
 
