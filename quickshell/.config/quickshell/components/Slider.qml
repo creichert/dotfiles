@@ -5,8 +5,9 @@ Controls.Slider {
     id: root
 
     required property var theme
+    property int handleSize: 16
 
-    implicitHeight: 32
+    implicitHeight: Math.max(32, handleSize + 16)
     from: 0
     to: 1
     stepSize: 0.01
@@ -33,8 +34,8 @@ Controls.Slider {
     handle: Rectangle {
         x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
         y: (root.height - height) / 2
-        implicitWidth: 16
-        implicitHeight: 16
+        implicitWidth: root.handleSize
+        implicitHeight: root.handleSize
         radius: width / 2
         color: root.enabled ? root.theme.primaryText : root.theme.mutedText
         border.width: root.visualFocus ? 2 : 1

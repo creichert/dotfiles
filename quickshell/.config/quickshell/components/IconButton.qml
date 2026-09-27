@@ -5,6 +5,7 @@ Button {
     id: root
 
     required property string iconName
+    property int iconPixelSize: theme.fontPixelSize
 
     implicitWidth: 28
     implicitHeight: 28
@@ -16,6 +17,7 @@ Button {
     contentItem: Icon {
         theme: root.theme
         name: root.iconName
+        font.pixelSize: root.iconPixelSize
         color: root.enabled ? root.theme.primaryText : root.theme.mutedText
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

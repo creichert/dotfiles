@@ -7,6 +7,7 @@ Item {
 
     property bool panelVisible: false
     readonly property var sink: Pipewire.ready ? Pipewire.defaultAudioSink : null
+    readonly property var preferredSink: Pipewire.ready ? Pipewire.preferredDefaultAudioSink : null
     readonly property var source: Pipewire.ready ? Pipewire.defaultAudioSource : null
     readonly property var outputDevices: Pipewire.nodes.values.filter(node =>
         node.audio && node.isSink && !node.isStream)
