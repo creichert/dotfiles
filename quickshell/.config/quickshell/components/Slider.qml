@@ -12,6 +12,7 @@ Controls.Slider {
     stepSize: 0.01
     hoverEnabled: true
     focusPolicy: Qt.StrongFocus
+    wheelEnabled: true
 
     background: Rectangle {
         x: root.leftPadding

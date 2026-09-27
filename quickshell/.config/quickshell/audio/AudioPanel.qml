@@ -153,6 +153,7 @@ Components.AnchoredPanel {
                                 property: "value"
                                 value: root.audio.sinkVolume
                                 when: !outputSlider.pressed
+                                restoreMode: Binding.RestoreNone
                             }
                         }
 
@@ -317,6 +318,7 @@ Components.AnchoredPanel {
                                 property: "value"
                                 value: root.audio.sourceVolume
                                 when: !microphoneSlider.pressed
+                                restoreMode: Binding.RestoreNone
                             }
                         }
                     }
