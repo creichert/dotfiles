@@ -1,9 +1,11 @@
 import QtQuick
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 
 Item {
     id: root
 
+    property bool panelVisible: false
     readonly property var sink: Pipewire.ready ? Pipewire.defaultAudioSink : null
     readonly property var source: Pipewire.ready ? Pipewire.defaultAudioSource : null
     readonly property var outputDevices: Pipewire.nodes.values.filter(node =>
@@ -37,6 +39,14 @@ Item {
             setSinkMuted(!sink.audio.muted)
     }
 
+    // Pipewire.preferredDefaultAudioSink = device
+    //   ≈ user explicitly chooses preferred/default sink
+    //   → WirePlumber remembers that choice
+    //   → visible under `wpctl status` → Default Configured Devices
+    //
+    // wpctl clear-default
+    //   → removes explicit default-device preference
+    //   → WirePlumber resumes automatic device selection
     function selectOutputDevice(device) {
         if (device && outputDevices.indexOf(device) !== -1)
             Pipewire.preferredDefaultAudioSink = device
@@ -50,5 +60,21 @@ Item {
     function setSourceMuted(muted) {
         if (source && source.ready && source.audio)
             source.audio.muted = muted
+    }
+
+    function togglePanel() {
+        panelVisible = !panelVisible
+    }
+
+    function closePanel() {
+        panelVisible = false
+    }
+
+    IpcHandler {
+        target: "audio"
+
+        function togglePanel(): void {
+            root.togglePanel()
+        }
     }
 }

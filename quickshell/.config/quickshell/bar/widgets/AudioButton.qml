@@ -43,7 +43,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: root.audio.toggleSinkMuted()
+        onClicked: root.audio.togglePanel()
         onWheel: wheel => root.audio.adjustSinkVolume(wheel.angleDelta.y > 0 ? 0.03 : -0.03)
     }
 }

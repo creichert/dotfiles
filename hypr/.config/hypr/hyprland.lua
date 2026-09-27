@@ -345,6 +345,9 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 ---- quickshell keybindings ----
 --------------------------------
 
+-- Audio
+hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("qs ipc call audio togglePanel"))
+
 -- Notification center
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications toggleNotificationCenter"))
 hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications clearHistory"))

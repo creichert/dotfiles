@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import "widgets" as Widgets
+import "../audio" as AudioUi
 import "../notifications" as Notifications
 
 PanelWindow {
@@ -83,6 +84,7 @@ PanelWindow {
         }
 
         Widgets.AudioButton {
+            id: audioButton
             audio: root.audio
             config: root.config
             theme: root.theme
@@ -140,5 +142,11 @@ PanelWindow {
         controller: root.notifications
         open: notificationButton.centerVisible
         onDismissed: root.notifications.notificationCenterVisible = false
+    }
+
+    AudioUi.AudioPanel {
+        trigger: audioButton
+        audio: root.audio
+        theme: root.theme
     }
 }

@@ -43,7 +43,9 @@ const glyphs = {
     volumeOff: "",
     volumeLow: "",
     volumeHigh: "",
-    volumeMuted: ""
+    volumeMuted: "",
+    microphone: "",
+    microphoneMuted: ""
 }
 
 function glyph(name) {
