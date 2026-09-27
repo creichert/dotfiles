@@ -15,6 +15,7 @@ Components.AnchoredPanel {
     implicitHeight: 420
     gap: theme.spacingMedium
     visible: audio.panelVisible
+    onDismissed: audio.closePanel()
 
     onVisibleChanged: {
         if (!visible) {

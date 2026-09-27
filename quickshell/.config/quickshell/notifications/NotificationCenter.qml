@@ -11,7 +11,6 @@ Components.AnchoredPanel {
     required property var theme
     property var controller: null
     property bool open: false
-    signal dismissed()
     visible: open && controller !== null
     implicitWidth: config.notificationWidth
     implicitHeight: config.notificationCenterHeight
@@ -30,8 +29,6 @@ Components.AnchoredPanel {
                 if (root.visible)
                     centerFocus.forceActiveFocus()
             })
-        } else {
-            dismissed()
         }
     }
 
