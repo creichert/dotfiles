@@ -98,44 +98,21 @@ Components.AnchoredPanel {
                 width: parent.width
                 spacing: root.theme.spacingMedium
 
-                Components.Button {
-                    id: backButton
-
+                Components.IconButton {
                     visible: root.view === "discovery"
+                    Layout.alignment: Qt.AlignVCenter
                     theme: root.theme
                     text: "Back"
+                    iconName: "chevronLeft"
+                    iconPixelSize: root.theme.bodyFontPixelSize + 2
+                    implicitWidth: 32
                     implicitHeight: 32
                     onClicked: root.showStatus()
-
-                    contentItem: Row {
-                        spacing: root.theme.spacingSmall
-
-                        Components.Icon {
-                            theme: root.theme
-                            name: "chevronLeft"
-                            color: root.theme.primaryText
-                            font.pixelSize: root.theme.bodyFontPixelSize + 2
-                        }
-
-                        Text {
-                            text: "Back"
-                            color: root.theme.primaryText
-                            font.family: root.theme.fontFamily
-                            font.pixelSize: root.theme.bodyFontPixelSize
-                        }
-                    }
-
-                    background: Rectangle {
-                        radius: root.theme.controlRadius
-                        color: backButton.pressed ? root.theme.surface
-                            : backButton.hovered ? root.theme.selectedSurface : "transparent"
-                        border.width: backButton.visualFocus ? 1 : 0
-                        border.color: root.theme.activeAccent
-                    }
                 }
 
                 Text {
                     Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
                     text: root.view === "discovery" ? "Available networks" : "Network"
                     color: root.theme.primaryText
                     font.family: root.theme.fontFamily
@@ -144,6 +121,7 @@ Components.AnchoredPanel {
                 }
 
                 Controls.BusyIndicator {
+                    Layout.alignment: Qt.AlignVCenter
                     visible: running
                     running: root.view === "discovery" && root.network.wifiCanScan
                         && root.network.wifiScanning
@@ -498,8 +476,8 @@ Components.AnchoredPanel {
                         visible: root.network.wifiCanScan && count > 0
                         clip: true
                         spacing: 2
-                        activeFocusOnTab: true
-                        keyNavigationEnabled: true
+                        activeFocusOnTab: false
+                        keyNavigationEnabled: false
                         model: root.network.availableWifiNetworkModel
 
                         delegate: Rectangle {
@@ -557,15 +535,6 @@ Components.AnchoredPanel {
                                 }
                             }
                         }
-                    }
-
-                    Rectangle {
-                        anchors.top: parent.top
-                        width: parent.width
-                        height: 2
-                        visible: networksList.visible && networksList.activeFocus
-                        enabled: false
-                        color: root.theme.activeAccent
                     }
                 }
             }
