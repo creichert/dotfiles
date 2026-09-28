@@ -2,6 +2,7 @@
 
 import QtQuick
 import Quickshell.Io
+import Quickshell.Networking
 
 Item {
     id: root
@@ -22,6 +23,35 @@ Item {
         : linkState === "down" ? "Link down · default route"
         : linkState === "dormant" ? "Link dormant · default route"
         : "Default route present · link unknown"
+
+    readonly property bool networkManagerAvailable: Networking.backend === NetworkBackendType.NetworkManager
+    // Prefer a connected managed adapter, otherwise use the first managed Wi-Fi adapter.
+    readonly property var wifiDevice: {
+        if (!networkManagerAvailable)
+            return null
+
+        let first = null
+        for (const device of Networking.devices.values) {
+            if (device.type !== DeviceType.Wifi || !device.nmManaged)
+                continue
+            if (device.connected)
+                return device
+            if (!first)
+                first = device
+        }
+        return first
+    }
+    readonly property bool wifiManagementAvailable: wifiDevice !== null
+    readonly property var wifiEnabled: wifiManagementAvailable ? Networking.wifiEnabled : null
+    readonly property var wifiHardwareBlocked: wifiManagementAvailable
+        ? !Networking.wifiHardwareEnabled : null
+    readonly property bool wifiConnected: wifiDevice ? wifiDevice.connected : false
+    readonly property var connectedWifiNetwork: wifiConnected
+        ? wifiDevice.networks.values.find(network => network.connected) || null : null
+    readonly property string wifiSsid: connectedWifiNetwork ? connectedWifiNetwork.name : ""
+    readonly property var wifiSignalPercent: connectedWifiNetwork
+        && Number.isFinite(connectedWifiNetwork.signalStrength)
+        ? Math.round(connectedWifiNetwork.signalStrength * 100) : null
 
     function rate(bytes) {
         const bits = bytes * 8

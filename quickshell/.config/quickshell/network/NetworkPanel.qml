@@ -11,7 +11,7 @@ Components.AnchoredPanel {
     required property var theme
 
     implicitWidth: 380
-    implicitHeight: 365
+    implicitHeight: network.wifiManagementAvailable ? 490 : 365
     gap: theme.spacingMedium
     visible: network.panelVisible
     onDismissed: network.closePanel()
@@ -255,6 +255,90 @@ Components.AnchoredPanel {
                             Text {
                                 text: root.network.interfaceName
                                     ? root.network.rate(root.network.transmitBytesPerSecond) : "—"
+                                color: root.theme.primaryText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: root.theme.separator
+                        visible: root.network.wifiManagementAvailable
+                    }
+
+                    Column {
+                        width: parent.width
+                        spacing: root.theme.spacingMedium + 2
+                        visible: root.network.wifiManagementAvailable
+
+                        Text {
+                            text: "Wi-Fi"
+                            color: root.theme.primaryText
+                            font.family: root.theme.fontFamily
+                            font.pixelSize: root.theme.bodyFontPixelSize + 2
+                            font.bold: true
+                        }
+
+                        RowLayout {
+                            width: parent.width
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Radio"
+                                color: root.theme.mutedText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+
+                            Text {
+                                text: root.network.wifiHardwareBlocked ? "Hardware blocked"
+                                    : root.network.wifiEnabled ? "On" : "Off"
+                                color: root.theme.primaryText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+                        }
+
+                        RowLayout {
+                            width: parent.width
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Network"
+                                color: root.theme.mutedText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+
+                            Text {
+                                Layout.maximumWidth: parent.width * 0.7
+                                text: root.network.wifiSsid || (root.network.wifiConnected
+                                    ? "Connected · SSID unavailable" : "Not connected")
+                                color: root.theme.primaryText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                                elide: Text.ElideRight
+                            }
+                        }
+
+                        RowLayout {
+                            width: parent.width
+                            visible: root.network.wifiSignalPercent !== null
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Signal"
+                                color: root.theme.mutedText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+
+                            Text {
+                                text: root.network.wifiSignalPercent !== null
+                                    ? `${root.network.wifiSignalPercent}%` : ""
                                 color: root.theme.primaryText
                                 font.family: root.theme.fontFamily
                                 font.pixelSize: root.theme.bodyFontPixelSize
