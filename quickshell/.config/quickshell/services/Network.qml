@@ -12,6 +12,7 @@ Item {
     property string localIpv4: ""
     property bool detailsPending: false
     property bool queuedRefresh: false
+    property bool discoveryRequested: false
     property var scanningDevice: null
 
     readonly property string interfaceName: metrics.interfaceName
@@ -85,7 +86,7 @@ Item {
     }
 
     function syncWifiScan() {
-        const nextDevice = panelVisible && wifiCanScan ? wifiDevice : null
+        const nextDevice = panelVisible && discoveryRequested && wifiCanScan ? wifiDevice : null
         if (scanningDevice && scanningDevice !== nextDevice)
             scanningDevice.scannerEnabled = false
 
@@ -164,6 +165,7 @@ Item {
     }
 
     onPanelVisibleChanged: syncWifiScan()
+    onDiscoveryRequestedChanged: syncWifiScan()
     onWifiDeviceChanged: syncWifiScan()
     onWifiEnabledChanged: syncWifiScan()
     onWifiHardwareBlockedChanged: syncWifiScan()
