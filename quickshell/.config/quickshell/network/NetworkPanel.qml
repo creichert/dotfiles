@@ -11,7 +11,7 @@ Components.AnchoredPanel {
     required property var theme
 
     implicitWidth: 380
-    implicitHeight: network.wifiManagementAvailable ? 490 : 365
+    implicitHeight: network.wifiManagementAvailable ? 580 : 365
     gap: theme.spacingMedium
     visible: network.panelVisible
     onDismissed: network.closePanel()
@@ -342,6 +342,105 @@ Components.AnchoredPanel {
                                 color: root.theme.primaryText
                                 font.family: root.theme.fontFamily
                                 font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+                        }
+
+                        RowLayout {
+                            width: parent.width
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Available networks"
+                                color: root.theme.primaryText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.bodyFontPixelSize
+                            }
+
+                            Text {
+                                visible: root.network.wifiScanning
+                                text: "Scanning…"
+                                color: root.theme.mutedText
+                                font.family: root.theme.fontFamily
+                                font.pixelSize: root.theme.secondaryFontPixelSize
+                            }
+                        }
+
+                        Text {
+                            visible: !root.network.wifiCanScan
+                                || root.network.availableWifiNetworks.length === 0
+                            text: root.network.wifiHardwareBlocked ? "Wi-Fi hardware blocked"
+                                : !root.network.wifiEnabled ? "Wi-Fi is off"
+                                : root.network.wifiScanning ? "No networks found yet"
+                                : "Scanning unavailable"
+                            color: root.theme.mutedText
+                            font.family: root.theme.fontFamily
+                            font.pixelSize: root.theme.bodyFontPixelSize
+                        }
+
+                        ListView {
+                            id: networksList
+
+                            width: parent.width
+                            height: Math.min(count, 5) * 50
+                            visible: root.network.wifiCanScan && count > 0
+                            clip: true
+                            spacing: 2
+                            interactive: contentHeight > height
+                            model: root.network.availableWifiNetworks
+
+                            delegate: Rectangle {
+                                id: networkEntry
+
+                                required property var modelData
+
+                                width: networksList.width
+                                height: 48
+                                radius: root.theme.controlRadius
+                                color: networkEntry.modelData.connected
+                                    ? root.theme.selectedSurface : root.theme.surface
+
+                                RowLayout {
+                                    anchors {
+                                        fill: parent
+                                        leftMargin: root.theme.spacingMedium
+                                        rightMargin: root.theme.spacingMedium
+                                    }
+                                    spacing: root.theme.spacingMedium
+
+                                    Column {
+                                        Layout.fillWidth: true
+                                        spacing: root.theme.spacingSmall
+
+                                        Text {
+                                            width: parent.width
+                                            text: networkEntry.modelData.ssid
+                                            color: root.theme.primaryText
+                                            font.family: root.theme.fontFamily
+                                            font.pixelSize: root.theme.bodyFontPixelSize
+                                            font.bold: networkEntry.modelData.connected
+                                            elide: Text.ElideRight
+                                        }
+
+                                        Text {
+                                            width: parent.width
+                                            text: (networkEntry.modelData.connected ? "Connected · " : "")
+                                                + (networkEntry.modelData.known ? "Saved · " : "Not saved · ")
+                                                + networkEntry.modelData.security
+                                            color: root.theme.mutedText
+                                            font.family: root.theme.fontFamily
+                                            font.pixelSize: root.theme.secondaryFontPixelSize
+                                            elide: Text.ElideRight
+                                        }
+                                    }
+
+                                    Text {
+                                        text: networkEntry.modelData.signalPercent !== null
+                                            ? `${networkEntry.modelData.signalPercent}%` : "—"
+                                        color: root.theme.mutedText
+                                        font.family: root.theme.fontFamily
+                                        font.pixelSize: root.theme.bodyFontPixelSize
+                                    }
+                                }
                             }
                         }
                     }

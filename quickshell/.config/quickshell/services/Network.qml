@@ -12,6 +12,7 @@ Item {
     property string localIpv4: ""
     property bool detailsPending: false
     property bool queuedRefresh: false
+    property var scanningDevice: null
 
     readonly property string interfaceName: metrics.interfaceName
     readonly property string gateway: metrics.gateway
@@ -52,6 +53,46 @@ Item {
     readonly property var wifiSignalPercent: connectedWifiNetwork
         && Number.isFinite(connectedWifiNetwork.signalStrength)
         ? Math.round(connectedWifiNetwork.signalStrength * 100) : null
+    readonly property bool wifiCanScan: wifiManagementAvailable
+        && wifiEnabled === true && wifiHardwareBlocked === false
+    readonly property bool wifiScanning: scanningDevice === wifiDevice
+        && wifiDevice !== null && wifiDevice.scannerEnabled
+    readonly property var availableWifiNetworks: wifiScanning
+        ? wifiDevice.networks.values.map(network => ({
+            ssid: network.name || "SSID unavailable",
+            signalPercent: Number.isFinite(network.signalStrength)
+                ? Math.round(network.signalStrength * 100) : null,
+            connected: network.connected,
+            known: network.known,
+            security: wifiSecurityLabel(network.security)
+        })) : []
+
+    function wifiSecurityLabel(security) {
+        switch (security) {
+        case WifiSecurityType.Open: return "Open"
+        case WifiSecurityType.Owe: return "Enhanced open"
+        case WifiSecurityType.Sae: return "WPA3"
+        case WifiSecurityType.Wpa3SuiteB192: return "WPA3 Enterprise"
+        case WifiSecurityType.Wpa2Psk: return "WPA2"
+        case WifiSecurityType.Wpa2Eap: return "WPA2 Enterprise"
+        case WifiSecurityType.WpaPsk: return "WPA"
+        case WifiSecurityType.WpaEap: return "WPA Enterprise"
+        case WifiSecurityType.StaticWep:
+        case WifiSecurityType.DynamicWep: return "WEP"
+        case WifiSecurityType.Leap: return "LEAP"
+        default: return "Security unknown"
+        }
+    }
+
+    function syncWifiScan() {
+        const nextDevice = panelVisible && wifiCanScan ? wifiDevice : null
+        if (scanningDevice && scanningDevice !== nextDevice)
+            scanningDevice.scannerEnabled = false
+
+        scanningDevice = nextDevice
+        if (nextDevice && !nextDevice.scannerEnabled)
+            nextDevice.scannerEnabled = true
+    }
 
     function rate(bytes) {
         const bits = bytes * 8
@@ -121,6 +162,11 @@ Item {
         if (panelVisible && linkState === "up" && !detailsPending)
             refreshAddress()
     }
+
+    onPanelVisibleChanged: syncWifiScan()
+    onWifiDeviceChanged: syncWifiScan()
+    onWifiEnabledChanged: syncWifiScan()
+    onWifiHardwareBlockedChanged: syncWifiScan()
 
     Process {
         id: addressProcess
