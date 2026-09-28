@@ -56,17 +56,22 @@ Item {
         ? Math.round(connectedWifiNetwork.signalStrength * 100) : null
     readonly property bool wifiCanScan: wifiManagementAvailable
         && wifiEnabled === true && wifiHardwareBlocked === false
-    readonly property bool wifiScanning: scanningDevice === wifiDevice
-        && wifiDevice !== null && wifiDevice.scannerEnabled
-    readonly property var availableWifiNetworks: wifiScanning
-        ? wifiDevice.networks.values.map(network => ({
+    readonly property bool wifiScanning: panelVisible && discoveryRequested && wifiCanScan
+        && scanningDevice === wifiDevice && wifiDevice !== null && wifiDevice.scannerEnabled
+    // Keep the native model stable as scan results arrive. The view loads it only in Discovery.
+    readonly property var availableWifiNetworkModel: panelVisible && discoveryRequested && wifiCanScan
+        ? wifiDevice.networks : null
+
+    function wifiNetworkDetails(network) {
+        return {
             ssid: network.name || "SSID unavailable",
             signalPercent: Number.isFinite(network.signalStrength)
                 ? Math.round(network.signalStrength * 100) : null,
             connected: network.connected,
             known: network.known,
             security: wifiSecurityLabel(network.security)
-        })) : []
+        }
+    }
 
     function wifiSecurityLabel(security) {
         switch (security) {

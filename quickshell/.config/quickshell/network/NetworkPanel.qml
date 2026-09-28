@@ -13,7 +13,8 @@ Components.AnchoredPanel {
     property string view: "status"
 
     implicitWidth: 380
-    implicitHeight: network.wifiManagementAvailable ? 580 : 365
+    implicitHeight: !network.wifiManagementAvailable ? 365
+        : view === "discovery" ? 580 : 520
     gap: theme.spacingMedium
     visible: network.panelVisible
     onDismissed: network.closePanel()
@@ -98,11 +99,39 @@ Components.AnchoredPanel {
                 spacing: root.theme.spacingMedium
 
                 Components.Button {
+                    id: backButton
+
                     visible: root.view === "discovery"
                     theme: root.theme
                     text: "Back"
                     implicitHeight: 32
                     onClicked: root.showStatus()
+
+                    contentItem: Row {
+                        spacing: root.theme.spacingSmall
+
+                        Components.Icon {
+                            theme: root.theme
+                            name: "chevronLeft"
+                            color: root.theme.primaryText
+                            font.pixelSize: root.theme.bodyFontPixelSize + 2
+                        }
+
+                        Text {
+                            text: "Back"
+                            color: root.theme.primaryText
+                            font.family: root.theme.fontFamily
+                            font.pixelSize: root.theme.bodyFontPixelSize
+                        }
+                    }
+
+                    background: Rectangle {
+                        radius: root.theme.controlRadius
+                        color: backButton.pressed ? root.theme.surface
+                            : backButton.hovered ? root.theme.selectedSurface : "transparent"
+                        border.width: backButton.visualFocus ? 1 : 0
+                        border.color: root.theme.activeAccent
+                    }
                 }
 
                 Text {
@@ -116,9 +145,10 @@ Components.AnchoredPanel {
 
                 Controls.BusyIndicator {
                     visible: running
-                    running: root.view === "discovery" && root.network.wifiScanning
-                    implicitWidth: 20
-                    implicitHeight: 20
+                    running: root.view === "discovery" && root.network.wifiCanScan
+                        && root.network.wifiScanning
+                    implicitWidth: 28
+                    implicitHeight: 28
                 }
             }
 
@@ -404,6 +434,8 @@ Components.AnchoredPanel {
                             }
 
                             Components.Button {
+                                id: availableNetworksButton
+
                                 width: parent.width
                                 implicitHeight: 42
                                 theme: root.theme
@@ -421,12 +453,21 @@ Components.AnchoredPanel {
                                         font.pixelSize: root.theme.bodyFontPixelSize
                                     }
 
-                                    Text {
-                                        text: "›"
+                                    Components.Icon {
+                                        theme: root.theme
+                                        name: "chevronRight"
                                         color: root.theme.mutedText
-                                        font.family: root.theme.fontFamily
-                                        font.pixelSize: root.theme.bodyFontPixelSize + 4
+                                        font.pixelSize: root.theme.bodyFontPixelSize + 2
                                     }
+                                }
+
+                                background: Rectangle {
+                                    radius: root.theme.controlRadius
+                                    color: availableNetworksButton.pressed ? root.theme.surface
+                                        : availableNetworksButton.hovered
+                                            ? root.theme.selectedSurface : "transparent"
+                                    border.width: availableNetworksButton.visualFocus ? 1 : 0
+                                    border.color: root.theme.activeAccent
                                 }
                             }
                         }
@@ -459,17 +500,18 @@ Components.AnchoredPanel {
                         spacing: 2
                         activeFocusOnTab: true
                         keyNavigationEnabled: true
-                        model: root.network.availableWifiNetworks
+                        model: root.network.availableWifiNetworkModel
 
                         delegate: Rectangle {
                             id: networkEntry
 
                             required property var modelData
+                            readonly property var details: root.network.wifiNetworkDetails(modelData)
 
                             width: networksList.width
                             height: 48
                             radius: root.theme.controlRadius
-                            color: networkEntry.modelData.connected
+                            color: networkEntry.details.connected
                                 ? root.theme.selectedSurface : root.theme.surface
 
                             RowLayout {
@@ -486,19 +528,19 @@ Components.AnchoredPanel {
 
                                     Text {
                                         width: parent.width
-                                        text: networkEntry.modelData.ssid
+                                        text: networkEntry.details.ssid
                                         color: root.theme.primaryText
                                         font.family: root.theme.fontFamily
                                         font.pixelSize: root.theme.bodyFontPixelSize
-                                        font.bold: networkEntry.modelData.connected
+                                        font.bold: networkEntry.details.connected
                                         elide: Text.ElideRight
                                     }
 
                                     Text {
                                         width: parent.width
-                                        text: (networkEntry.modelData.connected ? "Connected · " : "")
-                                            + (networkEntry.modelData.known ? "Saved · " : "Not saved · ")
-                                            + networkEntry.modelData.security
+                                        text: (networkEntry.details.connected ? "Connected · " : "")
+                                            + (networkEntry.details.known ? "Saved · " : "Not saved · ")
+                                            + networkEntry.details.security
                                         color: root.theme.mutedText
                                         font.family: root.theme.fontFamily
                                         font.pixelSize: root.theme.secondaryFontPixelSize
@@ -507,8 +549,8 @@ Components.AnchoredPanel {
                                 }
 
                                 Text {
-                                    text: networkEntry.modelData.signalPercent !== null
-                                        ? `${networkEntry.modelData.signalPercent}%` : "—"
+                                    text: networkEntry.details.signalPercent !== null
+                                        ? `${networkEntry.details.signalPercent}%` : "—"
                                     color: root.theme.mutedText
                                     font.family: root.theme.fontFamily
                                     font.pixelSize: root.theme.bodyFontPixelSize
@@ -518,13 +560,12 @@ Components.AnchoredPanel {
                     }
 
                     Rectangle {
-                        anchors.fill: networksList
+                        anchors.top: parent.top
+                        width: parent.width
+                        height: 2
                         visible: networksList.visible && networksList.activeFocus
                         enabled: false
-                        color: "transparent"
-                        border.width: 1
-                        border.color: root.theme.activeAccent
-                        radius: root.theme.controlRadius
+                        color: root.theme.activeAccent
                     }
                 }
             }

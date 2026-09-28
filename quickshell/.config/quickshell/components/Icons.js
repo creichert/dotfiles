@@ -34,6 +34,8 @@ const glyphs = {
     markUnread: "",
     networkConnected: "󰱔",
     networkDisconnected: "⚠",
+    chevronLeft: "",
+    chevronRight: "",
     upload: "",
     download: "",
     temperatureCool: "",
