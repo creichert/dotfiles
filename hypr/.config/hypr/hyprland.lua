@@ -346,7 +346,10 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 --------------------------------
 
 -- Audio
-hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("qs ipc call audio togglePanel"))
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs ipc call audio togglePanel"))
+
+-- Network
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs ipc call network togglePanel"))
 
 -- Notification center
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications toggleNotificationCenter"))

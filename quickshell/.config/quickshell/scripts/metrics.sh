@@ -106,12 +106,27 @@ while true; do
     fi
 
     interface_name=""
-    while read -r interface destination _ _ _ _ _ _; do
+    gateway_hex=""
+    while read -r interface destination gateway _ _ _ _ _; do
         if [[ "$destination" == "00000000" ]]; then
             interface_name="$interface"
+            gateway_hex="$gateway"
             break
         fi
     done < <(tail -n +2 /proc/net/route)
+
+    gateway_json=null
+    if [[ "$gateway_hex" =~ ^[[:xdigit:]]{8}$ && "$gateway_hex" != "00000000" ]]; then
+        printf -v gateway_ip '%d.%d.%d.%d' \
+            "$((16#${gateway_hex:6:2}))" "$((16#${gateway_hex:4:2}))" \
+            "$((16#${gateway_hex:2:2}))" "$((16#${gateway_hex:0:2}))"
+        gateway_json="\"$gateway_ip\""
+    fi
+
+    link_state="unknown"
+    if [[ -n "$interface_name" && -r "/sys/class/net/$interface_name/operstate" ]]; then
+        link_state=$(< "/sys/class/net/$interface_name/operstate")
+    fi
 
     receive_bytes=0
     transmit_bytes=0
@@ -129,7 +144,7 @@ while true; do
 
     timestamp_ms=${EPOCHREALTIME/./}
     timestamp_ms=${timestamp_ms:0:13}
-    printf '{"cpuPercent":%s,"memoryPercent":%s,"temperatureC":%s,"batteryPercent":%s,"batteryStatus":%s,"brightnessPercent":%s,"interfaceName":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
-        "$cpu_percent" "$memory_percent" "$temperature_c" "$battery_percent_json" "$battery_status_json" "$brightness_percent_json" "$interface_name" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
+    printf '{"cpuPercent":%s,"memoryPercent":%s,"temperatureC":%s,"batteryPercent":%s,"batteryStatus":%s,"brightnessPercent":%s,"interfaceName":"%s","gateway":%s,"linkState":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
+        "$cpu_percent" "$memory_percent" "$temperature_c" "$battery_percent_json" "$battery_status_json" "$brightness_percent_json" "$interface_name" "$gateway_json" "$link_state" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
     sleep "$interval_seconds"
 done

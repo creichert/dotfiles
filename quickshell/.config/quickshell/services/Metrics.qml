@@ -12,6 +12,8 @@ QtObject {
     property var batteryStatus: null
     property var brightnessPercent: null
     property string interfaceName: ""
+    property string gateway: ""
+    property string linkState: "unknown"
     property real receiveBytesPerSecond: 0
     property real transmitBytesPerSecond: 0
     property real previousReceiveBytes: 0
@@ -40,10 +42,15 @@ QtObject {
         batteryStatus = sample.batteryStatus
         brightnessPercent = sample.brightnessPercent
         interfaceName = sample.interfaceName
+        gateway = sample.gateway || ""
+        linkState = sample.linkState || "unknown"
 
         if (elapsedSeconds > 0 && sameInterface) {
             receiveBytesPerSecond = Math.max(0, (sample.receiveBytes - previousReceiveBytes) / elapsedSeconds)
             transmitBytesPerSecond = Math.max(0, (sample.transmitBytes - previousTransmitBytes) / elapsedSeconds)
+        } else {
+            receiveBytesPerSecond = 0
+            transmitBytesPerSecond = 0
         }
 
         previousReceiveBytes = sample.receiveBytes

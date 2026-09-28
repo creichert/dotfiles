@@ -52,6 +52,11 @@ ShellRoot {
         config: config
     }
 
+    Network {
+        id: networkService
+        metrics: metricsService
+    }
+
     Audio {
         id: audioService
     }
@@ -123,6 +128,7 @@ ShellRoot {
             theme: theme
             metrics: metricsService
             audio: audioService
+            network: networkService
             notifications: notificationLoader.item
         }
     }
