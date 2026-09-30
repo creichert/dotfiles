@@ -57,6 +57,12 @@ ShellRoot {
         metrics: metricsService
     }
 
+    Resources {
+        id: resourcesService
+        metrics: metricsService
+        config: config
+    }
+
     Audio {
         id: audioService
     }
@@ -129,6 +135,7 @@ ShellRoot {
             metrics: metricsService
             audio: audioService
             network: networkService
+            resources: resourcesService
             notifications: notificationLoader.item
         }
     }

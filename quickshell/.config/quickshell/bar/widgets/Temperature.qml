@@ -4,21 +4,12 @@ import "../../components" as Components
 Item {
     id: root
 
-    required property var metrics
+    // QQuickItem already owns the resources list property.
+    required property var resourcesService
     required property var config
     required property var theme
     implicitWidth: temperatureRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
-
-    function icon() {
-        if (metrics.temperatureC >= config.temperatureCriticalThreshold)
-            return "temperatureCritical"
-        if (metrics.temperatureC < config.temperatureCoolThreshold)
-            return "temperatureCool"
-        if (metrics.temperatureC < config.temperatureWarmThreshold)
-            return "temperatureWarm"
-        return "temperatureHot"
-    }
 
     Row {
         id: temperatureRow
@@ -26,17 +17,17 @@ Item {
         spacing: 0
 
         Text {
-            text: `${root.metrics.temperatureC}°C `
-            color: root.metrics.temperatureC >= root.config.temperatureCriticalThreshold
+            text: root.resourcesService.temperatureAvailable ? `${root.resourcesService.temperatureC}°C ` : "--°C "
+            color: root.resourcesService.temperatureCritical
                 ? root.theme.urgent : root.theme.primaryText
             font.family: root.theme.fontFamily
             font.pixelSize: root.theme.fontPixelSize
         }
 
         Components.Icon {
-            name: root.icon()
+            name: root.resourcesService.temperatureIcon
             theme: root.theme
-            color: root.metrics.temperatureC >= root.config.temperatureCriticalThreshold
+            color: root.resourcesService.temperatureCritical
                 ? root.theme.urgent : root.theme.primaryText
         }
     }

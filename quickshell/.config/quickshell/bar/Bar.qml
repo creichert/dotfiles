@@ -6,6 +6,7 @@ import Quickshell.Wayland
 import "widgets" as Widgets
 import "../audio" as AudioUi
 import "../network" as NetworkUi
+import "../resources" as ResourcesUi
 import "../notifications" as Notifications
 
 PanelWindow {
@@ -14,6 +15,7 @@ PanelWindow {
     required property var metrics
     required property var audio
     required property var network
+    required property var resources
     required property var config
     required property var theme
     property var notifications: null
@@ -101,7 +103,8 @@ PanelWindow {
         }
 
         Widgets.Cpu {
-            metrics: root.metrics
+            id: resourcesButton
+            resourcesService: root.resources
             config: root.config
             theme: root.theme
         }
@@ -113,7 +116,7 @@ PanelWindow {
         }
 
         Widgets.Temperature {
-            metrics: root.metrics
+            resourcesService: root.resources
             config: root.config
             theme: root.theme
         }
@@ -157,6 +160,12 @@ PanelWindow {
     NetworkUi.NetworkPanel {
         trigger: networkButton
         network: root.network
+        theme: root.theme
+    }
+
+    ResourcesUi.ResourcesPanel {
+        trigger: resourcesButton
+        resources: root.resources
         theme: root.theme
     }
 }

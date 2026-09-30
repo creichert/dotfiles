@@ -258,7 +258,7 @@ hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
 
 -- Resize windows in a submap.
-hl.bind(mainMod .. " + SHIFT + R", hl.dsp.submap("resize"))
+hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
     hl.bind("right", hl.dsp.window.resize({ x = 10, y = 0, relative = true }), { repeating = true })
     hl.bind("left", hl.dsp.window.resize({ x = -10, y = 0, relative = true }), { repeating = true })
@@ -350,6 +350,9 @@ hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs ipc call audio togglePane
 
 -- Network
 hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs ipc call network togglePanel"))
+
+-- Resources
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("qs ipc call resources togglePanel"))
 
 -- Notification center
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications toggleNotificationCenter"))

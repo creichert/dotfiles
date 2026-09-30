@@ -5,7 +5,8 @@ Item {
     id: root
 
     required property var config
-    required property var metrics
+    // QQuickItem already owns the resources list property.
+    required property var resourcesService
     required property var theme
     implicitWidth: cpuRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
@@ -16,7 +17,7 @@ Item {
         spacing: 0
 
         Text {
-            text: `${root.metrics.cpuPercent}% `
+            text: `${root.resourcesService.cpuPercent}% `
             color: root.theme.primaryText
             font.family: root.theme.fontFamily
             font.pixelSize: root.theme.fontPixelSize
@@ -26,5 +27,10 @@ Item {
             name: "cpu"
             theme: root.theme
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: root.resourcesService.togglePanel()
     }
 }
