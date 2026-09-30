@@ -71,7 +71,7 @@ Components.AnchoredPanel {
     Rectangle {
         anchors.fill: parent
         radius: root.theme.surfaceRadius
-        color: root.theme.raisedSurface
+        color: root.theme.surface
         border.width: 1
         border.color: root.theme.separator
 
