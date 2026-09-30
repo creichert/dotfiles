@@ -47,7 +47,8 @@ QtObject {
     property int notificationMaximumVisible: 3
     property int notificationHistoryLimit: 100
     property int notificationWidth: 400
-    property int notificationCenterHeight: 600
+    property int notificationCenterWidth: 480
+    property int notificationCenterHeight: 720
     property int notificationSpacing: 8
     property int notificationMargin: 12
     property string notificationBackgroundColor: surfaceRaisedColor

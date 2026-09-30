@@ -11,11 +11,29 @@ Rectangle {
     required property var theme
     required property var controller
     required property var record
-    implicitHeight: content.implicitHeight + 20
+    signal controlFocused(var control)
+    implicitHeight: content.implicitHeight + theme.spacingLarge * 2
     radius: theme.surfaceRadius
     color: record.urgency === 2 ? theme.urgent : theme.raisedSurface
     border.width: 1
-    border.color: theme.activeAccent
+    border.color: activeFocus ? theme.activeAccent : theme.separator
+    activeFocusOnTab: defaultActionAvailable
+
+    onActiveFocusChanged: {
+        if (activeFocus)
+            root.controlFocused(root)
+    }
+
+    Keys.onPressed: event => {
+        // Child controls handle their own activation; never invoke both actions.
+        if (!root.activeFocus || !root.defaultActionAvailable)
+            return
+
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            event.accepted = true
+            root.controller.invokeDefaultAction(root.record.id)
+        }
+    }
 
     function bodyText(body) {
         return body.replace(/<img\b[^>]*>/gi, "")
@@ -73,14 +91,11 @@ Rectangle {
 
     property bool actionButtonsExpired: false
     property bool appIconFailed: false
+    readonly property bool defaultActionAvailable: hasDefaultAction()
     readonly property string appIconSource: iconSource()
     readonly property real actionButtonsExpireAt: record.actionButtonsExpireAt || 0
     readonly property bool actionButtonsAvailable: actionButtonsExpireAt === 0
         || (!actionButtonsExpired && Date.now() < actionButtonsExpireAt)
-
-    function clearReadFocus() {
-        readButton.focus = false
-    }
 
     onAppIconSourceChanged: appIconFailed = false
 
@@ -95,7 +110,7 @@ Rectangle {
     // invoke the notification's default action.
     MouseArea {
         anchors.fill: parent
-        enabled: root.hasDefaultAction()
+        enabled: root.defaultActionAvailable
         onClicked: root.controller.invokeDefaultAction(root.record.id)
     }
 
@@ -104,9 +119,9 @@ Rectangle {
 
         anchors {
             fill: parent
-            margins: 10
+            margins: root.theme.spacingLarge
         }
-        spacing: 6
+        spacing: root.theme.spacingMedium
 
         Row {
             width: parent.width
@@ -116,7 +131,7 @@ Rectangle {
                 id: appIcon
 
                 source: root.appIconFailed ? root.fallbackIconSource() : root.appIconSource
-                implicitSize: 20
+                implicitSize: 32
                 onStatusChanged: {
                     if (status === Image.Error && !root.appIconFailed)
                         root.appIconFailed = true
@@ -125,7 +140,7 @@ Rectangle {
 
             Column {
                 width: parent.width - appIcon.width - controls.width - parent.spacing * 2
-                spacing: 1
+                spacing: root.theme.spacingSmall
 
                 Text {
                     width: parent.width
@@ -133,23 +148,30 @@ Rectangle {
                     text: root.record.summary
                     color: root.theme.primaryText
                     font.family: root.theme.fontFamily
-                    font.pixelSize: root.theme.fontPixelSize
+                    font.pixelSize: root.theme.bodyFontPixelSize + 2
                     font.bold: root.record.unread
                 }
 
                 Text {
                     width: parent.width
                     elide: Text.ElideRight
-                    text: root.record.appName + " - " + root.timestamp()
-                    color: root.theme.primaryText
-                    opacity: 0.7
+                    text: root.record.appName
+                    color: root.theme.mutedText
                     font.family: root.theme.fontFamily
-                    font.pixelSize: root.theme.fontPixelSize - 3
+                    font.pixelSize: root.theme.secondaryFontPixelSize
                 }
             }
 
             Row {
                 id: controls
+                spacing: root.theme.spacingMedium
+
+                Text {
+                    text: root.timestamp()
+                    color: root.theme.mutedText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.secondaryFontPixelSize
+                }
 
                 Components.IconButton {
                     id: readButton
@@ -157,6 +179,13 @@ Rectangle {
                     theme: root.theme
                     iconName: root.record.unread ? "markRead" : "markUnread"
                     text: root.record.unread ? "Mark read" : "Mark unread"
+                    iconPixelSize: root.theme.bodyFontPixelSize + 4
+                    implicitWidth: 36
+                    implicitHeight: 36
+                    onActiveFocusChanged: {
+                        if (activeFocus)
+                            root.controlFocused(readButton)
+                    }
                     onClicked: root.controller.setRead(root.record.id, !root.record.unread)
                 }
             }
@@ -174,7 +203,7 @@ Rectangle {
             textFormat: Text.StyledText
             color: root.theme.primaryText
             font.family: root.theme.fontFamily
-            font.pixelSize: root.theme.fontPixelSize - 1
+            font.pixelSize: root.theme.bodyFontPixelSize
 
             MouseArea {
                 anchors.fill: parent
@@ -197,9 +226,12 @@ Rectangle {
 
         Flow {
             width: parent.width
-            spacing: 6
+            visible: actionRepeater.count > 0
+            spacing: root.theme.spacingMedium
 
             Repeater {
+                id: actionRepeater
+
                 model: root.actionButtonsAvailable
                     ? root.controller.nonDefaultActionsFor(root.record.id)
                     : []
@@ -210,6 +242,11 @@ Rectangle {
                     required property var modelData
                     theme: root.theme
                     text: actionButton.modelData.text
+                    fontPixelSize: root.theme.bodyFontPixelSize
+                    onActiveFocusChanged: {
+                        if (activeFocus)
+                            root.controlFocused(actionButton)
+                    }
                     onClicked: root.controller.invokeAction(root.record.id, actionButton.modelData.identifier)
                 }
             }

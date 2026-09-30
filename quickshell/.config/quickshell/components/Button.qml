@@ -5,6 +5,7 @@ Controls.Button {
     id: root
 
     required property var theme
+    property int fontPixelSize: theme.fontPixelSize - 2
 
     leftPadding: theme.spacingMedium
     rightPadding: theme.spacingMedium
@@ -17,7 +18,7 @@ Controls.Button {
         text: root.text
         color: root.enabled ? root.theme.primaryText : root.theme.mutedText
         font.family: root.theme.fontFamily
-        font.pixelSize: root.theme.fontPixelSize - 2
+        font.pixelSize: root.fontPixelSize
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }
