@@ -14,6 +14,11 @@ Item {
     property bool queuedRefresh: false
     property bool discoveryRequested: false
     property var scanningDevice: null
+    property var pendingWifiNetwork: null
+    property bool pendingWifiWasConnecting: false
+    property string wifiConnectionError: ""
+
+    signal wifiConnectionSucceeded()
 
     readonly property string interfaceName: metrics.interfaceName
     readonly property string gateway: metrics.gateway
@@ -69,7 +74,54 @@ Item {
                 ? Math.round(network.signalStrength * 100) : null,
             connected: network.connected,
             known: network.known,
+            unavailable: !network.connected && !network.known
+                && network.security !== WifiSecurityType.Open,
             security: wifiSecurityLabel(network.security)
+        }
+    }
+
+    function setWifiEnabled(enabled) {
+        if (wifiManagementAvailable && !wifiHardwareBlocked)
+            Networking.wifiEnabled = enabled
+    }
+
+    function canConnectWifiNetwork(network) {
+        return wifiCanScan && network && network.device === wifiDevice
+            && !network.connected && !network.stateChanging
+            && (network.known || network.security === WifiSecurityType.Open)
+    }
+
+    function connectWifiNetwork(network) {
+        if (!panelVisible || !discoveryRequested || pendingWifiNetwork
+                || !canConnectWifiNetwork(network))
+            return
+
+        wifiConnectionError = ""
+        pendingWifiWasConnecting = network.state === ConnectionState.Connecting
+        pendingWifiNetwork = network
+        network.connect()
+    }
+
+    function clearWifiAttempt() {
+        pendingWifiNetwork = null
+        pendingWifiWasConnecting = false
+        wifiConnectionError = ""
+    }
+
+    function failWifiAttempt(message) {
+        if (!pendingWifiNetwork)
+            return
+        pendingWifiNetwork = null
+        pendingWifiWasConnecting = false
+        wifiConnectionError = message
+    }
+
+    function wifiFailureMessage(reason) {
+        switch (reason) {
+        case ConnectionFailReason.NoSecrets: return "Saved credentials unavailable"
+        case ConnectionFailReason.WifiAuthTimeout: return "Wi-Fi authentication timed out"
+        case ConnectionFailReason.WifiNetworkLost: return "Network no longer available"
+        default: return "Could not connect to Wi-Fi"
         }
     }
 
@@ -169,11 +221,67 @@ Item {
             refreshAddress()
     }
 
-    onPanelVisibleChanged: syncWifiScan()
-    onDiscoveryRequestedChanged: syncWifiScan()
-    onWifiDeviceChanged: syncWifiScan()
-    onWifiEnabledChanged: syncWifiScan()
-    onWifiHardwareBlockedChanged: syncWifiScan()
+    onPanelVisibleChanged: {
+        syncWifiScan()
+        if (!panelVisible)
+            clearWifiAttempt()
+    }
+    onDiscoveryRequestedChanged: {
+        syncWifiScan()
+        if (!discoveryRequested)
+            clearWifiAttempt()
+    }
+    onWifiDeviceChanged: {
+        syncWifiScan()
+        if (pendingWifiNetwork && pendingWifiNetwork.device !== wifiDevice
+                && !pendingWifiNetwork.connected)
+            failWifiAttempt("Wi-Fi device changed")
+    }
+    onWifiEnabledChanged: {
+        syncWifiScan()
+        if (pendingWifiNetwork && !wifiEnabled)
+            failWifiAttempt("Wi-Fi is off")
+    }
+    onWifiHardwareBlockedChanged: {
+        syncWifiScan()
+        if (pendingWifiNetwork && wifiHardwareBlocked)
+            failWifiAttempt("Wi-Fi hardware blocked")
+    }
+
+    Connections {
+        target: root.pendingWifiNetwork
+
+        function onConnectedChanged() {
+            if (root.pendingWifiNetwork && root.pendingWifiNetwork.connected) {
+                root.clearWifiAttempt()
+                root.wifiConnectionSucceeded()
+            }
+        }
+
+        function onStateChanged() {
+            const network = root.pendingWifiNetwork
+            if (!network)
+                return
+            if (network.state === ConnectionState.Connecting)
+                root.pendingWifiWasConnecting = true
+            else if (network.state === ConnectionState.Disconnected && root.pendingWifiWasConnecting) {
+                // Allow a more specific connectionFailed reason from the same NM update first.
+                Qt.callLater(() => {
+                    if (root.pendingWifiNetwork === network
+                            && network.state === ConnectionState.Disconnected)
+                        root.failWifiAttempt("Could not connect to Wi-Fi")
+                })
+            }
+        }
+
+        function onConnectionFailed(reason) {
+            root.failWifiAttempt(root.wifiFailureMessage(reason))
+        }
+
+        function onDestroyed() {
+            root.failWifiAttempt("Network no longer available")
+        }
+    }
 
     Process {
         id: addressProcess

@@ -61,6 +61,11 @@ Components.AnchoredPanel {
             if (!root.network.wifiManagementAvailable && root.view === "discovery")
                 root.showStatus()
         }
+
+        function onWifiConnectionSucceeded() {
+            if (root.view === "discovery")
+                root.showStatus()
+        }
     }
 
     Rectangle {
@@ -360,11 +365,19 @@ Components.AnchoredPanel {
                                 }
 
                                 Text {
-                                    text: root.network.wifiHardwareBlocked ? "Hardware blocked"
-                                        : root.network.wifiEnabled ? "On" : "Off"
-                                    color: root.theme.primaryText
+                                    visible: root.network.wifiHardwareBlocked
+                                    text: "Hardware blocked"
+                                    color: root.theme.mutedText
                                     font.family: root.theme.fontFamily
-                                    font.pixelSize: root.theme.bodyFontPixelSize
+                                    font.pixelSize: root.theme.secondaryFontPixelSize
+                                }
+
+                                Components.Switch {
+                                    theme: root.theme
+                                    text: "Wi-Fi"
+                                    checked: root.network.wifiEnabled === true
+                                    enabled: !root.network.wifiHardwareBlocked
+                                    onToggled: root.network.setWifiEnabled(checked)
                                 }
                             }
 
@@ -458,7 +471,27 @@ Components.AnchoredPanel {
 
                 Item {
                     Text {
-                        anchors.centerIn: parent
+                        id: connectionMessage
+
+                        anchors {
+                            top: parent.top
+                            left: parent.left
+                            right: parent.right
+                        }
+                        visible: root.network.pendingWifiNetwork !== null
+                            || root.network.wifiConnectionError.length > 0
+                        height: visible ? implicitHeight : 0
+                        text: root.network.pendingWifiNetwork
+                            ? `Connecting to ${root.network.pendingWifiNetwork.name}…`
+                            : root.network.wifiConnectionError
+                        color: root.theme.mutedText
+                        font.family: root.theme.fontFamily
+                        font.pixelSize: root.theme.secondaryFontPixelSize
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        anchors.centerIn: networksList
                         visible: !root.network.wifiCanScan || networksList.count === 0
                         text: root.network.wifiHardwareBlocked ? "Wi-Fi hardware blocked"
                             : !root.network.wifiEnabled ? "Wi-Fi is off"
@@ -472,32 +505,106 @@ Components.AnchoredPanel {
                     ListView {
                         id: networksList
 
-                        anchors.fill: parent
+                        anchors {
+                            top: connectionMessage.bottom
+                            topMargin: connectionMessage.visible ? root.theme.spacingSmall : 0
+                            left: parent.left
+                            right: parent.right
+                            bottom: parent.bottom
+                        }
                         visible: root.network.wifiCanScan && count > 0
                         clip: true
                         spacing: 2
                         activeFocusOnTab: false
                         keyNavigationEnabled: false
                         model: root.network.availableWifiNetworkModel
+                        currentIndex: -1
+                        property var keyboardTarget: null
 
-                        delegate: Rectangle {
+                        function focusNetwork(network) {
+                            const index = model ? model.values.indexOf(network) : -1
+                            if (index < 0)
+                                return
+                            keyboardTarget = network
+                            currentIndex = index
+                            positionViewAtIndex(index, ListView.Contain)
+                            focusKeyboardTarget()
+                        }
+
+                        function focusKeyboardTarget() {
+                            if (keyboardTarget && currentItem && model
+                                    && model.values[currentIndex] === keyboardTarget
+                                    && currentItem.enabled) {
+                                currentItem.forceActiveFocus()
+                                keyboardTarget = null
+                            }
+                        }
+
+                        function focusAdjacent(index, direction) {
+                            const networks = model ? model.values : []
+                            for (let next = index + direction; next >= 0 && next < networks.length;
+                                    next += direction) {
+                                if (root.network.canConnectWifiNetwork(networks[next])) {
+                                    focusNetwork(networks[next])
+                                    return
+                                }
+                            }
+                        }
+
+                        onCurrentItemChanged: focusKeyboardTarget()
+
+                        delegate: Components.Button {
                             id: networkEntry
 
+                            required property int index
                             required property var modelData
                             readonly property var details: root.network.wifiNetworkDetails(modelData)
 
+                            theme: root.theme
                             width: networksList.width
                             height: 48
-                            radius: root.theme.controlRadius
-                            color: networkEntry.details.connected
-                                ? root.theme.selectedSurface : root.theme.surface
+                            text: networkEntry.details.ssid
+                            enabled: root.network.pendingWifiNetwork === null
+                                && root.network.canConnectWifiNetwork(modelData)
+                            activeFocusOnTab: enabled
+                            leftPadding: root.theme.spacingMedium
+                            rightPadding: root.theme.spacingMedium
+                            topPadding: 0
+                            bottomPadding: 0
+                            onClicked: root.network.connectWifiNetwork(modelData)
 
-                            RowLayout {
-                                anchors {
-                                    fill: parent
-                                    leftMargin: root.theme.spacingMedium
-                                    rightMargin: root.theme.spacingMedium
-                                }
+                            onActiveFocusChanged: {
+                                if (activeFocus && networksList.currentIndex !== index)
+                                    networksList.currentIndex = index
+                            }
+
+                            Keys.onUpPressed: event => {
+                                networksList.focusAdjacent(networkEntry.index, -1)
+                                event.accepted = true
+                            }
+                            Keys.onDownPressed: event => {
+                                networksList.focusAdjacent(networkEntry.index, 1)
+                                event.accepted = true
+                            }
+                            Keys.onReturnPressed: event => {
+                                networkEntry.click()
+                                event.accepted = true
+                            }
+                            Keys.onEnterPressed: event => {
+                                networkEntry.click()
+                                event.accepted = true
+                            }
+
+                            background: Rectangle {
+                                radius: root.theme.controlRadius
+                                color: networkEntry.details.connected
+                                    || (networkEntry.hovered && networkEntry.enabled)
+                                    ? root.theme.selectedSurface : root.theme.surface
+                                border.width: networkEntry.visualFocus ? 1 : 0
+                                border.color: root.theme.activeAccent
+                            }
+
+                            contentItem: RowLayout {
                                 spacing: root.theme.spacingMedium
 
                                 Column {
@@ -519,6 +626,7 @@ Components.AnchoredPanel {
                                         text: (networkEntry.details.connected ? "Connected · " : "")
                                             + (networkEntry.details.known ? "Saved · " : "Not saved · ")
                                             + networkEntry.details.security
+                                            + (networkEntry.details.unavailable ? " · Unavailable here" : "")
                                         color: root.theme.mutedText
                                         font.family: root.theme.fontFamily
                                         font.pixelSize: root.theme.secondaryFontPixelSize
