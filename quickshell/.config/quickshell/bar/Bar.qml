@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 // qmllint disable uncreatable-type
 import QtQuick
 import QtQuick.Layouts
@@ -142,30 +144,46 @@ PanelWindow {
         }
     }
 
-    Notifications.NotificationCenter {
-        trigger: notificationButton
-        config: root.config
-        theme: root.theme
-        controller: root.notifications
-        open: notificationButton.centerVisible
-        onDismissed: root.notifications.notificationCenterVisible = false
+    LazyLoader {
+        active: notificationButton.centerVisible
+
+        Notifications.NotificationCenter {
+            trigger: notificationButton
+            config: root.config
+            theme: root.theme
+            controller: root.notifications
+            open: notificationButton.centerVisible
+            onDismissed: root.notifications.notificationCenterVisible = false
+        }
     }
 
-    AudioUi.AudioPanel {
-        trigger: audioButton
-        audio: root.audio
-        theme: root.theme
+    LazyLoader {
+        active: root.audio.panelVisible
+
+        AudioUi.AudioPanel {
+            trigger: audioButton
+            audio: root.audio
+            theme: root.theme
+        }
     }
 
-    NetworkUi.NetworkPanel {
-        trigger: networkButton
-        network: root.network
-        theme: root.theme
+    LazyLoader {
+        active: root.network.panelVisible
+
+        NetworkUi.NetworkPanel {
+            trigger: networkButton
+            network: root.network
+            theme: root.theme
+        }
     }
 
-    ResourcesUi.ResourcesPanel {
-        trigger: resourcesButton
-        resources: root.resources
-        theme: root.theme
+    LazyLoader {
+        active: root.resources.panelVisible
+
+        ResourcesUi.ResourcesPanel {
+            trigger: resourcesButton
+            resources: root.resources
+            theme: root.theme
+        }
     }
 }
