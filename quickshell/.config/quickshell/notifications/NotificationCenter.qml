@@ -12,11 +12,9 @@ Components.AnchoredPanel {
     property var controller: null
     property bool open: false
     visible: open && controller !== null
-    implicitWidth: screen ? Math.min(config.notificationCenterWidth,
-        Math.max(1, screen.width - config.notificationMargin * 2)) : config.notificationCenterWidth
-    implicitHeight: screen ? Math.min(config.notificationCenterHeight,
-        Math.max(1, screen.height - Math.max(config.notificationMargin,
-            triggerRect.y + triggerRect.height + gap) - config.notificationMargin)) : config.notificationCenterHeight
+    implicitWidth: Math.min(config.notificationCenterWidth, availableWidth)
+    implicitHeight: Math.min(config.notificationCenterHeight, availableHeight)
+    edgeInset: config.notificationMargin
     gap: config.notificationMargin
 
     onVisibleChanged: {

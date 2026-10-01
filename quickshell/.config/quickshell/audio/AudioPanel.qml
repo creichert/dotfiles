@@ -11,8 +11,8 @@ Components.AnchoredPanel {
     required property var audio
     required property var theme
 
-    implicitWidth: 420
-    implicitHeight: 440
+    implicitWidth: Math.min(420, availableWidth)
+    implicitHeight: Math.min(440, availableHeight)
     gap: theme.spacingMedium
     visible: audio.panelVisible
     onDismissed: audio.closePanel()

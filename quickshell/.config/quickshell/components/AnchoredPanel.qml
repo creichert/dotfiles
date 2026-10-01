@@ -14,7 +14,15 @@ PanelWindow {
 
     readonly property var triggerWindow: trigger ? trigger.QsWindow.window : null
     readonly property rect triggerRect: placement.rect
-    readonly property int edgeInset: 8
+    property int edgeInset: 8
+
+    // Limit preferred sizes without depending on the panel's current dimensions.
+    // Until the relevant bounds are known, leave preferred sizes unconstrained.
+    readonly property real availableWidth: screen && screen.width > 0
+        ? Math.max(1, screen.width - 2 * edgeInset) : Number.POSITIVE_INFINITY
+    readonly property real availableHeight: placement.captured && screen && screen.height > 0
+        ? Math.max(1, screen.height - Math.max(edgeInset,
+            triggerRect.y + triggerRect.height + gap) - edgeInset) : Number.POSITIVE_INFINITY
 
     QtObject {
         id: placement

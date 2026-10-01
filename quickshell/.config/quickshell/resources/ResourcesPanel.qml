@@ -10,9 +10,8 @@ Components.AnchoredPanel {
     required property var resources
     required property var theme
 
-    implicitWidth: screen ? Math.min(380, Math.max(1, screen.width - 2 * edgeInset)) : 380
-    implicitHeight: screen ? Math.min(desiredHeight, Math.max(1,
-        screen.height - triggerRect.y - triggerRect.height - gap - edgeInset)) : desiredHeight
+    implicitWidth: Math.min(380, availableWidth)
+    implicitHeight: Math.min(desiredHeight, availableHeight)
     readonly property int desiredHeight: Math.ceil(sections.implicitHeight + theme.panelPadding * 2)
     gap: theme.spacingMedium
     visible: resources.panelVisible

@@ -12,9 +12,9 @@ Components.AnchoredPanel {
     required property var theme
     property string view: "status"
 
-    implicitWidth: 380
-    implicitHeight: !network.wifiManagementAvailable ? 365
-        : view === "discovery" ? 580 : 520
+    implicitWidth: Math.min(380, availableWidth)
+    implicitHeight: Math.min(!network.wifiManagementAvailable ? 365
+        : view === "discovery" ? 580 : 520, availableHeight)
     gap: theme.spacingMedium
     visible: network.panelVisible
     onDismissed: network.closePanel()
