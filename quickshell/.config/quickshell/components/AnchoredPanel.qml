@@ -13,20 +13,57 @@ PanelWindow {
     signal dismissed()
 
     readonly property var triggerWindow: trigger ? trigger.QsWindow.window : null
-    readonly property rect triggerRect: {
-        if (!triggerWindow || !triggerWindow.backingWindowVisible)
-            return Qt.rect(0, 0, 0, 0)
-
-        // itemRect() is not reactive; these dependencies refresh its position
-        // when the bar or the trigger moves or changes size.
-        triggerWindow.windowTransform
-        trigger.x
-        trigger.y
-        trigger.width
-        trigger.height
-        return triggerWindow.itemRect(trigger)
-    }
+    readonly property rect triggerRect: placement.rect
     readonly property int edgeInset: 8
+
+    QtObject {
+        id: placement
+
+        property bool ready: false
+        property bool captured: false
+        property rect rect: Qt.rect(0, 0, 0, 0)
+
+        function capture() {
+            if (!ready || captured || !root.visible || !root.triggerWindow
+                    || !root.triggerWindow.backingWindowVisible)
+                return
+
+            // itemRect() is nonreactive; sample once, not through a binding.
+            rect = root.triggerWindow.itemRect(root.trigger)
+            captured = true
+        }
+    }
+
+    Component.onCompleted: {
+        // LazyLoader may create this panel with visible already true.
+        placement.ready = true
+        placement.capture()
+    }
+
+    Connections {
+        target: root
+
+        function onVisibleChanged() {
+            if (root.visible)
+                placement.capture()
+            else
+                placement.captured = false
+        }
+
+        function onTriggerWindowChanged() {
+            placement.capture()
+        }
+    }
+
+    Connections {
+        target: root.triggerWindow
+        // Startup/reload may attach the trigger before its bar is mapped.
+        enabled: placement.ready && root.visible && !placement.captured
+
+        function onBackingWindowVisibleChanged() {
+            placement.capture()
+        }
+    }
 
     screen: triggerWindow ? triggerWindow.screen : null
     anchors.top: true
