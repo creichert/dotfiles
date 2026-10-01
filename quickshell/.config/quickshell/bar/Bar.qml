@@ -1,19 +1,28 @@
+pragma ComponentBehavior: Bound
+
 // qmllint disable uncreatable-type
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import "widgets" as Widgets
+import "../audio" as AudioUi
+import "../network" as NetworkUi
+import "../resources" as ResourcesUi
 import "../notifications" as Notifications
 
 PanelWindow {
     id: root
 
     required property var metrics
+    required property var audio
+    required property var network
+    required property var resources
     required property var config
+    required property var theme
     property var notifications: null
     implicitHeight: config.barHeight
-    color: config.barBackgroundColor
+    color: theme.surface
     readonly property int rightMargin: systemTray.visible ? config.barSpacing : 0
 
     anchors {
@@ -37,18 +46,21 @@ PanelWindow {
         Widgets.Workspaces {
             Layout.alignment: Qt.AlignVCenter
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Battery {
             Layout.alignment: Qt.AlignVCenter
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Brightness {
             Layout.alignment: Qt.AlignVCenter
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
     }
 
@@ -60,6 +72,7 @@ PanelWindow {
             parent.width - 2 * Math.max(leftModules.width, rightModules.width + root.rightMargin)
         ))
         config: root.config
+        theme: root.theme
     }
 
     RowLayout {
@@ -73,30 +86,41 @@ PanelWindow {
         Widgets.IdleInhibitorButton {
             id: idleButton
             config: root.config
+            theme: root.theme
         }
 
-        Widgets.Volume {
+        Widgets.AudioButton {
+            id: audioButton
+            audio: root.audio
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Network {
-            metrics: root.metrics
+            id: networkButton
+
+            network: root.network
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Cpu {
-            metrics: root.metrics
+            id: resourcesButton
+            resourcesService: root.resources
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Memory {
             metrics: root.metrics
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Temperature {
-            metrics: root.metrics
+            resourcesService: root.resources
             config: root.config
+            theme: root.theme
         }
 
         Widgets.NotificationCenterButton {
@@ -104,24 +128,62 @@ PanelWindow {
 
             controller: root.notifications
             config: root.config
+            theme: root.theme
         }
 
         Widgets.Clock {
             config: root.config
+            theme: root.theme
         }
 
         Widgets.SystemTray {
             id: systemTray
 
             config: root.config
+            theme: root.theme
         }
     }
 
-    Notifications.NotificationCenter {
-        bar: root
-        config: root.config
-        controller: root.notifications
-        open: notificationButton.centerVisible
-        onDismissed: root.notifications.notificationCenterVisible = false
+    LazyLoader {
+        active: notificationButton.centerVisible
+
+        Notifications.NotificationCenter {
+            trigger: notificationButton
+            config: root.config
+            theme: root.theme
+            controller: root.notifications
+            open: notificationButton.centerVisible
+            onDismissed: root.notifications.notificationCenterVisible = false
+        }
+    }
+
+    LazyLoader {
+        active: root.audio.panelVisible
+
+        AudioUi.AudioPanel {
+            trigger: audioButton
+            audio: root.audio
+            theme: root.theme
+        }
+    }
+
+    LazyLoader {
+        active: root.network.panelVisible
+
+        NetworkUi.NetworkPanel {
+            trigger: networkButton
+            network: root.network
+            theme: root.theme
+        }
+    }
+
+    LazyLoader {
+        active: root.resources.panelVisible
+
+        ResourcesUi.ResourcesPanel {
+            trigger: resourcesButton
+            resources: root.resources
+            theme: root.theme
+        }
     }
 }

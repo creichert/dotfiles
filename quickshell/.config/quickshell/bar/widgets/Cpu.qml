@@ -1,17 +1,36 @@
 import QtQuick
+import "../../components" as Components
 
 Item {
-    required property var metrics
+    id: root
+
     required property var config
-    implicitWidth: cpuText.implicitWidth + config.moduleHorizontalPadding
+    // QQuickItem already owns the resources list property.
+    required property var resourcesService
+    required property var theme
+    implicitWidth: cpuRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
-    Text {
-        id: cpuText
+    Row {
+        id: cpuRow
         anchors.centerIn: parent
-        text: `${parent.metrics.cpuPercent}% `
-        color: parent.config.textColor
-        font.family: parent.config.fontFamily
-        font.pixelSize: parent.config.fontPixelSize
+        spacing: 0
+
+        Text {
+            text: `${root.resourcesService.cpuPercent}% `
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            name: "cpu"
+            theme: root.theme
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: root.resourcesService.togglePanel()
     }
 }

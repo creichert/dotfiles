@@ -4,3 +4,5 @@ else
     # The desktop uses the integrated GPU instead of the discrete GPU.
     export AQ_DRM_DEVICES="/dev/dri/card1"
 fi
+
+export QT_QPA_PLATFORMTHEME=gtk3

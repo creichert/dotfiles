@@ -1,28 +1,21 @@
 import QtQuick
+import "../../components" as Components
 
 Item {
     id: root
 
-    required property var metrics
+    required property var network
     required property var config
+    required property var theme
     visible: config.networkModuleEnabled
     implicitWidth: networkRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
 
-    function rate(bytes) {
-        const bits = bytes * 8
-        if (bits < 1000)
-            return `${Math.round(bits)} b/s`
-        if (bits < 1000000)
-            return `${(bits / 1000).toFixed(1)} Kb/s`
-        return `${(bits / 1000000).toFixed(1)} Mb/s`
-    }
-
     TextMetrics {
         id: rateMetrics
         text: root.config.networkRateWidthLabel
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+        font.family: root.theme.fontFamily
+        font.pixelSize: root.theme.fontPixelSize
     }
 
     Row {
@@ -31,49 +24,63 @@ Item {
         spacing: root.config.networkSpacing
 
         Text {
-            text: root.metrics.interfaceName.length > 0 ? root.metrics.interfaceName : "Disconnected"
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            text: root.network.interfaceName.length > 0 ? root.network.interfaceName : "No route"
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
         }
 
-        Text {
-            text: root.metrics.interfaceName.length > 0 ? "󰱔 |" : "⚠"
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
-        }
+        Row {
+            spacing: 0
 
-        Text {
-            width: rateMetrics.width
-            horizontalAlignment: Text.AlignRight
-            text: root.metrics.interfaceName.length > 0 ? root.rate(root.metrics.transmitBytesPerSecond) : ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
-        }
+            Components.Icon {
+                name: root.network.interfaceName.length > 0 && root.network.linkState !== "down"
+                    ? "networkConnected" : "networkDisconnected"
+                theme: root.theme
+            }
 
-        Text {
-            text: ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            Text {
+                visible: root.network.interfaceName.length > 0
+                text: " |"
+                color: root.theme.primaryText
+                font.family: root.theme.fontFamily
+                font.pixelSize: root.theme.fontPixelSize
+            }
         }
 
         Text {
             width: rateMetrics.width
             horizontalAlignment: Text.AlignRight
-            text: root.metrics.interfaceName.length > 0 ? root.rate(root.metrics.receiveBytesPerSecond) : ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            text: root.network.interfaceName.length > 0
+                ? root.network.rate(root.network.transmitBytesPerSecond) : ""
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
+        }
+
+        Components.Icon {
+            name: "upload"
+            theme: root.theme
         }
 
         Text {
-            text: ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            width: rateMetrics.width
+            horizontalAlignment: Text.AlignRight
+            text: root.network.interfaceName.length > 0
+                ? root.network.rate(root.network.receiveBytesPerSecond) : ""
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
         }
+
+        Components.Icon {
+            name: "download"
+            theme: root.theme
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: root.network.togglePanel()
     }
 }

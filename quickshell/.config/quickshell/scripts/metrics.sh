@@ -9,7 +9,10 @@ temperature_interval_samples=${3:?missing temperature interval samples}
 previous_total=0
 previous_idle=0
 sample_number=0
-temperature_c=0
+temperature_c=null
+temperature_sensor_name=""
+temperature_sensor_label=""
+temperature_supported=false
 battery_capacity_file=""
 battery_status_file=""
 brightness_file=""
@@ -40,6 +43,36 @@ discover_power_devices() {
 # sampler. Discovering them once avoids filesystem scans on every sample.
 discover_power_devices
 
+# Sensor identity is stable for this sampler lifetime. Keep dynamic hwmon
+# numbering out of the configuration, and avoid extra metadata reads per sample.
+for temperature_file in "$temperature_hwmon_path"/hwmon*/temp1_input; do
+    [[ -r "$temperature_file" ]] || continue
+    temperature_supported=true
+    temperature_directory=${temperature_file%/*}
+    if [[ -r "$temperature_directory/name" ]]; then
+        temperature_sensor_name=$(< "$temperature_directory/name")
+    fi
+    if [[ -r "$temperature_directory/temp1_label" ]]; then
+        temperature_sensor_label=$(< "$temperature_directory/temp1_label")
+    fi
+    break
+done
+
+# Escape strings without adding a JSON helper process to the shared sampler.
+json_string() {
+    local target=$1 value=$2
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    value=${value//$'\n'/\\n}
+    value=${value//$'\r'/\\r}
+    value=${value//$'\t'/\\t}
+    printf -v "$target" '"%s"' "$value"
+}
+json_string temperature_name_json "$temperature_sensor_name"
+json_string temperature_label_json "$temperature_sensor_label"
+printf -v temperature_identity_json '"temperatureSensorName":%s,"temperatureSensorLabel":%s' \
+    "$temperature_name_json" "$temperature_label_json"
+
 while true; do
     read -r _ user nice system idle iowait irq softirq steal _ < /proc/stat
     total=$((user + nice + system + idle + iowait + irq + softirq + steal))
@@ -66,11 +99,15 @@ while true; do
     done < /proc/meminfo
     memory_percent=$((100 * (memory_total - memory_available) / memory_total))
 
-    if (( sample_number % temperature_interval_samples == 1 )); then
+    if (( (sample_number - 1) % temperature_interval_samples == 0 )); then
+        temperature_c=null
         for temperature_file in "$temperature_hwmon_path"/hwmon*/temp1_input; do
             if [[ -r "$temperature_file" ]]; then
-                temperature_millidegrees=$(< "$temperature_file")
-                temperature_c=$((temperature_millidegrees / 1000))
+                temperature_supported=true
+                temperature_millidegrees=$(< "$temperature_file") || temperature_millidegrees=""
+                if [[ "$temperature_millidegrees" =~ ^-?[0-9]+$ ]]; then
+                    temperature_c=$((temperature_millidegrees / 1000))
+                fi
                 break
             fi
         done
@@ -106,12 +143,27 @@ while true; do
     fi
 
     interface_name=""
-    while read -r interface destination _ _ _ _ _ _; do
+    gateway_hex=""
+    while read -r interface destination gateway _ _ _ _ _; do
         if [[ "$destination" == "00000000" ]]; then
             interface_name="$interface"
+            gateway_hex="$gateway"
             break
         fi
     done < <(tail -n +2 /proc/net/route)
+
+    gateway_json=null
+    if [[ "$gateway_hex" =~ ^[[:xdigit:]]{8}$ && "$gateway_hex" != "00000000" ]]; then
+        printf -v gateway_ip '%d.%d.%d.%d' \
+            "$((16#${gateway_hex:6:2}))" "$((16#${gateway_hex:4:2}))" \
+            "$((16#${gateway_hex:2:2}))" "$((16#${gateway_hex:0:2}))"
+        gateway_json="\"$gateway_ip\""
+    fi
+
+    link_state="unknown"
+    if [[ -n "$interface_name" && -r "/sys/class/net/$interface_name/operstate" ]]; then
+        link_state=$(< "/sys/class/net/$interface_name/operstate")
+    fi
 
     receive_bytes=0
     transmit_bytes=0
@@ -129,7 +181,9 @@ while true; do
 
     timestamp_ms=${EPOCHREALTIME/./}
     timestamp_ms=${timestamp_ms:0:13}
-    printf '{"cpuPercent":%s,"memoryPercent":%s,"temperatureC":%s,"batteryPercent":%s,"batteryStatus":%s,"brightnessPercent":%s,"interfaceName":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
-        "$cpu_percent" "$memory_percent" "$temperature_c" "$battery_percent_json" "$battery_status_json" "$brightness_percent_json" "$interface_name" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
+    cpu_sample_valid=false
+    (( sample_number > 1 )) && cpu_sample_valid=true
+    printf '{"cpuPercent":%s,"cpuSampleValid":%s,"memoryPercent":%s,"memoryTotalBytes":%s,"memoryAvailableBytes":%s,"temperatureC":%s,"temperatureSupported":%s,%s,"batteryPercent":%s,"batteryStatus":%s,"brightnessPercent":%s,"interfaceName":"%s","gateway":%s,"linkState":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
+        "$cpu_percent" "$cpu_sample_valid" "$memory_percent" "$((memory_total * 1024))" "$((memory_available * 1024))" "$temperature_c" "$temperature_supported" "$temperature_identity_json" "$battery_percent_json" "$battery_status_json" "$brightness_percent_json" "$interface_name" "$gateway_json" "$link_state" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
     sleep "$interval_seconds"
 done

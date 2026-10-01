@@ -8,6 +8,7 @@ RowLayout {
     id: workspaceRow
 
     required property var config
+    required property var theme
     spacing: 0
 
     Connections {
@@ -26,6 +27,7 @@ RowLayout {
             required property var modelData
             workspace: modelData
             config: workspaceRow.config
+            theme: workspaceRow.theme
         }
     }
 
@@ -36,6 +38,7 @@ RowLayout {
             required property var modelData
             workspace: modelData
             config: workspaceRow.config
+            theme: workspaceRow.theme
             showSpecial: true
         }
     }
