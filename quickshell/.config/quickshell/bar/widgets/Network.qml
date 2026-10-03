@@ -57,11 +57,6 @@ Item {
             visible: root.expanded && root.hasRoute
             spacing: root.config.networkSpacing
 
-            Components.Icon {
-                name: "download"
-                theme: root.theme
-            }
-
             Text {
                 width: rateMetrics.width
                 horizontalAlignment: Text.AlignRight
@@ -72,7 +67,7 @@ Item {
             }
 
             Components.Icon {
-                name: "upload"
+                name: "download"
                 theme: root.theme
             }
 
@@ -84,6 +79,12 @@ Item {
                 font.family: root.theme.fontFamily
                 font.pixelSize: root.theme.fontPixelSize
             }
+
+            Components.Icon {
+                name: "upload"
+                theme: root.theme
+            }
+
         }
     }
 
