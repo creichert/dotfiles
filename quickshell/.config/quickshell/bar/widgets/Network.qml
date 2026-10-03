@@ -10,6 +10,31 @@ Item {
     visible: config.networkModuleEnabled
     implicitWidth: networkRow.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
+    property bool expanded: false
+
+    readonly property bool hasRoute: network.interfaceName.length > 0
+        && network.linkState !== "down"
+    readonly property string connectionGlyph: {
+        if (!hasRoute)
+            return "networkUnavailable"
+
+        if (network.wifiConnected) {
+            const signal = network.wifiSignalPercent
+            if (signal === null)
+                return "wifiStrengthOutline"
+            if (signal <= 25)
+                return "wifiStrength1"
+            if (signal <= 50)
+                return "wifiStrength2"
+            if (signal <= 75)
+                return "wifiStrength3"
+            return "wifiStrength4"
+        }
+
+        // Experiment-only inference: on the current two hosts, a route-up
+        // interface without connected Wi-Fi is presented as wired/Ethernet.
+        return "ethernet"
+    }
 
     TextMetrics {
         id: rateMetrics
@@ -23,64 +48,53 @@ Item {
         anchors.centerIn: parent
         spacing: root.config.networkSpacing
 
-        Text {
-            text: root.network.interfaceName.length > 0 ? root.network.interfaceName : "No route"
-            color: root.theme.primaryText
-            font.family: root.theme.fontFamily
-            font.pixelSize: root.theme.fontPixelSize
+        Components.Icon {
+            name: root.connectionGlyph
+            theme: root.theme
         }
 
         Row {
-            spacing: 0
+            visible: root.expanded && root.hasRoute
+            spacing: root.config.networkSpacing
 
             Components.Icon {
-                name: root.network.interfaceName.length > 0 && root.network.linkState !== "down"
-                    ? "networkConnected" : "networkDisconnected"
+                name: "download"
                 theme: root.theme
             }
 
             Text {
-                visible: root.network.interfaceName.length > 0
-                text: " |"
+                width: rateMetrics.width
+                horizontalAlignment: Text.AlignRight
+                text: root.network.rate(root.network.receiveBytesPerSecond)
+                color: root.theme.primaryText
+                font.family: root.theme.fontFamily
+                font.pixelSize: root.theme.fontPixelSize
+            }
+
+            Components.Icon {
+                name: "upload"
+                theme: root.theme
+            }
+
+            Text {
+                width: rateMetrics.width
+                horizontalAlignment: Text.AlignRight
+                text: root.network.rate(root.network.transmitBytesPerSecond)
                 color: root.theme.primaryText
                 font.family: root.theme.fontFamily
                 font.pixelSize: root.theme.fontPixelSize
             }
         }
-
-        Text {
-            width: rateMetrics.width
-            horizontalAlignment: Text.AlignRight
-            text: root.network.interfaceName.length > 0
-                ? root.network.rate(root.network.transmitBytesPerSecond) : ""
-            color: root.theme.primaryText
-            font.family: root.theme.fontFamily
-            font.pixelSize: root.theme.fontPixelSize
-        }
-
-        Components.Icon {
-            name: "upload"
-            theme: root.theme
-        }
-
-        Text {
-            width: rateMetrics.width
-            horizontalAlignment: Text.AlignRight
-            text: root.network.interfaceName.length > 0
-                ? root.network.rate(root.network.receiveBytesPerSecond) : ""
-            color: root.theme.primaryText
-            font.family: root.theme.fontFamily
-            font.pixelSize: root.theme.fontPixelSize
-        }
-
-        Components.Icon {
-            name: "download"
-            theme: root.theme
-        }
     }
 
     MouseArea {
         anchors.fill: parent
-        onClicked: root.network.togglePanel()
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: mouse => {
+            if (mouse.button === Qt.LeftButton)
+                root.network.togglePanel()
+            else if (mouse.button === Qt.RightButton)
+                root.expanded = !root.expanded
+        }
     }
 }

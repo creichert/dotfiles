@@ -96,14 +96,6 @@ PanelWindow {
             theme: root.theme
         }
 
-        Widgets.Network {
-            id: networkButton
-
-            network: root.network
-            config: root.config
-            theme: root.theme
-        }
-
         Widgets.Cpu {
             id: resourcesButton
             resourcesService: root.resources
@@ -119,6 +111,14 @@ PanelWindow {
 
         Widgets.Temperature {
             resourcesService: root.resources
+            config: root.config
+            theme: root.theme
+        }
+
+        Widgets.Network {
+            id: networkButton
+
+            network: root.network
             config: root.config
             theme: root.theme
         }

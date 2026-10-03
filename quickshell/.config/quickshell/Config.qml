@@ -9,7 +9,7 @@ QtObject {
     property int barHeight: isLaptop ? 25 : 30
     property int fontPixelSize: isLaptop ? 12 : 14
     property string fontFamily: "Hack Nerd Font Propo"
-    property bool networkModuleEnabled: !isLaptop
+    property bool networkModuleEnabled: true
     property bool batteryModuleEnabled: isLaptop
     property bool brightnessModuleEnabled: isLaptop
 
@@ -84,7 +84,8 @@ QtObject {
         "1": "browser",
         "2": "terminal",
         "3": "code",
-        "4": "music",
+        "4": "agent",
+        "5": "music",
         "cfg": "window",
         "terms": "window",
         "db": "window",
