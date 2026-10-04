@@ -96,20 +96,8 @@ PanelWindow {
             theme: root.theme
         }
 
-        Widgets.Cpu {
+        Widgets.Resources {
             id: resourcesButton
-            resourcesService: root.resources
-            config: root.config
-            theme: root.theme
-        }
-
-        Widgets.Memory {
-            metrics: root.metrics
-            config: root.config
-            theme: root.theme
-        }
-
-        Widgets.Temperature {
             resourcesService: root.resources
             config: root.config
             theme: root.theme

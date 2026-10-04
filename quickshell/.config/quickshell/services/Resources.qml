@@ -30,6 +30,8 @@ Item {
 
     readonly property bool memoryAvailable: sampleAvailable && metrics.memoryTotalBytes > 0
     readonly property real memoryPercent: metrics.memoryPercent
+    readonly property bool memoryUrgent: memoryAvailable
+        && memoryPercent >= config.memoryAttentionThreshold
     readonly property real memoryTotalBytes: metrics.memoryTotalBytes
     readonly property real memoryUsedBytes: Math.max(0, memoryTotalBytes - metrics.memoryAvailableBytes)
     readonly property string memoryCapacityText: memoryAvailable
@@ -45,10 +47,9 @@ Item {
         : temperatureCritical ? "critical"
         : temperatureC < config.temperatureCoolThreshold ? "cool"
         : temperatureC < config.temperatureWarmThreshold ? "warm" : "hot"
-    readonly property string temperatureIcon: !temperatureAvailable ? "temperatureWarm"
-        : temperatureLevel === "cool" ? "temperatureCool"
-        : temperatureLevel === "warm" ? "temperatureWarm"
-        : temperatureLevel === "hot" ? "temperatureHot" : "temperatureCritical"
+    readonly property string temperatureIcon: !temperatureAvailable ? "temperatureHalf"
+        : temperatureLevel === "cool" ? "temperatureEmpty"
+        : temperatureLevel === "warm" ? "temperatureHalf" : "temperatureFull"
     readonly property string temperatureStatusText: !temperatureAvailable ? "Sensor unavailable"
         : temperatureCritical ? `At or above ${config.temperatureCriticalThreshold}°C threshold`
         : temperatureLevel === "cool" ? "Cool"

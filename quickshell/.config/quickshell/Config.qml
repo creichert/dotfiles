@@ -101,9 +101,12 @@ QtObject {
     property string networkRateWidthLabel: "999.9 Mb/s"
     property int volumeMediumThreshold: 50
     property int batteryCriticalThreshold: 15
-    property int temperatureCoolThreshold: 50
-    property int temperatureWarmThreshold: 70
-    property int temperatureCriticalThreshold: 85
+    // Personal bar attention policy, not a Linux memory-pressure measurement.
+    property int memoryAttentionThreshold: 90
+    // Host-specific presentation policy; tune against ordinary workloads.
+    property int temperatureCoolThreshold: isLaptop ? 35 : 50
+    property int temperatureWarmThreshold: isLaptop ? 50 : 70
+    property int temperatureCriticalThreshold: isLaptop ? 65 : 85
 
     // Host metrics
     property string cpuTemperatureHwmonPath: isLaptop
