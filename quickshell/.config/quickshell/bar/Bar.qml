@@ -49,19 +49,6 @@ PanelWindow {
             theme: root.theme
         }
 
-        Widgets.Battery {
-            Layout.alignment: Qt.AlignVCenter
-            metrics: root.metrics
-            config: root.config
-            theme: root.theme
-        }
-
-        Widgets.Brightness {
-            Layout.alignment: Qt.AlignVCenter
-            metrics: root.metrics
-            config: root.config
-            theme: root.theme
-        }
     }
 
     // Center the clock itself; satellite controls must not affect its position.
@@ -96,6 +83,20 @@ PanelWindow {
         anchors.rightMargin: root.rightMargin
         anchors.verticalCenter: parent.verticalCenter
         spacing: root.config.barSpacing
+
+        Widgets.Battery {
+            Layout.alignment: Qt.AlignVCenter
+            metrics: root.metrics
+            config: root.config
+            theme: root.theme
+        }
+
+        Widgets.Brightness {
+            Layout.alignment: Qt.AlignVCenter
+            metrics: root.metrics
+            config: root.config
+            theme: root.theme
+        }
 
         Widgets.Audio {
             id: audioButton
