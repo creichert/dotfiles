@@ -86,9 +86,10 @@ QtObject {
         "3": "code",
         "4": "agent",
         "5": "music",
-        "cfg": "window",
-        "terms": "window",
-        "db": "window",
+        "cfg": "config",
+
+        "terms": "terminalWindow",
+        "db": "database",
         "default": "workspaceDefault",
         "urgent": "warning"
     })

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import "../../components" as Components
 
 Rectangle {
@@ -7,6 +8,8 @@ Rectangle {
     required property var config
     required property var theme
     required property var workspace
+
+    readonly property int workspaceButtonWidth: 32
     property bool showSpecial: false
 
     readonly property bool special: workspace.name.indexOf("special:") === 0
@@ -17,16 +20,14 @@ Rectangle {
     readonly property bool active: workspace.focused || specialActive
     readonly property string displayName: workspace.name.replace("special:", "")
 
-    function icon() {
-        if (workspace.urgent)
-            return config.workspaceIcons.urgent
-
-        return config.workspaceIcons[displayName] || config.workspaceIcons.default
-    }
-
     visible: special === showSpecial && (!special || specialActive)
-    implicitWidth: workspaceRow.implicitWidth + config.workspaceHorizontalPadding
+    implicitWidth: workspaceButtonWidth
     implicitHeight: config.barHeight
+    // Fix the actual navigation slot for both normal and special workspaces.
+    Layout.minimumWidth: root.workspaceButtonWidth
+    Layout.preferredWidth: root.workspaceButtonWidth
+    Layout.maximumWidth: root.workspaceButtonWidth
+    radius: theme.controlRadius
     color: workspace.urgent ? theme.urgent
         : active ? theme.selectedSurface
         : "transparent"
@@ -36,15 +37,8 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 0
 
-        Text {
-            text: `${root.displayName}: `
-            color: root.theme.primaryText
-            font.family: root.theme.fontFamily
-            font.pixelSize: root.theme.fontPixelSize
-        }
-
         Components.Icon {
-            name: root.icon()
+            name: root.config.workspaceIcons[root.displayName] || root.config.workspaceIcons.default
             theme: root.theme
         }
     }
