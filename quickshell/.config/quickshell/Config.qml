@@ -94,7 +94,7 @@ QtObject {
     })
 
     // Module behavior
-    property string clockFormat: "MM/dd/yyyy HH:mm"
+    property string clockFormat: "ddd dd · HH:mm"
     property int titleMaximumWidth: isLaptop ? 500 : 900
     property int titleSpacing: 6
     property int networkSpacing: 6

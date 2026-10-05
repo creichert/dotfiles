@@ -1,13 +1,12 @@
 import QtQuick
 import Quickshell
 
-Rectangle {
+Item {
     required property var config
     required property var theme
 
     implicitWidth: clockText.implicitWidth + config.moduleHorizontalPadding
     implicitHeight: config.barHeight
-    color: theme.selectedSurface
 
     SystemClock {
         id: clock

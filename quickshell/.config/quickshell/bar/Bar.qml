@@ -64,15 +64,29 @@ PanelWindow {
         }
     }
 
-    Widgets.WindowTitle {
+    // Center the clock itself; satellite controls must not affect its position.
+    Widgets.Clock {
+        id: centerClock
+
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        width: Math.max(0, Math.min(
-            root.config.titleMaximumWidth,
-            parent.width - 2 * Math.max(leftModules.width, rightModules.width + root.rightMargin)
-        ))
         config: root.config
         theme: root.theme
+    }
+
+    RowLayout {
+        // Add left satellites before idleButton; anchor future right satellites
+        // to centerClock.right in a separate row.
+        anchors.right: centerClock.left
+        anchors.rightMargin: root.config.barSpacing
+        anchors.verticalCenter: centerClock.verticalCenter
+        spacing: root.config.barSpacing
+
+        Widgets.IdleInhibitorButton {
+            id: idleButton
+            config: root.config
+            theme: root.theme
+        }
     }
 
     RowLayout {
@@ -82,12 +96,6 @@ PanelWindow {
         anchors.rightMargin: root.rightMargin
         anchors.verticalCenter: parent.verticalCenter
         spacing: root.config.barSpacing
-
-        Widgets.IdleInhibitorButton {
-            id: idleButton
-            config: root.config
-            theme: root.theme
-        }
 
         Widgets.Audio {
             id: audioButton
@@ -115,11 +123,6 @@ PanelWindow {
             id: notificationButton
 
             controller: root.notifications
-            config: root.config
-            theme: root.theme
-        }
-
-        Widgets.Clock {
             config: root.config
             theme: root.theme
         }
