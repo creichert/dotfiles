@@ -56,6 +56,7 @@ const glyphs = {
     temperatureFull: "",
     volumeOff: "",
     volumeLow: "",
+    volumeMedium: "",
     volumeHigh: "",
     volumeMuted: "",
     microphone: "",

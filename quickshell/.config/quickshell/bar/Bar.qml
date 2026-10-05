@@ -89,7 +89,7 @@ PanelWindow {
             theme: root.theme
         }
 
-        Widgets.AudioButton {
+        Widgets.Audio {
             id: audioButton
             audio: root.audio
             config: root.config

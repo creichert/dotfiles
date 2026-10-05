@@ -99,7 +99,8 @@ QtObject {
     property int titleSpacing: 6
     property int networkSpacing: 6
     property string networkRateWidthLabel: "999.9 Mb/s"
-    property int volumeMediumThreshold: 50
+    property int volumeMediumThreshold: 35
+    property int volumeHighThreshold: 75
     property int batteryCriticalThreshold: 15
     // Personal bar attention policy, not a Linux memory-pressure measurement.
     property int memoryAttentionThreshold: 90
