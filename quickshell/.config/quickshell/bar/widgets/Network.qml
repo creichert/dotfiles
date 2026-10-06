@@ -8,7 +8,7 @@ Item {
     required property var config
     required property var theme
     visible: config.networkModuleEnabled
-    implicitWidth: networkRow.implicitWidth + config.moduleHorizontalPadding
+    implicitWidth: networkRow.implicitWidth + 2 * config.barStatusHorizontalInset
     implicitHeight: config.barHeight
     property bool expanded: false
 
@@ -46,7 +46,7 @@ Item {
     Row {
         id: networkRow
         anchors.centerIn: parent
-        spacing: root.config.networkSpacing
+        spacing: root.config.barContentSpacing
 
         Components.Icon {
             name: root.connectionGlyph
@@ -55,7 +55,7 @@ Item {
 
         Row {
             visible: root.expanded && root.hasRoute
-            spacing: root.config.networkSpacing
+            spacing: root.config.barContentSpacing
 
             Text {
                 width: rateMetrics.width

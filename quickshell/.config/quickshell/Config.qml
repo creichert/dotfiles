@@ -35,10 +35,22 @@ QtObject {
     property string urgentBackgroundColor: urgentColor
     property string inhibitedBackgroundColor: surfaceSelectedColor
     property string inhibitedTextColor: textPrimaryColor
+
+    // Bar/group gaps, within-widget gaps, status insets, and fixed control slots.
+    //
+    // This is the actual layout gap between neighboring things. Workspaces now
+    // use it between their fixed slots, and the tray uses it between tray
+    // items.
     property int barSpacing: 4
+    // This is inside one widget. Audio uses it between transient % and speaker;
+    // Network between its internal elements; Resources between value and glyph.
+    property int barContentSpacing: 4
+    // This is what Audio, Resources, Network and Notifications now use to give
+    // their visible content breathing room from the module boundary.
+    property int barStatusHorizontalInset: 8
+    // The fixed geometry for things that are actual icon slots/buttons:
+    // Workspaces and tray items currently use it.
     property int barIconButtonWidth: 32
-    // 10px total is equivalent to 5px on each side.
-    property int moduleHorizontalPadding: isLaptop ? 10 : 16
     property int trayIconSize: 18
 
     // Quickshell is the session notification daemon.
@@ -79,7 +91,6 @@ QtObject {
     property int clipboardPreviewMaximumCharacters: 8000
 
     // Workspace presentation
-    property int workspaceHorizontalPadding: 10
     property var workspaceIcons: ({
         "1": "browser",
         "2": "terminal",
@@ -98,7 +109,6 @@ QtObject {
     property string clockFormat: "ddd dd · HH:mm"
     property int titleMaximumWidth: isLaptop ? 500 : 900
     property int titleSpacing: 6
-    property int networkSpacing: 6
     property string networkRateWidthLabel: "999.9 Mb/s"
     property int volumeMediumThreshold: 35
     property int volumeHighThreshold: 75

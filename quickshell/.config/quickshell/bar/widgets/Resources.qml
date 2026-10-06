@@ -11,31 +11,16 @@ Item {
     required property var config
     required property var theme
     property bool expanded: false
-    implicitWidth: resourceRow.implicitWidth + config.moduleHorizontalPadding
+    implicitWidth: resourceRow.implicitWidth + 2 * config.barStatusHorizontalInset
     implicitHeight: config.barHeight
 
     readonly property string compactResource: resourcesService.temperatureCritical ? "temperature"
         : resourcesService.memoryUrgent ? "memory" : "cpu"
-    readonly property real valueWidth: Math.max(percentMetrics.width, temperatureMetrics.width)
-
-    TextMetrics {
-        id: percentMetrics
-        text: "100%"
-        font.family: root.theme.fontFamily
-        font.pixelSize: root.theme.fontPixelSize
-    }
-
-    TextMetrics {
-        id: temperatureMetrics
-        text: "100°"
-        font.family: root.theme.fontFamily
-        font.pixelSize: root.theme.fontPixelSize
-    }
 
     Row {
         id: resourceRow
         anchors.centerIn: parent
-        spacing: root.theme.spacingMedium
+        spacing: 2 * root.config.barContentSpacing
 
         Headline {
             visible: root.expanded || root.compactResource === "cpu"
@@ -76,11 +61,9 @@ Item {
         required property string value
         required property string iconName
         property bool urgent: false
-        spacing: root.theme.spacingSmall
+        spacing: root.config.barContentSpacing
 
         Text {
-            width: Math.max(root.valueWidth, implicitWidth)
-            horizontalAlignment: Text.AlignRight
             text: headline.value
             color: headline.urgent ? root.theme.urgent : root.theme.primaryText
             font.family: root.theme.fontFamily
@@ -88,8 +71,6 @@ Item {
         }
 
         Components.Icon {
-            width: Math.max(root.theme.fontPixelSize, implicitWidth)
-            horizontalAlignment: Text.AlignHCenter
             name: headline.iconName
             theme: root.theme
             color: headline.urgent ? root.theme.urgent : root.theme.primaryText

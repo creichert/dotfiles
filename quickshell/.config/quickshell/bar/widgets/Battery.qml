@@ -13,7 +13,7 @@ Item {
         && metrics.batteryPercent <= config.batteryCriticalThreshold
 
     visible: config.batteryModuleEnabled
-    implicitWidth: batteryRow.implicitWidth + config.moduleHorizontalPadding
+    implicitWidth: batteryRow.implicitWidth
     implicitHeight: config.barHeight
 
     function icon() {
@@ -35,10 +35,10 @@ Item {
     Row {
         id: batteryRow
         anchors.centerIn: parent
-        spacing: 0
+        spacing: root.config.barContentSpacing
 
         Text {
-            text: root.available ? `${Math.round(root.metrics.batteryPercent)}% ` : "--"
+            text: root.available ? `${Math.round(root.metrics.batteryPercent)}%` : "--"
             color: root.critical ? root.theme.urgent : root.theme.primaryText
             font.family: root.theme.fontFamily
             font.pixelSize: root.theme.fontPixelSize

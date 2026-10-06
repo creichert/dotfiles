@@ -9,7 +9,6 @@ Rectangle {
     required property var theme
     required property var workspace
 
-    readonly property int workspaceButtonWidth: 32
     property bool showSpecial: false
 
     readonly property bool special: workspace.name.indexOf("special:") === 0
@@ -21,12 +20,12 @@ Rectangle {
     readonly property string displayName: workspace.name.replace("special:", "")
 
     visible: special === showSpecial && (!special || specialActive)
-    implicitWidth: workspaceButtonWidth
+    implicitWidth: config.barIconButtonWidth
     implicitHeight: config.barHeight
     // Fix the actual navigation slot for both normal and special workspaces.
-    Layout.minimumWidth: root.workspaceButtonWidth
-    Layout.preferredWidth: root.workspaceButtonWidth
-    Layout.maximumWidth: root.workspaceButtonWidth
+    Layout.minimumWidth: root.config.barIconButtonWidth
+    Layout.preferredWidth: root.config.barIconButtonWidth
+    Layout.maximumWidth: root.config.barIconButtonWidth
     radius: theme.controlRadius
     color: workspace.urgent ? theme.urgent
         : active ? theme.selectedSurface

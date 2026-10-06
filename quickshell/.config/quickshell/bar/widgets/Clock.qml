@@ -5,7 +5,7 @@ Item {
     required property var config
     required property var theme
 
-    implicitWidth: clockText.implicitWidth + config.moduleHorizontalPadding
+    implicitWidth: clockText.implicitWidth
     implicitHeight: config.barHeight
 
     SystemClock {

@@ -23,13 +23,15 @@ Rectangle {
     }
 
     visible: controller !== null
-    implicitWidth: config.barIconButtonWidth
+    implicitWidth: notificationIcon.implicitWidth + 2 * config.barStatusHorizontalInset
     implicitHeight: config.barHeight
     color: controller && controller.doNotDisturb
         ? theme.selectedSurface
         : "transparent"
 
     Components.Icon {
+        id: notificationIcon
+
         anchors.centerIn: parent
         name: root.controller && root.controller.doNotDisturb ? "bellMuted" : "bell"
         theme: root.theme

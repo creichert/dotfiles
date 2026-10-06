@@ -7,7 +7,7 @@ Item {
     required property var config
     required property var theme
     required property var audio
-    implicitWidth: volumeRow.implicitWidth + config.moduleHorizontalPadding
+    implicitWidth: volumeRow.implicitWidth + 2 * config.barStatusHorizontalInset
     implicitHeight: config.barHeight
 
     readonly property var sink: audio.sink
@@ -33,11 +33,11 @@ Item {
     Row {
         id: volumeRow
         anchors.centerIn: parent
-        spacing: 0
+        spacing: root.config.barContentSpacing
 
         Text {
             visible: feedbackTimer.running
-            text: !root.sink ? "--% " : `${root.percent}% `
+            text: !root.sink ? "--%" : `${root.percent}%`
             color: root.theme.primaryText
             font.family: root.theme.fontFamily
             font.pixelSize: root.theme.fontPixelSize

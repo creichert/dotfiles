@@ -18,6 +18,7 @@ Item {
         id: trayRow
 
         anchors.centerIn: parent
+        spacing: root.config.barSpacing
 
         Repeater {
             model: SystemTray.items
@@ -26,7 +27,7 @@ Item {
                 id: trayItem
 
                 required property var modelData
-                implicitWidth: root.config.barHeight
+                implicitWidth: root.config.barIconButtonWidth
                 implicitHeight: root.config.barHeight
 
                 IconImage {

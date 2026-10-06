@@ -10,7 +10,7 @@ RowLayout {
     required property var config
     required property var theme
 
-    spacing: 0
+    spacing: config.barSpacing
 
     Connections {
         target: Hyprland
