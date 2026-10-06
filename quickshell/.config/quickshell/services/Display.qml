@@ -14,6 +14,11 @@ Item {
         && backlight.status !== "unavailable"
     readonly property var brightnessPercent: backlight.raw === null
         ? null : backlight.raw * 100 / backlight.maximum
+    // Presentation-only target. Observed brightnessPercent remains authoritative.
+    readonly property var brightnessPendingPercent: {
+        const target = backlight.queuedRaw !== null ? backlight.queuedRaw : backlight.requestedRaw
+        return target === null ? null : target * 100 / backlight.maximum
+    }
     readonly property bool brightnessAdjustable: brightnessAvailable
         && brightnessPercent !== null && backlight.adjustmentSupported
     readonly property string brightnessStatus: backlight.status
@@ -45,6 +50,8 @@ Item {
         // One process and one latest target, not an unbounded command queue.
         property var requestedRaw: null
         property var queuedRaw: null
+        // Keep requestedRaw through command completion and FileView confirmation.
+        property string confirmation: ""
     }
 
     function percentFromText(text, maximum) {
@@ -98,6 +105,7 @@ Item {
     function updateBrightness(text) {
         const percent = percentFromText(text, backlight.maximum)
         if (percent === null) {
+            clearPendingAdjustment()
             backlight.raw = null
             backlight.readError = "Backlight brightness data is invalid"
             backlight.status = "error"
@@ -109,6 +117,23 @@ Item {
             backlight.raw = raw
         backlight.readError = ""
         backlight.status = "ready"
+        if (backlight.confirmation === "read" && raw !== backlight.requestedRaw) {
+            // reload() can share an earlier in-flight FileView read. Once this
+            // callback returns, one fresh read confirms the actual post-command
+            // value, even if the backend did not apply the requested target.
+            backlight.confirmation = "fresh-read"
+            Qt.callLater(() => brightnessFile.reload())
+        } else if (backlight.confirmation !== "") {
+            backlight.confirmation = ""
+            backlight.requestedRaw = null
+            Qt.callLater(root.startQueuedAdjustment)
+        }
+    }
+
+    function clearPendingAdjustment() {
+        backlight.confirmation = ""
+        backlight.requestedRaw = null
+        backlight.queuedRaw = null
     }
 
     function startQueuedAdjustment() {
@@ -198,6 +223,7 @@ Item {
         onFileChanged: brightnessFile.reload()
         onLoaded: root.updateBrightness(brightnessFile.text())
         onLoadFailed: error => {
+            root.clearPendingAdjustment()
             backlight.raw = null
             backlight.readError = `Could not read backlight brightness: ${FileViewError.toString(error)}`
             backlight.status = error === FileViewError.FileNotFound ? "unavailable" : "error"
@@ -208,13 +234,19 @@ Item {
         id: adjustmentProcess
 
         onExited: exitCode => {
-            backlight.requestedRaw = null
             if (exitCode === 0) {
+                // A matching observed value may already have arrived through
+                // fileChanged while brightnessctl was still running.
+                if (backlight.raw === backlight.requestedRaw) {
+                    backlight.requestedRaw = null
+                    Qt.callLater(root.startQueuedAdjustment)
+                } else if (backlight.requestedRaw !== null) {
+                    backlight.confirmation = "read"
+                }
                 brightnessFile.reload()
                 root.brightnessAdjustmentSucceeded()
-                Qt.callLater(root.startQueuedAdjustment)
             } else {
-                backlight.queuedRaw = null
+                root.clearPendingAdjustment()
                 backlight.controlError = `Could not adjust brightness (brightnessctl exit ${exitCode})`
             }
         }

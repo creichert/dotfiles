@@ -123,16 +123,20 @@ Components.AnchoredPanel {
                         onPressedChanged: {
                             if (!pressed && pendingPercent !== null) {
                                 const percent = pendingPercent
-                                pendingPercent = null
                                 root.display.setBrightnessPercent(percent)
+                                pendingPercent = null
                             }
                         }
 
                         Binding {
                             target: brightnessSlider
                             property: "value"
-                            value: root.display.brightnessPercent !== null ? root.display.brightnessPercent : 0
-                            when: !brightnessSlider.pressed
+                            value: root.display.brightnessPendingPercent !== null
+                                ? root.display.brightnessPendingPercent
+                                : root.display.brightnessPercent !== null ? root.display.brightnessPercent : 0
+                            // Register the release request before resuming the
+                            // binding; then hold its target until confirmation.
+                            when: !brightnessSlider.pressed && brightnessSlider.pendingPercent === null
                             restoreMode: Binding.RestoreNone
                         }
                     }

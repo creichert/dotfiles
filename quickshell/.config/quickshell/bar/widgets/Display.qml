@@ -1,3 +1,4 @@
+// Display feature entry point; brightness is currently its only capability.
 import QtQuick
 import "../../components" as Components
 

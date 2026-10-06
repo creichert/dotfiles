@@ -102,8 +102,8 @@ PanelWindow {
             theme: root.theme
         }
 
-        Widgets.Brightness {
-            id: brightnessButton
+        Widgets.Display {
+            id: displayButton
             Layout.alignment: Qt.AlignVCenter
             display: root.display
             config: root.config
@@ -175,7 +175,7 @@ PanelWindow {
         active: root.display.panelVisible
 
         DisplayUi.DisplayPanel {
-            trigger: brightnessButton
+            trigger: displayButton
             display: root.display
             theme: root.theme
         }
