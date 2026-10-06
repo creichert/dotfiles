@@ -1,9 +1,9 @@
 import QtQuick
+import "../../components" as Components
 
-Rectangle {
+Components.BarItem {
     id: root
 
-    required property var config
     property var controller: null
     readonly property bool centerVisible: controller && controller.notificationCenterVisible
     readonly property int unreadCount: {
@@ -21,20 +21,29 @@ Rectangle {
     }
 
     visible: controller !== null
-    implicitWidth: 32
-    implicitHeight: config.barHeight
-    color: controller && controller.doNotDisturb
-        ? config.inhibitedBackgroundColor
-        : "transparent"
+    engaged: centerVisible || Boolean(controller && controller.doNotDisturb)
 
-    Text {
-        anchors.centerIn: parent
-        text: root.controller && root.controller.doNotDisturb ? "" : ""
-        color: root.controller && root.controller.doNotDisturb
-            ? root.config.inhibitedTextColor
-            : root.config.textColor
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+    contentItem: Item {
+        implicitWidth: Math.max(bellIcon.implicitWidth, mutedBellIcon.implicitWidth)
+        implicitHeight: Math.max(bellIcon.implicitHeight, mutedBellIcon.implicitHeight)
+
+        Components.Icon {
+            id: bellIcon
+
+            anchors.centerIn: parent
+            visible: !root.controller || !root.controller.doNotDisturb
+            name: "bell"
+            theme: root.theme
+        }
+
+        Components.Icon {
+            id: mutedBellIcon
+
+            anchors.centerIn: parent
+            visible: Boolean(root.controller && root.controller.doNotDisturb)
+            name: "bellMuted"
+            theme: root.theme
+        }
     }
 
     Rectangle {
@@ -45,16 +54,16 @@ Rectangle {
         width: unreadLabel.implicitWidth + 6
         height: unreadLabel.implicitHeight + 2
         radius: height / 2
-        color: root.config.urgentBackgroundColor
+        color: root.theme.urgent
 
         Text {
             id: unreadLabel
 
             anchors.centerIn: parent
             text: root.unreadCount > 99 ? "99+" : root.unreadCount
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize - 4
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize - 4
         }
     }
 

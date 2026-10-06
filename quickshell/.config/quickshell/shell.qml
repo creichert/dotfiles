@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import "bar"
+import "theme"
 import "clipboard" as ClipboardUi
 import "launcher" as LauncherUi
 import "services"
@@ -41,8 +42,38 @@ ShellRoot {
         id: config
     }
 
+    Theme {
+        id: theme
+        config: config
+    }
+
     Metrics {
         id: metricsService
+        config: config
+    }
+
+    Network {
+        id: networkService
+        metrics: metricsService
+    }
+
+    Resources {
+        id: resourcesService
+        metrics: metricsService
+        config: config
+    }
+
+    Audio {
+        id: audioService
+    }
+
+    Battery {
+        id: batteryService
+        config: config
+    }
+
+    Display {
+        id: displayService
         config: config
     }
 
@@ -110,7 +141,12 @@ ShellRoot {
             required property var modelData
             screen: modelData
             config: config
-            metrics: metricsService
+            theme: theme
+            display: displayService
+            audio: audioService
+            battery: batteryService
+            network: networkService
+            resources: resourcesService
             notifications: notificationLoader.item
         }
     }

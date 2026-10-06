@@ -7,6 +7,7 @@ Item {
     id: root
 
     required property var config
+    required property var theme
     implicitHeight: config.barHeight
     implicitWidth: titleRow.implicitWidth
     clip: true
@@ -33,9 +34,9 @@ Item {
             width: Math.min(800, implicitWidth)
             elide: Text.ElideRight
             text: root.toplevel ? root.toplevel.title : ""
-            color: root.config.textColor
-            font.family: root.config.fontFamily
-            font.pixelSize: root.config.fontPixelSize
+            color: root.theme.primaryText
+            font.family: root.theme.fontFamily
+            font.pixelSize: root.theme.fontPixelSize
         }
     }
 }

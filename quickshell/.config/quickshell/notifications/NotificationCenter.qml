@@ -1,40 +1,29 @@
 pragma ComponentBehavior: Bound
 
-// qmllint disable uncreatable-type
-
 import QtQuick
-import Quickshell
-import Quickshell.Wayland
+import QtQuick.Layouts
+import "../components" as Components
 
-PanelWindow {
+Components.AnchoredPanel {
     id: root
 
-    required property var bar
     required property var config
+    required property var theme
     property var controller: null
     property bool open: false
-    signal dismissed()
-    screen: bar.screen
     visible: open && controller !== null
-    color: "transparent"
-    exclusionMode: ExclusionMode.Ignore
-    focusable: true
-
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    implicitWidth: Math.min(config.notificationCenterWidth, availableWidth)
+    implicitHeight: Math.min(config.notificationCenterHeight, availableHeight)
+    edgeInset: config.notificationMargin
+    gap: config.notificationMargin
 
     onVisibleChanged: {
-        if (visible)
-            Qt.callLater(() => centerFocus.forceActiveFocus())
-        else
-            dismissed()
+        if (visible) {
+            Qt.callLater(() => {
+                if (root.visible)
+                    neutralFocus.forceActiveFocus()
+            })
+        }
     }
 
     Connections {
@@ -45,28 +34,14 @@ PanelWindow {
         }
     }
 
-    // Match native popup dismissal without relying on an input-grabbing
-    // xdg_popup, which cannot be opened from IPC.
-    MouseArea {
-        anchors.fill: parent
-        onClicked: root.dismissed()
-    }
-
     Rectangle {
         id: center
 
-        width: root.config.notificationWidth
-        height: root.config.notificationCenterHeight
-        anchors {
-            top: parent.top
-            right: parent.right
-            topMargin: root.bar.height + root.config.notificationMargin
-            rightMargin: root.config.notificationMargin
-        }
-        radius: root.config.surfaceRadius
-        color: root.config.notificationBackgroundColor
+        anchors.fill: parent
+        radius: root.theme.surfaceRadius
+        color: root.theme.surface
         border.width: 1
-        border.color: root.config.accentColor
+        border.color: root.theme.separator
 
         // Consume clicks on inactive card space so only outside clicks dismiss.
         MouseArea {
@@ -76,107 +51,131 @@ PanelWindow {
         FocusScope {
             id: centerFocus
 
-            anchors.fill: parent
+            anchors {
+                fill: parent
+                margins: root.theme.panelPadding
+            }
             focus: true
+
+            // A real child target avoids restoring the FocusScope's last control.
+            Item {
+                id: neutralFocus
+                activeFocusOnTab: false
+            }
 
             Keys.onEscapePressed: event => {
                 root.dismissed()
                 event.accepted = true
             }
 
-            Column {
+            RowLayout {
+                id: header
+
+                anchors.top: parent.top
+                width: parent.width
+                spacing: root.theme.spacingMedium
+
+                Text {
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
+                    Layout.alignment: Qt.AlignVCenter
+                    text: "Notifications"
+                    color: root.theme.primaryText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.titleFontPixelSize + 2
+                    font.bold: true
+                    elide: Text.ElideRight
+                }
+
+                Components.Button {
+                    id: clearButton
+
+                    Layout.alignment: Qt.AlignVCenter
+                    text: "Clear"
+                    theme: root.theme
+                    fontPixelSize: root.theme.bodyFontPixelSize
+                    enabled: root.controller && root.controller.history.length > 0
+                    onClicked: root.controller.clearHistory()
+                }
+
+                Components.Switch {
+                    id: dndSwitch
+
+                    Layout.alignment: Qt.AlignVCenter
+                    theme: root.theme
+                    text: "Do Not Disturb"
+                    checked: root.controller ? root.controller.doNotDisturb : false
+                    onToggled: {
+                        if (root.controller)
+                            root.controller.doNotDisturb = checked
+                    }
+                }
+            }
+
+            Flickable {
+                id: historyView
+
                 anchors {
-                    fill: parent
-                    margins: 12
+                    top: header.bottom
+                    topMargin: root.theme.spacingLarge * 2 + 1
+                    left: parent.left
+                    right: parent.right
+                    bottom: parent.bottom
                 }
-                spacing: 8
+                contentWidth: width
+                contentHeight: records.implicitHeight
+                clip: true
+                interactive: contentHeight > height
 
-                Row {
-                    width: parent.width
+                function revealControl(control) {
+                    const position = control.mapToItem(records, 0, 0)
+                    const bottom = position.y + control.height
+                    if (position.y < contentY)
+                        contentY = position.y
+                    else if (bottom > contentY + height)
+                        contentY = bottom - height
+                }
 
-                    Text {
-                        width: parent.width - controls.width
-                        text: "Notifications"
-                        color: root.config.textColor
-                        font.family: root.config.fontFamily
-                        font.pixelSize: root.config.fontPixelSize
-                        font.bold: true
-                    }
+                Column {
+                    id: records
 
-                    Row {
-                        id: controls
+                    width: historyView.width
+                    spacing: root.theme.spacingLarge
 
-                        spacing: 10
+                    Repeater {
+                        model: root.controller ? root.controller.history.slice().reverse() : []
 
-                        Text {
-                            text: root.controller && root.controller.doNotDisturb ? "DND on" : "DND off"
-                            color: root.config.textColor
-                            font.family: root.config.fontFamily
-                            font.pixelSize: root.config.fontPixelSize - 2
+                        delegate: NotificationRecord {
+                            required property var modelData
 
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: root.controller.doNotDisturb = !root.controller.doNotDisturb
-                            }
-                        }
-
-                        Text {
-                            text: "Clear"
-                            color: root.config.textColor
-                            font.family: root.config.fontFamily
-                            font.pixelSize: root.config.fontPixelSize - 2
-
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: root.controller.clearHistory()
-                            }
+                            width: records.width
+                            theme: root.theme
+                            controller: root.controller
+                            record: modelData
+                            onControlFocused: control => historyView.revealControl(control)
                         }
                     }
                 }
+            }
 
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Qt.rgba(1, 1, 1, 0.16)
+            Column {
+                anchors.centerIn: historyView
+                visible: root.controller && root.controller.history.length === 0
+                spacing: root.theme.spacingLarge
+
+                Components.Icon {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    theme: root.theme
+                    name: "bell"
+                    color: root.theme.mutedText
+                    font.pixelSize: 40
                 }
 
-                Flickable {
-                    width: parent.width
-                    height: parent.height - y
-                    contentWidth: width
-                    contentHeight: records.implicitHeight
-                    clip: true
-
-                    Column {
-                        id: records
-
-                        width: parent.width
-                        spacing: root.config.notificationSpacing
-
-                        Repeater {
-                            model: root.controller ? root.controller.history.slice().reverse() : []
-
-                            delegate: NotificationRecord {
-                                required property var modelData
-
-                                width: records.width
-                                config: root.config
-                                controller: root.controller
-                                record: modelData
-                            }
-                        }
-
-                        Text {
-                            visible: root.controller && root.controller.history.length === 0
-                            width: parent.width
-                            text: "No notifications"
-                            color: root.config.textColor
-                            opacity: 0.8
-                            horizontalAlignment: Text.AlignHCenter
-                            font.family: root.config.fontFamily
-                            font.pixelSize: root.config.fontPixelSize
-                        }
-                    }
+                Text {
+                    text: "No notifications"
+                    color: root.theme.mutedText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.bodyFontPixelSize
                 }
             }
         }

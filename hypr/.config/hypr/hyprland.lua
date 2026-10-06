@@ -28,9 +28,6 @@ else
     hl.monitor({ output = "DP-1", mode = "3440x1440@144", position = "0x0", scale = 1 })
     hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@144", position = "3440x0", scale = 1, transform = 3 })
 
-    -- improves display but much harder on igpu. leave for testing
-    -- hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60", position = "3440x0", scale = 2, transform = 3 })
-
     hl.workspace_rule({ workspace = "1", monitor = "DP-1", default = true })
     hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
 end
@@ -243,8 +240,6 @@ if not isLaptop then
     hl.bind(mainMod .. " + E", hl.dsp.focus({ monitor = "HDMI-A-1" }))
 end
 
--- Launch apps, manipulate session.
-hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"))
 hl.bind(mainMod .. " + Tab", hl.dsp.window.cycle_next())
 hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.window.cycle_next({ next = false }))
 hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd("uwsm app emacs"))
@@ -260,7 +255,7 @@ hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
 
 -- Resize windows in a submap.
-hl.bind(mainMod .. " + SHIFT + R", hl.dsp.submap("resize"))
+hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
     hl.bind("right", hl.dsp.window.resize({ x = 10, y = 0, relative = true }), { repeating = true })
     hl.bind("left", hl.dsp.window.resize({ x = -10, y = 0, relative = true }), { repeating = true })
@@ -287,9 +282,6 @@ hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down", hl.dsp.focus({ direction = "down" }))
-
--- Clipboard manual selection.
-hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
 
 -- Screenshots.
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -s -m region -o ~/downloads/screenshots/"))
@@ -346,13 +338,37 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = tru
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 
 
--- Quickshell IPC handlers
+--------------------------------
+---- quickshell keybindings ----
+--------------------------------
+
+-- Audio
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs ipc call audio togglePanel"))
+
+-- Network
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs ipc call network togglePanel"))
+
+-- Resources
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("qs ipc call resources togglePanel"))
+
+-- Notification center
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("qs ipc call notifications toggleNotificationCenter"))
 hl.bind(mainMod .. " + CTRL + escape", hl.dsp.exec_cmd("qs ipc call notifications clearHistory"))
 hl.bind(mainMod .. " + grave", hl.dsp.exec_cmd("qs ipc call notifications dismissVisible"))
 hl.bind(mainMod .. " + SHIFT + grave", hl.dsp.exec_cmd("qs ipc call notifications restoreLastDismissed"))
 hl.bind(mainMod .. " + SHIFT + CTRL + grave", hl.dsp.exec_cmd("qs ipc call notifications toggleDoNotDisturb"))
 
+-- App launcher
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"))
+
+--- Clipboard
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
+
+-- Battery & Display
+if isLaptop then
+    hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs ipc call battery togglePanel"))
+    hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("qs ipc call display togglePanel"))
+end
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----

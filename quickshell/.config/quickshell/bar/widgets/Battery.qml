@@ -1,43 +1,23 @@
 import QtQuick
+import "../../components" as Components
 
-Item {
+Components.BarItem {
     id: root
 
-    required property var metrics
-    required property var config
-    readonly property bool available: metrics.batteryPercent !== null
-    readonly property bool critical: available
-        && metrics.batteryStatus === "Discharging"
-        && metrics.batteryPercent <= config.batteryCriticalThreshold
-
+    required property var battery
     visible: config.batteryModuleEnabled
-    implicitWidth: batteryText.implicitWidth + config.moduleHorizontalPadding
-    implicitHeight: config.barHeight
+    engaged: battery.panelVisible
 
-    function icon() {
-        if (metrics.batteryStatus === "Charging")
-            return ""
-        if (metrics.batteryStatus === "Full" || metrics.batteryStatus === "Not charging")
-            return ""
-        if (metrics.batteryPercent <= 10)
-            return ""
-        if (metrics.batteryPercent <= 30)
-            return ""
-        if (metrics.batteryPercent <= 50)
-            return ""
-        if (metrics.batteryPercent <= 75)
-            return ""
-        return ""
+    contentItem: Components.Icon {
+        name: root.battery.iconName
+        theme: root.theme
+        // Preserve the existing critical foreground, without adding state backgrounds.
+        color: root.battery.critical ? root.theme.urgent : root.theme.primaryText
     }
 
-    Text {
-        id: batteryText
-        anchors.centerIn: parent
-        text: root.available
-            ? `${Math.round(root.metrics.batteryPercent)}% ${root.icon()}`
-            : "--"
-        color: root.critical ? root.config.urgentColor : root.config.textColor
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        onClicked: root.battery.togglePanel()
     }
 }

@@ -8,7 +8,9 @@ RowLayout {
     id: workspaceRow
 
     required property var config
-    spacing: 0
+    required property var theme
+
+    spacing: config.barSpacing
 
     Connections {
         target: Hyprland
@@ -26,6 +28,7 @@ RowLayout {
             required property var modelData
             workspace: modelData
             config: workspaceRow.config
+            theme: workspaceRow.theme
         }
     }
 
@@ -36,6 +39,7 @@ RowLayout {
             required property var modelData
             workspace: modelData
             config: workspaceRow.config
+            theme: workspaceRow.theme
             showSpecial: true
         }
     }

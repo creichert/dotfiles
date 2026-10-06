@@ -1,10 +1,14 @@
 import QtQuick
+import QtQuick.Layouts
+import "../../components" as Components
 
 Rectangle {
     id: root
 
     required property var config
+    required property var theme
     required property var workspace
+
     property bool showSpecial: false
 
     readonly property bool special: workspace.name.indexOf("special:") === 0
@@ -15,27 +19,27 @@ Rectangle {
     readonly property bool active: workspace.focused || specialActive
     readonly property string displayName: workspace.name.replace("special:", "")
 
-    function icon() {
-        if (workspace.urgent)
-            return config.workspaceIcons.urgent
-
-        return config.workspaceIcons[displayName] || config.workspaceIcons.default
-    }
-
     visible: special === showSpecial && (!special || specialActive)
-    implicitWidth: workspaceLabel.implicitWidth + config.workspaceHorizontalPadding
+    implicitWidth: config.barIconButtonWidth
     implicitHeight: config.barHeight
-    color: workspace.urgent ? config.urgentBackgroundColor
-        : active ? config.activeBackgroundColor
+    // Fix the actual navigation slot for both normal and special workspaces.
+    Layout.minimumWidth: root.config.barIconButtonWidth
+    Layout.preferredWidth: root.config.barIconButtonWidth
+    Layout.maximumWidth: root.config.barIconButtonWidth
+    radius: theme.controlRadius
+    color: workspace.urgent ? theme.urgent
+        : active ? theme.selectedSurface
         : "transparent"
 
-    Text {
-        id: workspaceLabel
+    Row {
+        id: workspaceRow
         anchors.centerIn: parent
-        text: `${root.displayName}: ${root.icon()}`
-        color: root.config.textColor
-        font.family: root.config.fontFamily
-        font.pixelSize: root.config.fontPixelSize
+        spacing: 0
+
+        Components.Icon {
+            name: root.config.workspaceIcons[root.displayName] || root.config.workspaceIcons.default
+            theme: root.theme
+        }
     }
 
     MouseArea {

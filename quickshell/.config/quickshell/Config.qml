@@ -9,9 +9,10 @@ QtObject {
     property int barHeight: isLaptop ? 25 : 30
     property int fontPixelSize: isLaptop ? 12 : 14
     property string fontFamily: "Hack Nerd Font Propo"
-    property bool networkModuleEnabled: !isLaptop
+    property bool networkModuleEnabled: true
     property bool batteryModuleEnabled: isLaptop
-    property bool brightnessModuleEnabled: isLaptop
+    // Presentation policy; backlight discovery determines brightness capability.
+    property bool brightnessModuleEnabled: true
 
     // Theme and UX contract
     property string surfaceBaseColor: "#272a2c"
@@ -35,9 +36,24 @@ QtObject {
     property string urgentBackgroundColor: urgentColor
     property string inhibitedBackgroundColor: surfaceSelectedColor
     property string inhibitedTextColor: textPrimaryColor
+
+    // Bar/group gaps, within-widget gaps, status insets, and fixed control slots.
+    //
+    // This is the actual layout gap between neighboring things. Workspaces now
+    // use it between their fixed slots, and the tray uses it between tray
+    // items.
     property int barSpacing: 4
-    // 10px total is equivalent to 5px on each side.
-    property int moduleHorizontalPadding: isLaptop ? 10 : 16
+    // Gap from the fixed Clock anchor to either center satellite area.
+    property int barCenterSpacing: 8
+    // This is inside one widget. Audio uses it between transient % and speaker;
+    // Network between its internal elements; Resources between value and glyph.
+    property int barContentSpacing: 4
+    // This is what Audio, Resources, Network and Notifications now use to give
+    // their visible content breathing room from the module boundary.
+    property int barStatusHorizontalInset: 8
+    // The fixed geometry for things that are actual icon slots/buttons:
+    // Workspaces and tray items currently use it.
+    property int barIconButtonWidth: 32
     property int trayIconSize: 18
 
     // Quickshell is the session notification daemon.
@@ -46,7 +62,8 @@ QtObject {
     property int notificationMaximumVisible: 3
     property int notificationHistoryLimit: 100
     property int notificationWidth: 400
-    property int notificationCenterHeight: 600
+    property int notificationCenterWidth: 480
+    property int notificationCenterHeight: 720
     property int notificationSpacing: 8
     property int notificationMargin: 12
     property string notificationBackgroundColor: surfaceRaisedColor
@@ -77,30 +94,35 @@ QtObject {
     property int clipboardPreviewMaximumCharacters: 8000
 
     // Workspace presentation
-    property int workspaceHorizontalPadding: 10
     property var workspaceIcons: ({
-        "1": "",
-        "2": "",
-        "3": "",
-        "4": "",
-        "cfg": "",
-        "terms": "",
-        "db": "",
-        "default": "",
-        "urgent": ""
+        "1": "browser",
+        "2": "terminal",
+        "3": "code",
+        "4": "agent",
+        "5": "music",
+        "cfg": "config",
+
+        "terms": "terminalWindow",
+        "db": "database",
+        "default": "workspaceDefault",
+        "urgent": "warning"
     })
 
     // Module behavior
-    property string clockFormat: "MM/dd/yyyy HH:mm"
+    property string clockFormat: "ddd dd · HH:mm"
     property int titleMaximumWidth: isLaptop ? 500 : 900
     property int titleSpacing: 6
-    property int networkSpacing: 6
     property string networkRateWidthLabel: "999.9 Mb/s"
-    property int volumeMediumThreshold: 50
+    property int volumeMediumThreshold: 35
+    property int volumeHighThreshold: 75
+    property int brightnessStepPercent: 5
     property int batteryCriticalThreshold: 15
-    property int temperatureCoolThreshold: 50
-    property int temperatureWarmThreshold: 70
-    property int temperatureCriticalThreshold: 85
+    // Personal bar attention policy, not a Linux memory-pressure measurement.
+    property int memoryAttentionThreshold: 90
+    // Host-specific presentation policy; tune against ordinary workloads.
+    property int temperatureCoolThreshold: isLaptop ? 35 : 50
+    property int temperatureWarmThreshold: isLaptop ? 50 : 70
+    property int temperatureCriticalThreshold: isLaptop ? 65 : 85
 
     // Host metrics
     property string cpuTemperatureHwmonPath: isLaptop

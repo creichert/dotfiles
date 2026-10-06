@@ -9,6 +9,7 @@ Item {
     id: root
 
     required property var config
+    required property var theme
     visible: SystemTray.items.values.length > 0
     implicitWidth: trayRow.implicitWidth
     implicitHeight: config.barHeight
@@ -17,6 +18,7 @@ Item {
         id: trayRow
 
         anchors.centerIn: parent
+        spacing: root.config.barSpacing
 
         Repeater {
             model: SystemTray.items
@@ -25,7 +27,7 @@ Item {
                 id: trayItem
 
                 required property var modelData
-                implicitWidth: root.config.barHeight
+                implicitWidth: root.config.barIconButtonWidth
                 implicitHeight: root.config.barHeight
 
                 IconImage {
