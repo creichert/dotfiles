@@ -67,6 +67,11 @@ ShellRoot {
         id: audioService
     }
 
+    Battery {
+        id: batteryService
+        config: config
+    }
+
     Launcher {
         id: launcher
         config: config
@@ -134,6 +139,7 @@ ShellRoot {
             theme: theme
             metrics: metricsService
             audio: audioService
+            battery: batteryService
             network: networkService
             resources: resourcesService
             notifications: notificationLoader.item

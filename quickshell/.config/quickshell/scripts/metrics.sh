@@ -13,24 +13,10 @@ temperature_c=null
 temperature_sensor_name=""
 temperature_sensor_label=""
 temperature_supported=false
-battery_capacity_file=""
-battery_status_file=""
 brightness_file=""
 brightness_max_file=""
 
-discover_power_devices() {
-    for power_supply in /sys/class/power_supply/*; do
-        [[ -d "$power_supply" ]] || continue
-        [[ -r "$power_supply/type" ]] || continue
-        [[ "$(<"$power_supply/type")" == "Battery" ]] || continue
-
-        if [[ -r "$power_supply/capacity" && -r "$power_supply/status" ]]; then
-            battery_capacity_file="$power_supply/capacity"
-            battery_status_file="$power_supply/status"
-            break
-        fi
-    done
-
+discover_backlight() {
     for backlight in /sys/class/backlight/*; do
         [[ -r "$backlight/brightness" && -r "$backlight/max_brightness" ]] || continue
         brightness_file="$backlight/brightness"
@@ -41,7 +27,7 @@ discover_power_devices() {
 
 # Device names under /sys/class are sufficient for the lifetime of this
 # sampler. Discovering them once avoids filesystem scans on every sample.
-discover_power_devices
+discover_backlight
 
 # Sensor identity is stable for this sampler lifetime. Keep dynamic hwmon
 # numbering out of the configuration, and avoid extra metadata reads per sample.
@@ -113,25 +99,6 @@ while true; do
         done
     fi
 
-    battery_percent_json=null
-    battery_status_json=null
-    if [[ -n "$battery_capacity_file" ]]; then
-        battery_percent=$(< "$battery_capacity_file")
-        if [[ "$battery_percent" =~ ^[0-9]+$ ]] && (( battery_percent <= 100 )); then
-            battery_percent_json=$battery_percent
-        fi
-
-        battery_status=$(< "$battery_status_file")
-        case "$battery_status" in
-            Charging|Discharging|Full|Unknown)
-                battery_status_json="\"$battery_status\""
-                ;;
-            "Not charging")
-                battery_status_json='"Not charging"'
-                ;;
-        esac
-    fi
-
     brightness_percent_json=null
     if [[ -n "$brightness_file" ]]; then
         brightness=$(< "$brightness_file")
@@ -183,7 +150,7 @@ while true; do
     timestamp_ms=${timestamp_ms:0:13}
     cpu_sample_valid=false
     (( sample_number > 1 )) && cpu_sample_valid=true
-    printf '{"cpuPercent":%s,"cpuSampleValid":%s,"memoryPercent":%s,"memoryTotalBytes":%s,"memoryAvailableBytes":%s,"temperatureC":%s,"temperatureSupported":%s,%s,"batteryPercent":%s,"batteryStatus":%s,"brightnessPercent":%s,"interfaceName":"%s","gateway":%s,"linkState":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
-        "$cpu_percent" "$cpu_sample_valid" "$memory_percent" "$((memory_total * 1024))" "$((memory_available * 1024))" "$temperature_c" "$temperature_supported" "$temperature_identity_json" "$battery_percent_json" "$battery_status_json" "$brightness_percent_json" "$interface_name" "$gateway_json" "$link_state" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
+    printf '{"cpuPercent":%s,"cpuSampleValid":%s,"memoryPercent":%s,"memoryTotalBytes":%s,"memoryAvailableBytes":%s,"temperatureC":%s,"temperatureSupported":%s,%s,"brightnessPercent":%s,"interfaceName":"%s","gateway":%s,"linkState":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
+        "$cpu_percent" "$cpu_sample_valid" "$memory_percent" "$((memory_total * 1024))" "$((memory_available * 1024))" "$temperature_c" "$temperature_supported" "$temperature_identity_json" "$brightness_percent_json" "$interface_name" "$gateway_json" "$link_state" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
     sleep "$interval_seconds"
 done

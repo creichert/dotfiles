@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Wayland
 import "widgets" as Widgets
 import "../audio" as AudioUi
+import "../battery" as BatteryUi
 import "../network" as NetworkUi
 import "../resources" as ResourcesUi
 import "../notifications" as Notifications
@@ -16,6 +17,7 @@ PanelWindow {
 
     required property var metrics
     required property var audio
+    required property var battery
     required property var network
     required property var resources
     required property var config
@@ -92,8 +94,9 @@ PanelWindow {
         spacing: root.config.barSpacing
 
         Widgets.Battery {
+            id: batteryButton
             Layout.alignment: Qt.AlignVCenter
-            metrics: root.metrics
+            battery: root.battery
             config: root.config
             theme: root.theme
         }
@@ -138,6 +141,17 @@ PanelWindow {
         Widgets.SystemTray {
             id: systemTray
 
+            config: root.config
+            theme: root.theme
+        }
+    }
+
+    LazyLoader {
+        active: root.battery.panelVisible
+
+        BatteryUi.BatteryPanel {
+            trigger: batteryButton
+            battery: root.battery
             config: root.config
             theme: root.theme
         }

@@ -1,54 +1,23 @@
 import QtQuick
 import "../../components" as Components
 
-Item {
+Components.BarItem {
     id: root
 
-    required property var metrics
-    required property var config
-    required property var theme
-    readonly property bool available: metrics.batteryPercent !== null
-    readonly property bool critical: available
-        && metrics.batteryStatus === "Discharging"
-        && metrics.batteryPercent <= config.batteryCriticalThreshold
-
+    required property var battery
     visible: config.batteryModuleEnabled
-    implicitWidth: batteryRow.implicitWidth
-    implicitHeight: config.barHeight
+    engaged: battery.panelVisible
 
-    function icon() {
-        if (metrics.batteryStatus === "Charging")
-            return "batteryCharging"
-        if (metrics.batteryStatus === "Full" || metrics.batteryStatus === "Not charging")
-            return "batteryPlugged"
-        if (metrics.batteryPercent <= 10)
-            return "batteryEmpty"
-        if (metrics.batteryPercent <= 30)
-            return "batteryQuarter"
-        if (metrics.batteryPercent <= 50)
-            return "batteryHalf"
-        if (metrics.batteryPercent <= 75)
-            return "batteryThreeQuarters"
-        return "batteryFull"
+    contentItem: Components.Icon {
+        name: root.battery.iconName
+        theme: root.theme
+        // Preserve the existing critical foreground, without adding state backgrounds.
+        color: root.battery.critical ? root.theme.urgent : root.theme.primaryText
     }
 
-    Row {
-        id: batteryRow
-        anchors.centerIn: parent
-        spacing: root.config.barContentSpacing
-
-        Text {
-            text: root.available ? `${Math.round(root.metrics.batteryPercent)}%` : "--"
-            color: root.critical ? root.theme.urgent : root.theme.primaryText
-            font.family: root.theme.fontFamily
-            font.pixelSize: root.theme.fontPixelSize
-        }
-
-        Components.Icon {
-            visible: root.available
-            name: root.icon()
-            theme: root.theme
-            color: root.critical ? root.theme.urgent : root.theme.primaryText
-        }
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        onClicked: root.battery.togglePanel()
     }
 }
