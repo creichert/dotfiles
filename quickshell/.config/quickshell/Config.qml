@@ -115,7 +115,6 @@ QtObject {
     property int volumeMediumThreshold: 35
     property int volumeHighThreshold: 75
     property int batteryCriticalThreshold: 15
-    property int batteryPanelWidth: 340
     // Personal bar attention policy, not a Linux memory-pressure measurement.
     property int memoryAttentionThreshold: 90
     // Host-specific presentation policy; tune against ordinary workloads.

@@ -8,10 +8,9 @@ Components.AnchoredPanel {
     id: root
 
     required property var battery
-    required property var config
     required property var theme
 
-    implicitWidth: Math.min(config.batteryPanelWidth, availableWidth)
+    implicitWidth: Math.min(340, availableWidth)
     implicitHeight: Math.min(desiredHeight, availableHeight)
     readonly property int desiredHeight: Math.ceil(sections.implicitHeight + theme.panelPadding * 2)
     gap: theme.spacingMedium

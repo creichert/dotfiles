@@ -367,6 +367,10 @@ hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"
 --- Clipboard
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
 
+-- Battery
+if isLaptop then
+    hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs ipc call battery togglePanel"))
+end
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----

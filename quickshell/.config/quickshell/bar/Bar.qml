@@ -152,7 +152,6 @@ PanelWindow {
         BatteryUi.BatteryPanel {
             trigger: batteryButton
             battery: root.battery
-            config: root.config
             theme: root.theme
         }
     }
