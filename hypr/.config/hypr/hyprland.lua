@@ -28,9 +28,6 @@ else
     hl.monitor({ output = "DP-1", mode = "3440x1440@144", position = "0x0", scale = 1 })
     hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@144", position = "3440x0", scale = 1, transform = 3 })
 
-    -- improves display but much harder on igpu. leave for testing
-    -- hl.monitor({ output = "HDMI-A-1", mode = "3840x2160@60", position = "3440x0", scale = 2, transform = 3 })
-
     hl.workspace_rule({ workspace = "1", monitor = "DP-1", default = true })
     hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
 end
@@ -367,9 +364,10 @@ hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("qs ipc call launcher toggleLauncher"
 --- Clipboard
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("qs ipc call clipboard togglePicker"))
 
--- Battery
+-- Battery & Display
 if isLaptop then
     hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs ipc call battery togglePanel"))
+    hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("qs ipc call display togglePanel"))
 end
 
 --------------------------------

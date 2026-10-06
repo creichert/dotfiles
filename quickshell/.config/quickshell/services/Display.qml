@@ -35,7 +35,6 @@ Item {
             : "Brightness is read-only: brightnessctl is unavailable"
     }
     readonly property string brightnessIconName: iconForPercent(brightnessPercent)
-    signal brightnessAdjustmentSucceeded()
 
     QtObject {
         id: backlight
@@ -244,7 +243,6 @@ Item {
                     backlight.confirmation = "read"
                 }
                 brightnessFile.reload()
-                root.brightnessAdjustmentSucceeded()
             } else {
                 root.clearPendingAdjustment()
                 backlight.controlError = `Could not adjust brightness (brightnessctl exit ${exitCode})`
