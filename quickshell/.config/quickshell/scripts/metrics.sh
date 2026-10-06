@@ -13,22 +13,6 @@ temperature_c=null
 temperature_sensor_name=""
 temperature_sensor_label=""
 temperature_supported=false
-brightness_file=""
-brightness_max_file=""
-
-discover_backlight() {
-    for backlight in /sys/class/backlight/*; do
-        [[ -r "$backlight/brightness" && -r "$backlight/max_brightness" ]] || continue
-        brightness_file="$backlight/brightness"
-        brightness_max_file="$backlight/max_brightness"
-        break
-    done
-}
-
-# Device names under /sys/class are sufficient for the lifetime of this
-# sampler. Discovering them once avoids filesystem scans on every sample.
-discover_backlight
-
 # Sensor identity is stable for this sampler lifetime. Keep dynamic hwmon
 # numbering out of the configuration, and avoid extra metadata reads per sample.
 for temperature_file in "$temperature_hwmon_path"/hwmon*/temp1_input; do
@@ -99,16 +83,6 @@ while true; do
         done
     fi
 
-    brightness_percent_json=null
-    if [[ -n "$brightness_file" ]]; then
-        brightness=$(< "$brightness_file")
-        brightness_max=$(< "$brightness_max_file")
-        if [[ "$brightness" =~ ^[0-9]+$ && "$brightness_max" =~ ^[0-9]+$ ]] \
-            && (( brightness_max > 0 )); then
-            brightness_percent_json=$((100 * brightness / brightness_max))
-        fi
-    fi
-
     interface_name=""
     gateway_hex=""
     while read -r interface destination gateway _ _ _ _ _; do
@@ -150,7 +124,7 @@ while true; do
     timestamp_ms=${timestamp_ms:0:13}
     cpu_sample_valid=false
     (( sample_number > 1 )) && cpu_sample_valid=true
-    printf '{"cpuPercent":%s,"cpuSampleValid":%s,"memoryPercent":%s,"memoryTotalBytes":%s,"memoryAvailableBytes":%s,"temperatureC":%s,"temperatureSupported":%s,%s,"brightnessPercent":%s,"interfaceName":"%s","gateway":%s,"linkState":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
-        "$cpu_percent" "$cpu_sample_valid" "$memory_percent" "$((memory_total * 1024))" "$((memory_available * 1024))" "$temperature_c" "$temperature_supported" "$temperature_identity_json" "$brightness_percent_json" "$interface_name" "$gateway_json" "$link_state" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
+    printf '{"cpuPercent":%s,"cpuSampleValid":%s,"memoryPercent":%s,"memoryTotalBytes":%s,"memoryAvailableBytes":%s,"temperatureC":%s,"temperatureSupported":%s,%s,"interfaceName":"%s","gateway":%s,"linkState":"%s","receiveBytes":%s,"transmitBytes":%s,"timestamp":%s}\n' \
+        "$cpu_percent" "$cpu_sample_valid" "$memory_percent" "$((memory_total * 1024))" "$((memory_available * 1024))" "$temperature_c" "$temperature_supported" "$temperature_identity_json" "$interface_name" "$gateway_json" "$link_state" "$receive_bytes" "$transmit_bytes" "$timestamp_ms"
     sleep "$interval_seconds"
 done

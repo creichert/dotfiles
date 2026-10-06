@@ -16,7 +16,6 @@ QtObject {
     property string temperatureSensorName: ""
     property string temperatureSensorLabel: ""
     readonly property bool samplerRunning: metricsProcess.running
-    property var brightnessPercent: null
     property string interfaceName: ""
     property string gateway: ""
     property string linkState: "unknown"
@@ -50,7 +49,6 @@ QtObject {
         temperatureSupported = sample.temperatureSupported === true
         temperatureSensorName = sample.temperatureSensorName || ""
         temperatureSensorLabel = sample.temperatureSensorLabel || ""
-        brightnessPercent = sample.brightnessPercent
         interfaceName = sample.interfaceName
         gateway = sample.gateway || ""
         linkState = sample.linkState || "unknown"

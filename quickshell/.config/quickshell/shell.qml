@@ -72,6 +72,11 @@ ShellRoot {
         config: config
     }
 
+    Display {
+        id: displayService
+        config: config
+    }
+
     Launcher {
         id: launcher
         config: config
@@ -137,7 +142,7 @@ ShellRoot {
             screen: modelData
             config: config
             theme: theme
-            metrics: metricsService
+            display: displayService
             audio: audioService
             battery: batteryService
             network: networkService

@@ -11,7 +11,8 @@ QtObject {
     property string fontFamily: "Hack Nerd Font Propo"
     property bool networkModuleEnabled: true
     property bool batteryModuleEnabled: isLaptop
-    property bool brightnessModuleEnabled: isLaptop
+    // Presentation policy; backlight discovery determines brightness capability.
+    property bool brightnessModuleEnabled: true
 
     // Theme and UX contract
     property string surfaceBaseColor: "#272a2c"
@@ -114,6 +115,7 @@ QtObject {
     property string networkRateWidthLabel: "999.9 Mb/s"
     property int volumeMediumThreshold: 35
     property int volumeHighThreshold: 75
+    property int brightnessStepPercent: 5
     property int batteryCriticalThreshold: 15
     // Personal bar attention policy, not a Linux memory-pressure measurement.
     property int memoryAttentionThreshold: 90

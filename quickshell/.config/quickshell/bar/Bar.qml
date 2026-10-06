@@ -8,6 +8,7 @@ import Quickshell.Wayland
 import "widgets" as Widgets
 import "../audio" as AudioUi
 import "../battery" as BatteryUi
+import "../display" as DisplayUi
 import "../network" as NetworkUi
 import "../resources" as ResourcesUi
 import "../notifications" as Notifications
@@ -15,7 +16,7 @@ import "../notifications" as Notifications
 PanelWindow {
     id: root
 
-    required property var metrics
+    required property var display
     required property var audio
     required property var battery
     required property var network
@@ -102,8 +103,9 @@ PanelWindow {
         }
 
         Widgets.Brightness {
+            id: brightnessButton
             Layout.alignment: Qt.AlignVCenter
-            metrics: root.metrics
+            display: root.display
             config: root.config
             theme: root.theme
         }
@@ -166,6 +168,16 @@ PanelWindow {
             controller: root.notifications
             open: notificationButton.centerVisible
             onDismissed: root.notifications.notificationCenterVisible = false
+        }
+    }
+
+    LazyLoader {
+        active: root.display.panelVisible
+
+        DisplayUi.DisplayPanel {
+            trigger: brightnessButton
+            display: root.display
+            theme: root.theme
         }
     }
 
