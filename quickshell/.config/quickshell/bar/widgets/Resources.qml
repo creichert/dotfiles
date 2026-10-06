@@ -3,23 +3,19 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import "../../components" as Components
 
-Item {
+Components.BarItem {
     id: root
 
     // QQuickItem already owns the resources list property.
     required property var resourcesService
-    required property var config
-    required property var theme
     property bool expanded: false
-    implicitWidth: resourceRow.implicitWidth + 2 * config.barStatusHorizontalInset
-    implicitHeight: config.barHeight
+    engaged: resourcesService.panelVisible
 
     readonly property string compactResource: resourcesService.temperatureCritical ? "temperature"
         : resourcesService.memoryUrgent ? "memory" : "cpu"
 
-    Row {
+    contentItem: Row {
         id: resourceRow
-        anchors.centerIn: parent
         spacing: 2 * root.config.barContentSpacing
 
         Headline {

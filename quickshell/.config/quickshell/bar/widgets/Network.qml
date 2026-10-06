@@ -1,15 +1,12 @@
 import QtQuick
 import "../../components" as Components
 
-Item {
+Components.BarItem {
     id: root
 
     required property var network
-    required property var config
-    required property var theme
     visible: config.networkModuleEnabled
-    implicitWidth: networkRow.implicitWidth + 2 * config.barStatusHorizontalInset
-    implicitHeight: config.barHeight
+    engaged: network.panelVisible
     property bool expanded: false
 
     readonly property bool hasRoute: network.interfaceName.length > 0
@@ -43,9 +40,8 @@ Item {
         font.pixelSize: root.theme.fontPixelSize
     }
 
-    Row {
+    contentItem: Row {
         id: networkRow
-        anchors.centerIn: parent
         spacing: root.config.barContentSpacing
 
         Components.Icon {

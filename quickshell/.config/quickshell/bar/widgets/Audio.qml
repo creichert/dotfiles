@@ -1,14 +1,11 @@
 import QtQuick
 import "../../components" as Components
 
-Item {
+Components.BarItem {
     id: root
 
-    required property var config
-    required property var theme
     required property var audio
-    implicitWidth: volumeRow.implicitWidth + 2 * config.barStatusHorizontalInset
-    implicitHeight: config.barHeight
+    engaged: audio.panelVisible
 
     readonly property var sink: audio.sink
     readonly property bool muted: audio.sinkMuted
@@ -30,9 +27,8 @@ Item {
         repeat: false
     }
 
-    Row {
+    contentItem: Row {
         id: volumeRow
-        anchors.centerIn: parent
         spacing: root.config.barContentSpacing
 
         Text {

@@ -1,18 +1,14 @@
 import QtQuick
 import "../../components" as Components
 
-Rectangle {
+Components.BarItem {
     id: root
 
-    required property var config
-    required property var theme
     property bool inhibited: false
     implicitWidth: config.barIconButtonWidth
-    implicitHeight: config.barHeight
-    color: inhibited ? theme.selectedSurface : "transparent"
+    engaged: inhibited
 
-    Components.Icon {
-        anchors.centerIn: parent
+    contentItem: Components.Icon {
         name: root.inhibited ? "eyeOpen" : "eyeClosed"
         theme: root.theme
     }

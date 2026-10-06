@@ -1,11 +1,9 @@
 import QtQuick
 import "../../components" as Components
 
-Rectangle {
+Components.BarItem {
     id: root
 
-    required property var config
-    required property var theme
     property var controller: null
     readonly property bool centerVisible: controller && controller.notificationCenterVisible
     readonly property int unreadCount: {
@@ -23,18 +21,29 @@ Rectangle {
     }
 
     visible: controller !== null
-    implicitWidth: notificationIcon.implicitWidth + 2 * config.barStatusHorizontalInset
-    implicitHeight: config.barHeight
-    color: controller && controller.doNotDisturb
-        ? theme.selectedSurface
-        : "transparent"
+    engaged: centerVisible || Boolean(controller && controller.doNotDisturb)
 
-    Components.Icon {
-        id: notificationIcon
+    contentItem: Item {
+        implicitWidth: Math.max(bellIcon.implicitWidth, mutedBellIcon.implicitWidth)
+        implicitHeight: Math.max(bellIcon.implicitHeight, mutedBellIcon.implicitHeight)
 
-        anchors.centerIn: parent
-        name: root.controller && root.controller.doNotDisturb ? "bellMuted" : "bell"
-        theme: root.theme
+        Components.Icon {
+            id: bellIcon
+
+            anchors.centerIn: parent
+            visible: !root.controller || !root.controller.doNotDisturb
+            name: "bell"
+            theme: root.theme
+        }
+
+        Components.Icon {
+            id: mutedBellIcon
+
+            anchors.centerIn: parent
+            visible: Boolean(root.controller && root.controller.doNotDisturb)
+            name: "bellMuted"
+            theme: root.theme
+        }
     }
 
     Rectangle {
