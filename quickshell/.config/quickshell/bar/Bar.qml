@@ -62,10 +62,9 @@ PanelWindow {
     }
 
     RowLayout {
-        // Add left satellites before idleButton; anchor future right satellites
-        // to centerClock.right in a separate row.
+        // Add left satellites before idleButton so this area grows outward.
         anchors.right: centerClock.left
-        anchors.rightMargin: root.config.barSpacing
+        anchors.rightMargin: root.config.barCenterSpacing
         anchors.verticalCenter: centerClock.verticalCenter
         spacing: root.config.barSpacing
 
@@ -74,6 +73,14 @@ PanelWindow {
             config: root.config
             theme: root.theme
         }
+    }
+
+    RowLayout {
+        // Future right satellites grow outward without moving the clock.
+        anchors.left: centerClock.right
+        anchors.leftMargin: root.config.barCenterSpacing
+        anchors.verticalCenter: centerClock.verticalCenter
+        spacing: root.config.barSpacing
     }
 
     RowLayout {

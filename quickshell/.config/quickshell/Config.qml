@@ -42,6 +42,8 @@ QtObject {
     // use it between their fixed slots, and the tray uses it between tray
     // items.
     property int barSpacing: 4
+    // Gap from the fixed Clock anchor to either center satellite area.
+    property int barCenterSpacing: 8
     // This is inside one widget. Audio uses it between transient % and speaker;
     // Network between its internal elements; Resources between value and glyph.
     property int barContentSpacing: 4
