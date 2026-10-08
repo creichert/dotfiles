@@ -21,12 +21,7 @@ Components.AnchoredPanel {
         if (!visible) {
             if (battery.panelVisible)
                 battery.closePanel()
-            return
         }
-        Qt.callLater(() => {
-            if (root.visible)
-                panelFocus.forceActiveFocus()
-        })
     }
 
     function duration(seconds) {
@@ -39,111 +34,91 @@ Components.AnchoredPanel {
         return hours > 0 ? `${hours} h ${minutes % 60} min` : `${minutes} min`
     }
 
-    Rectangle {
-        anchors.fill: parent
-        radius: root.theme.surfaceRadius
-        color: root.theme.surface
-        border.width: 1
-        border.color: root.theme.separator
+    Components.PanelBody {
+        panel: root
+        theme: root.theme
 
-        MouseArea {
+        Flickable {
             anchors.fill: parent
-        }
+            contentWidth: width
+            contentHeight: sections.implicitHeight
+            clip: true
+            interactive: contentHeight > height
 
-        FocusScope {
-            id: panelFocus
+            Column {
+                id: sections
+                width: parent.width
+                spacing: root.theme.sectionSpacing
 
-            anchors.fill: parent
-            anchors.margins: root.theme.panelPadding
-            focus: true
+                Text {
+                    text: "Battery"
+                    color: root.theme.primaryText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.titleFontPixelSize + 2
+                    font.bold: true
+                }
 
-            Keys.onEscapePressed: event => {
-                root.battery.closePanel()
-                event.accepted = true
-            }
+                RowLayout {
+                    width: parent.width
+                    spacing: root.theme.spacingLarge
 
-            Flickable {
-                anchors.fill: parent
-                contentWidth: width
-                contentHeight: sections.implicitHeight
-                clip: true
-                interactive: contentHeight > height
+                    Components.Icon {
+                        name: root.battery.iconName
+                        theme: root.theme
+                        font.pixelSize: root.theme.bodyFontPixelSize + 16
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        spacing: root.theme.spacingSmall
+
+                        Text {
+                            visible: root.battery.percent !== null
+                            text: root.battery.percent !== null ? `${Math.round(root.battery.percent)}%` : ""
+                            color: root.theme.primaryText
+                            font.family: root.theme.fontFamily
+                            font.pixelSize: root.theme.titleFontPixelSize + 6
+                            font.bold: true
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: root.battery.statusText
+                            color: root.theme.mutedText
+                            font.family: root.theme.fontFamily
+                            font.pixelSize: root.theme.bodyFontPixelSize
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
 
                 Column {
-                    id: sections
                     width: parent.width
-                    spacing: root.theme.sectionSpacing
+                    spacing: root.theme.spacingLarge
 
-                    Text {
-                        text: "Battery"
-                        color: root.theme.primaryText
-                        font.family: root.theme.fontFamily
-                        font.pixelSize: root.theme.titleFontPixelSize + 2
-                        font.bold: true
+                    DetailRow {
+                        visible: root.battery.chargeState === "charging" || root.battery.chargeState === "discharging"
+                        label: root.battery.chargeState === "charging" ? "Estimated time to full" : "Estimated time to empty"
+                        value: root.duration(root.battery.timeEstimateSeconds)
                     }
 
-                    RowLayout {
-                        width: parent.width
-                        spacing: root.theme.spacingLarge
-
-                        Components.Icon {
-                            name: root.battery.iconName
-                            theme: root.theme
-                            font.pixelSize: root.theme.bodyFontPixelSize + 16
-                        }
-
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            Layout.minimumWidth: 0
-                            spacing: root.theme.spacingSmall
-
-                            Text {
-                                visible: root.battery.percent !== null
-                                text: root.battery.percent !== null ? `${Math.round(root.battery.percent)}%` : ""
-                                color: root.theme.primaryText
-                                font.family: root.theme.fontFamily
-                                font.pixelSize: root.theme.titleFontPixelSize + 6
-                                font.bold: true
-                            }
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: root.battery.statusText
-                                color: root.theme.mutedText
-                                font.family: root.theme.fontFamily
-                                font.pixelSize: root.theme.bodyFontPixelSize
-                                wrapMode: Text.WordWrap
-                            }
-                        }
+                    DetailRow {
+                        visible: root.battery.rateWatts !== null
+                        label: root.battery.chargeState === "charging" ? "Charge rate" : "Discharge rate"
+                        value: root.battery.rateWatts !== null ? `${root.battery.rateWatts.toFixed(1)} W` : ""
                     }
 
-                    Column {
-                        width: parent.width
-                        spacing: root.theme.spacingLarge
+                    DetailRow {
+                        visible: root.battery.healthPercent !== null
+                        label: "Battery health"
+                        value: root.battery.healthPercent !== null ? `${root.battery.healthPercent.toFixed(1)}%` : ""
+                    }
 
-                        DetailRow {
-                            visible: root.battery.chargeState === "charging" || root.battery.chargeState === "discharging"
-                            label: root.battery.chargeState === "charging" ? "Estimated time to full" : "Estimated time to empty"
-                            value: root.duration(root.battery.timeEstimateSeconds)
-                        }
-
-                        DetailRow {
-                            visible: root.battery.rateWatts !== null
-                            label: root.battery.chargeState === "charging" ? "Charge rate" : "Discharge rate"
-                            value: root.battery.rateWatts !== null ? `${root.battery.rateWatts.toFixed(1)} W` : ""
-                        }
-
-                        DetailRow {
-                            visible: root.battery.healthPercent !== null
-                            label: "Battery health"
-                            value: root.battery.healthPercent !== null ? `${root.battery.healthPercent.toFixed(1)}%` : ""
-                        }
-
-                        DetailRow {
-                            visible: root.battery.fullCapacityWh !== null
-                            label: "Full-charge capacity"
-                            value: root.battery.fullCapacityWh !== null ? `${root.battery.fullCapacityWh.toFixed(1)} Wh` : ""
-                        }
+                    DetailRow {
+                        visible: root.battery.fullCapacityWh !== null
+                        label: "Full-charge capacity"
+                        value: root.battery.fullCapacityWh !== null ? `${root.battery.fullCapacityWh.toFixed(1)} Wh` : ""
                     }
                 }
             }
