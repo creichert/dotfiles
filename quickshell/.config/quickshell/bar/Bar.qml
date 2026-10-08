@@ -6,11 +6,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import "widgets" as Widgets
-import "../audio" as AudioUi
-import "../battery" as BatteryUi
-import "../display" as DisplayUi
-import "../network" as NetworkUi
-import "../resources" as ResourcesUi
+import "../panels" as Panels
 import "../notifications" as Notifications
 
 PanelWindow {
@@ -151,7 +147,7 @@ PanelWindow {
     LazyLoader {
         active: root.battery.panelVisible
 
-        BatteryUi.BatteryPanel {
+        Panels.BatteryPanel {
             trigger: batteryButton
             battery: root.battery
             theme: root.theme
@@ -174,7 +170,7 @@ PanelWindow {
     LazyLoader {
         active: root.display.panelVisible
 
-        DisplayUi.DisplayPanel {
+        Panels.DisplayPanel {
             trigger: displayButton
             display: root.display
             theme: root.theme
@@ -184,7 +180,7 @@ PanelWindow {
     LazyLoader {
         active: root.audio.panelVisible
 
-        AudioUi.AudioPanel {
+        Panels.AudioPanel {
             trigger: audioButton
             audio: root.audio
             theme: root.theme
@@ -194,7 +190,7 @@ PanelWindow {
     LazyLoader {
         active: root.network.panelVisible
 
-        NetworkUi.NetworkPanel {
+        Panels.NetworkPanel {
             trigger: networkButton
             network: root.network
             theme: root.theme
@@ -204,7 +200,7 @@ PanelWindow {
     LazyLoader {
         active: root.resources.panelVisible
 
-        ResourcesUi.ResourcesPanel {
+        Panels.ResourcesPanel {
             trigger: resourcesButton
             resources: root.resources
             theme: root.theme
