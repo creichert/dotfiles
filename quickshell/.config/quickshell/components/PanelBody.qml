@@ -5,22 +5,33 @@ FocusScope {
 
     required property AnchoredPanel panel
     required property var theme
+    property Item initialFocusItem: root
     default property alias contentData: contentHost.data
+    signal escapePressed(var event)
 
     anchors.fill: parent
     focus: true
 
     Keys.priority: Keys.AfterItem
     Keys.onEscapePressed: event => {
-        // Dismissal may immediately unload this body.
-        event.accepted = true
-        root.panel.dismissed()
+        // Feature navigation may consume Escape before the dismissal fallback.
+        event.accepted = false
+        root.escapePressed(event)
+        if (!event.accepted) {
+            // Dismissal may immediately unload this body.
+            event.accepted = true
+            root.panel.dismissed()
+        }
+    }
+
+    function focusContent() {
+        if (panel.visible)
+            focusTimer.restart()
     }
 
     Component.onCompleted: {
         // LazyLoader can create the panel with visible already true.
-        if (panel.visible)
-            focusTimer.start()
+        focusContent()
     }
 
     // Internal objects must not enter the consumer's padded content host.
@@ -49,9 +60,11 @@ FocusScope {
             interval: 0
             repeat: false
             onTriggered: {
-                // Do not steal focus from an already-focused descendant.
-                if (root.panel.visible && root.visible && !root.activeFocus)
-                    root.forceActiveFocus()
+                // Preserve descendant focus by default; an explicit opening
+                // target instead resets the scope's previously focused control.
+                if (root.panel.visible && root.visible && root.initialFocusItem
+                        && (root.initialFocusItem !== root || !root.activeFocus))
+                    root.initialFocusItem.forceActiveFocus()
             }
         },
         Connections {
@@ -59,7 +72,7 @@ FocusScope {
 
             function onVisibleChanged() {
                 if (root.panel.visible)
-                    focusTimer.restart()
+                    root.focusContent()
                 else
                     focusTimer.stop()
             }
