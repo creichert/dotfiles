@@ -21,109 +21,84 @@ Components.AnchoredPanel {
         if (!visible) {
             if (resources.panelVisible)
                 resources.closePanel()
-            return
         }
-        Qt.callLater(() => {
-            if (root.visible)
-                panelFocus.forceActiveFocus()
-        })
     }
 
-    Rectangle {
-        anchors.fill: parent
-        radius: root.theme.surfaceRadius
-        color: root.theme.surface
-        border.width: 1
-        border.color: root.theme.separator
+    Components.PanelBody {
+        panel: root
+        theme: root.theme
 
-        MouseArea {
+        Flickable {
             anchors.fill: parent
-        }
+            contentWidth: width
+            contentHeight: sections.implicitHeight
+            clip: true
+            interactive: contentHeight > height
 
-        FocusScope {
-            id: panelFocus
+            Column {
+                id: sections
+                width: parent.width
+                spacing: root.theme.sectionSpacing
 
-            anchors.fill: parent
-            anchors.margins: root.theme.panelPadding
-            focus: true
+                Text {
+                    text: "System Resources"
+                    color: root.theme.primaryText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.titleFontPixelSize + 2
+                    font.bold: true
+                }
 
-            Keys.onEscapePressed: event => {
-                root.resources.closePanel()
-                event.accepted = true
-            }
+                Text {
+                    visible: !root.resources.sampleAvailable
+                    text: "Waiting for resource data"
+                    color: root.theme.mutedText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.secondaryFontPixelSize
+                }
 
-            Flickable {
-                anchors.fill: parent
-                contentWidth: width
-                contentHeight: sections.implicitHeight
-                clip: true
-                interactive: contentHeight > height
-
-                Column {
-                    id: sections
+                ResourceRow {
                     width: parent.width
-                    spacing: root.theme.sectionSpacing
+                    theme: root.theme
+                    iconName: root.resources.cpuIcon
+                    label: "CPU"
+                    value: root.resources.cpuAvailable ? `${root.resources.cpuPercent}%` : "--%"
+                    detail: root.resources.cpuStatusText
+                }
 
-                    Text {
-                        text: "System Resources"
-                        color: root.theme.primaryText
-                        font.family: root.theme.fontFamily
-                        font.pixelSize: root.theme.titleFontPixelSize + 2
-                        font.bold: true
-                    }
+                ResourceRow {
+                    width: parent.width
+                    theme: root.theme
+                    iconName: "memory"
+                    label: "Memory"
+                    value: root.resources.memoryAvailable ? `${root.resources.memoryPercent}%` : "--%"
+                    detail: root.resources.memoryCapacityText
+                }
 
-                    Text {
-                        visible: !root.resources.sampleAvailable
-                        text: "Waiting for resource data"
-                        color: root.theme.mutedText
-                        font.family: root.theme.fontFamily
-                        font.pixelSize: root.theme.secondaryFontPixelSize
-                    }
+                Rectangle {
+                    visible: root.resources.temperatureSupported
+                    width: parent.width
+                    height: 1
+                    color: root.theme.separator
+                }
 
-                    ResourceRow {
-                        width: parent.width
-                        theme: root.theme
-                        iconName: root.resources.cpuIcon
-                        label: "CPU"
-                        value: root.resources.cpuAvailable ? `${root.resources.cpuPercent}%` : "--%"
-                        detail: root.resources.cpuStatusText
-                    }
+                ResourceRow {
+                    visible: root.resources.temperatureSupported
+                    width: parent.width
+                    theme: root.theme
+                    iconName: root.resources.temperatureIcon
+                    label: "CPU temperature"
+                    value: root.resources.temperatureAvailable ? `${root.resources.temperatureC}°C` : "--°C"
+                    detail: `${root.resources.temperatureStatusText} · ${root.resources.temperatureSensorText}`
+                    urgent: root.resources.temperatureCritical
+                }
 
-                    ResourceRow {
-                        width: parent.width
-                        theme: root.theme
-                        iconName: "memory"
-                        label: "Memory"
-                        value: root.resources.memoryAvailable ? `${root.resources.memoryPercent}%` : "--%"
-                        detail: root.resources.memoryCapacityText
-                    }
-
-                    Rectangle {
-                        visible: root.resources.temperatureSupported
-                        width: parent.width
-                        height: 1
-                        color: root.theme.separator
-                    }
-
-                    ResourceRow {
-                        visible: root.resources.temperatureSupported
-                        width: parent.width
-                        theme: root.theme
-                        iconName: root.resources.temperatureIcon
-                        label: "CPU temperature"
-                        value: root.resources.temperatureAvailable ? `${root.resources.temperatureC}°C` : "--°C"
-                        detail: `${root.resources.temperatureStatusText} · ${root.resources.temperatureSensorText}`
-                        urgent: root.resources.temperatureCritical
-                    }
-
-                    Text {
-                        width: parent.width
-                        text: root.resources.cadenceText
-                        color: root.theme.mutedText
-                        font.family: root.theme.fontFamily
-                        font.pixelSize: root.theme.secondaryFontPixelSize
-                        wrapMode: Text.WordWrap
-                    }
+                Text {
+                    width: parent.width
+                    text: root.resources.cadenceText
+                    color: root.theme.mutedText
+                    font.family: root.theme.fontFamily
+                    font.pixelSize: root.theme.secondaryFontPixelSize
+                    wrapMode: Text.WordWrap
                 }
             }
         }
