@@ -24,20 +24,10 @@ Components.AnchoredPanel {
             view = "status"
             if (network.panelVisible)
                 network.closePanel()
-            return
         }
-
-        focusPanel()
     }
 
-    onViewChanged: focusPanel()
-
-    function focusPanel() {
-        Qt.callLater(() => {
-            if (root.visible)
-                panelFocus.forceActiveFocus()
-        })
-    }
+    onViewChanged: panelBody.focusContent()
 
     function showStatus() {
         view = "status"
@@ -68,33 +58,21 @@ Components.AnchoredPanel {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        radius: root.theme.surfaceRadius
-        color: root.theme.surface
-        border.width: 1
-        border.color: root.theme.separator
+    Components.PanelBody {
+        id: panelBody
 
-        MouseArea {
-            anchors.fill: parent
+        panel: root
+        theme: root.theme
+
+        onEscapePressed: event => {
+            if (root.view === "discovery") {
+                event.accepted = true
+                root.showStatus()
+            }
         }
 
-        FocusScope {
-            id: panelFocus
-
-            anchors {
-                fill: parent
-                margins: root.theme.panelPadding
-            }
-            focus: true
-
-            Keys.onEscapePressed: event => {
-                if (root.view === "discovery")
-                    root.showStatus()
-                else
-                    root.network.closePanel()
-                event.accepted = true
-            }
+        Item {
+            anchors.fill: parent
 
             RowLayout {
                 id: header

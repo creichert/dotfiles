@@ -17,15 +17,6 @@ Components.AnchoredPanel {
     edgeInset: config.notificationMargin
     gap: config.notificationMargin
 
-    onVisibleChanged: {
-        if (visible) {
-            Qt.callLater(() => {
-                if (root.visible)
-                    neutralFocus.forceActiveFocus()
-            })
-        }
-    }
-
     Connections {
         target: root.controller
 
@@ -34,38 +25,20 @@ Components.AnchoredPanel {
         }
     }
 
-    Rectangle {
+    Components.PanelBody {
         id: center
 
-        anchors.fill: parent
-        radius: root.theme.surfaceRadius
-        color: root.theme.surface
-        border.width: 1
-        border.color: root.theme.separator
+        panel: root
+        theme: root.theme
+        initialFocusItem: neutralFocus
 
-        // Consume clicks on inactive card space so only outside clicks dismiss.
-        MouseArea {
+        Item {
             anchors.fill: parent
-        }
-
-        FocusScope {
-            id: centerFocus
-
-            anchors {
-                fill: parent
-                margins: root.theme.panelPadding
-            }
-            focus: true
 
             // A real child target avoids restoring the FocusScope's last control.
             Item {
                 id: neutralFocus
                 activeFocusOnTab: false
-            }
-
-            Keys.onEscapePressed: event => {
-                root.dismissed()
-                event.accepted = true
             }
 
             RowLayout {
