@@ -18,6 +18,17 @@ set -o vi
 shopt -s histappend
 shopt -s checkwinsize
 
+# Generous interactive history with bounded disk retention.
+export HISTSIZE=10000
+export HISTFILESIZE=200000
+
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
+HISTIGNORE=' *'
+HISTTIMEFORMAT='%F %T '
+
+# Persist commands immediately, without reloading all terminal history.
+PROMPT_COMMAND="history -a"
+
 bind 'set completion-ignore-case on'
 
 export EDITOR=vim
@@ -29,17 +40,9 @@ export GPG_TTY=$(tty)
 
 export PASSWORD_STORE_ENABLE_EXTENSIONS=true
 
-HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
-HISTSIZE=10000
-HISTIGNORE=' *'
-
-# Share history between all terminals immediately
-PROMPT_COMMAND="history -a"
-# PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
-
-PS1_USER='\[\e[0;32m\]\u@\h\[[01m\]'
-PS1_DIR='\[[0;35m\]\w\[[00m\]\[[1;30m\]\[[0;37m\]'
+PS1_USER='\[\e[0;32m\]\u@\h\[\e[01m\]'
+PS1_DIR='\[\e[0;35m\]\w\[\e[00m\]\[\e[1;30m\]\[\e[0;37m\]'
 GIT_PS1_SHOWCOLORHINTS=1
 GIT_PS1_SHOWDIRTYSTATE=1
-PS1_GITBRANCH='`__git_ps1 " (%s)"`\[[00m\]\[[0;37m\]'
+PS1_GITBRANCH='`__git_ps1 " (%s)"`\[\e[00m\]\[\e[0;37m\]'
 PS1='\n'$PS1_USER':'$PS1_DIR$PS1_GITBRANCH'\n\$ '
