@@ -111,8 +111,15 @@ Components.AnchoredPanel {
                             implicitHeight: 38
                             enabled: root.audio.sink && root.audio.sink.ready
                             KeyNavigation.tab: outputSlider
-                            KeyNavigation.backtab: microphoneSlider.enabled ? microphoneSlider : outputSelector
                             onClicked: root.audio.setSinkMuted(!root.audio.sinkMuted)
+
+                            // Install after implicit reciprocal links so panel
+                            // entry cannot replace the explicit wrap target.
+                            Binding {
+                                target: outputMute.KeyNavigation
+                                property: "backtab"
+                                value: microphoneSlider.enabled ? microphoneSlider : outputSelector
+                            }
                         }
                     }
 
